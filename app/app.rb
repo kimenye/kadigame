@@ -1,4 +1,5 @@
 require 'koala'
+require 'pusher'
 
 class Kadi < Padrino::Application
   use ActiveRecord::ConnectionAdapters::ConnectionManagement
@@ -14,6 +15,10 @@ class Kadi < Padrino::Application
       abort("missing env vars: please set FACEBOOK_APP_ID and FACEBOOK_SECRET with your app credentials")
     end
   end
+
+  Pusher.app_id = '26156';
+  Pusher.key = '3b40830094bf454823f2'
+  Pusher.secret = '4700f33ab2ce0a58b39d'
 
   helpers do
     def host
@@ -107,6 +112,17 @@ class Kadi < Padrino::Application
   get '/auth/facebook/callback' do
     session[:access_token] = authenticator.get_access_token(params[:code])
     redirect '/'
+  end
+
+  post "/pusher/presence/auth", :provides => [:json] do
+    puts "Authenticating presence channel: #{params}"
+    response = Pusher[params[:channel_name]].authenticate(params[:socket_id], {
+        :user_id => params[:userid],
+        :user_info => {
+            :name => params[:name]
+        }
+    })
+    response.to_json
   end
 
   get :logout do

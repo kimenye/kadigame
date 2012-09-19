@@ -10,6 +10,7 @@ function DashboardApplication() {
     this.xp = ko.observable();
     this.level = ko.observable();
     this.credits = ko.observable();
+    this.numPlayersOnline = ko.observable();
     this.player = null;
     this.views = ko.observableArray([new View('Invite FB Friends','invite-friends')]);
     this.selectedView = ko.observable(this.views()[0]);
@@ -19,5 +20,12 @@ function DashboardApplication() {
         this.xp(player.xp);
         this.level(player.level);
         this.credits(player.credits);
+        this.updatePlayersOnline(player.getPlayersOnline());
+        player.membershipChangedHandler = new Handler(this.updatePlayersOnline, this);
+
+    }
+
+    this.updatePlayersOnline = function(num) {
+        this.numPlayersOnline(num);
     }
 }
