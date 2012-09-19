@@ -1,19 +1,78 @@
+require 'koala'
+
 class Kadi < Padrino::Application
   use ActiveRecord::ConnectionAdapters::ConnectionManagement
   register Padrino::Rendering
   register Padrino::Mailer
   register Padrino::Helpers
 
+
   enable :sessions
 
+  unless ENV["FACEBOOK_APP_ID"] && ENV["FACEBOOK_SECRET"]
+    if production?
+      abort("missing env vars: please set FACEBOOK_APP_ID and FACEBOOK_SECRET with your app credentials")
+    end
+  end
+
+  helpers do
+    def host
+      request.env['HTTP_HOST']
+    end
+
+    def scheme
+      request.scheme
+    end
+
+    def url_no_scheme(path = '')
+      "//#{host}#{path}"
+    end
+
+    def url(path = '')
+      "#{scheme}://#{host}#{path}"
+    end
+
+    def authenticator
+      @authenticator ||= Koala::Facebook::OAuth.new(ENV["FACEBOOK_APP_ID"], ENV["FACEBOOK_SECRET"], url("/auth/facebook/callback"))
+    end
+
+    def is_logged_in_to_facebook
+      begin
+        @graph = Koala::Facebook::API.new(session[:access_token])
+
+        # Get public details of current application
+        @app  =  @graph.get_object(ENV["FACEBOOK_APP_ID"])
+
+        puts ">>> Access token #{session[:access_token]}"
+        return !@app.nil?
+      rescue
+        false
+      end
+    end
+  end
+
+  # the facebook session expired! reset ours and restart the process
+  #error(Koala::Facebook::APIError) do
+  #  session[:access_token] = nil
+  #  redirect "/auth/facebook"
+  #end
+
   get :index do
-    # url is generated as '/'
-    # url_for(:index) => "/"
     render :index
   end
 
+  #get :channel do
+  #  render
+  #end
+
   get :test  do
     render "test"
+  end
+
+  #/auth/facebook
+
+  get '/auth/facebook' do
+
   end
 
   ##

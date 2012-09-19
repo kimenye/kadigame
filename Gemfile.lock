@@ -15,17 +15,23 @@ GEM
     arel (3.0.2)
     bcrypt-ruby (3.0.1)
     builder (3.0.3)
+    faraday (0.8.4)
+      multipart-post (~> 1.1)
     haml (3.1.7)
     http_router (0.10.2)
       rack (>= 1.0.0)
       url_mount (~> 0.2.1)
     i18n (0.6.1)
+    koala (1.5.0)
+      faraday (~> 0.7)
+      multi_json (~> 1.3)
     mail (2.3.3)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mime-types (1.19)
     multi_json (1.3.6)
+    multipart-post (1.1.5)
     padrino (0.10.7)
       padrino-admin (= 0.10.7)
       padrino-cache (= 0.10.7)
@@ -81,6 +87,7 @@ DEPENDENCIES
   activerecord
   bcrypt-ruby
   haml
+  koala
   padrino (= 0.10.7)
   pg
   rake

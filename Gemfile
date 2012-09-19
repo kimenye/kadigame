@@ -19,6 +19,8 @@ gem 'pg'
 # Padrino Stable Gem
 gem 'padrino', '0.10.7'
 
+gem 'koala'
+
 # Or Padrino Edge
 # gem 'padrino', :git => 'git://github.com/padrino/padrino-framework.git'
 
