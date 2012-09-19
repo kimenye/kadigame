@@ -5,17 +5,9 @@
         =image_tag "/images/logo_fb.png", :class => 'logo'
       %small Kenyan Style Poker
 .container
-  -#.login.span2.offset10
-    .fb-login-button{ 'data-show-faces' => 'false', 'data-width' => '100', 'data-max-rows' => '1'}
   - if is_logged_in_to_facebook
-    .login
-      %h3
-        %a{:href => '/auth/facebook'}
-          =image_tag '/images/fb.jpg', :class => 'fb_logo'
-        %small Log in with Facebook
+    =partial 'base/login'
   - else
     %h1 You are logged into Facebook
 
-
 =javascript_include_tag "/javascripts/bootstrap.min.js"
--content_for :facebook, partial("base/facebook")
