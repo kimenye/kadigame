@@ -5,9 +5,8 @@
         =image_tag "/images/logo_fb.png", :class => 'logo'
       %small Kenyan Style Poker
 .container
-  - if is_logged_in_to_facebook
+  - if !@player
     =partial 'base/login'
   - else
-    %h1 You are logged into Facebook
-
-=javascript_include_tag "/javascripts/bootstrap.min.js"
+    -content_for :app_js, partial("base/app_js")
+-content_for :lib_js, partial("base/lib_js")

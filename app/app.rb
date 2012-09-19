@@ -35,41 +35,73 @@ class Kadi < Padrino::Application
     def authenticator
       @authenticator ||= Koala::Facebook::OAuth.new(ENV["FACEBOOK_APP_ID"], ENV["FACEBOOK_SECRET"], url("/auth/facebook/callback"))
     end
-
-    def is_logged_in_to_facebook
-      begin
-        @graph = Koala::Facebook::API.new(session[:access_token])
-
-        # Get public details of current application
-        @app  =  @graph.get_object(ENV["FACEBOOK_APP_ID"])
-
-        puts ">>> Access token #{session[:access_token]}"
-        return !@app.nil?
-      rescue
-        false
-      end
-    end
   end
 
   # the facebook session expired! reset ours and restart the process
-  #error(Koala::Facebook::APIError) do
-  #  session[:access_token] = nil
-  #  redirect "/auth/facebook"
-  #end
+  error(Koala::Facebook::APIError) do
+    puts ">>> The Facebook Session has expired"
+    session[:access_token] = nil
+    redirect "/auth/facebook"
+  end
 
   get :index do
+    @graph  = Koala::Facebook::API.new(session[:access_token])
+    #binding.pry
+    #puts ">>> Graph #{@graph}"
+
+    # Get public details of current application
+    #@app  =  @graph.get_object(ENV["FACEBOOK_APP_ID"])
+
+    puts ">>> Access token #{session[:access_token]}"
+
+    @token = session[:access_token]
+
+    #If we have a valid access token
+    if session[:access_token]
+      #read the object from the fb graph
+      @user = @graph.get_object("me")
+
+      puts ">> User #{@user}"
+      fb_id = @user['id']
+      name = @user['name']
+      puts ">> FB ID #{fb_id}"
+
+      @player = Player.find_by_fb_id(fb_id)
+      puts ">> Player in db #{@player}"
+
+      if @player.nil?
+        @player = Player.new({:fb_id => fb_id, :name => name})
+
+        if @player.save
+          puts ">>successfully saved to the database"
+        else
+          puts ">> there was a problem saving that player to the database"
+        end
+      end
+
+      #@friends = @graph.get_connections('me', 'friends')
+
+      # for other data you can always run fql
+      #@friends_using_app = @graph.fql_query("SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1")
+    end
+
     render :index
   end
 
-  #get :channel do
-  #  render
-  #end
+  post '/player/sync', :provides => [:json] do
+
+    puts ">>> Syncing player with params #{params}"
+    @player = Player.find_by_fb_id(params[:fb_id])
+
+    if !@player.nil?
+      result = @player.update_attributes({ :roar_id => params[:roar_id], :last_logged_in => Time.now })
+      {:success => result}.to_json
+    end
+  end
 
   get :test  do
     render "test"
   end
-
-  #/auth/facebook
 
   get '/auth/facebook' do
     session[:access_token] = nil

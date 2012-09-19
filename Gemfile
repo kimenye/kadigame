@@ -13,6 +13,7 @@ gem 'bcrypt-ruby', :require => "bcrypt"
 gem 'haml'
 gem 'activerecord', :require => "active_record"
 gem 'pg'
+gem 'pry'
 
 # Test requirements
 

@@ -1,0 +1,102 @@
+var Roar = JS.Class({
+    statics: {
+        APP_NAME: "kaditest",
+        LOGIN_OAUTH: "/facebook/login_oauth/",
+        buildMethodUrl: function(method_path) {
+            return "http://api.roar.io/" + Roar.APP_NAME + method_path;
+        },
+        getStatus: function(response, method) {
+//            <roar tick="128455548872">
+//                <info>
+//                    <user status="error">
+//                        <error type="0">Player does not exist</error>
+//                    </user>
+//                </info>
+//            </roar>
+            return $(response).find(method).attr('status') == 'ok';
+        }
+    },
+    construct : function(fb_auth_token, admin_token) {
+        this.fb_auth_token = fb_auth_token;
+        this.roar_auth_token = null;
+        this.admin_token = admin_token;
+    },
+
+    /**
+     * Try to log into roar first. If unsuccessful, then create a user
+     */
+    createRoarUserOrLogin : function(handler) {
+        var self = this;
+        var createdHandler = new Handler(function(params) {
+            var created = params[0], roarAuthToken = params[1], roarPlayerId = params[2];
+            if (created) {
+                this.roar_auth_token = roarAuthToken;
+                handler.callBack([true, roarPlayerId]);
+            }
+        });
+
+        //first check if the user has been logged in
+        var loginHandler = new Handler(function(params) {
+            var loggedIn = params[0];
+            var roarAuthToken = params[1];
+            var roarPlayerId = params[2];
+
+            if (loggedIn) {
+                self.roar_auth_token = roarAuthToken;
+                handler.callBack([loggedIn, roarPlayerId]);
+            }
+            else {
+                console.log("Login failed so attempting to call create");
+                self._facebookCreateOAuth(createdHandler);
+            }
+        }, this);
+
+        this._loginToRoar(loginHandler);
+    },
+
+    _facebookCreateOAuth : function(handler) {
+        if (!this.isAdmin()) {
+            console.log("About to create user in roar ", this.fb_auth_token);
+            var method_name = '/facebook/create_oauth/';
+            var url = Roar.buildMethodUrl(method_name);
+            var _self = this;
+            $.post(url, { oauth_token: this.fb_auth_token }, function(data) {
+                var success = Roar.getStatus(data, 'create_oauth');
+                console.log("Created in Roar : %s", success);
+                var params = [success];
+                if (success) {
+                    params.push($(data).find('auth_token').text());
+                    params.push($(data).find('player_id').text());
+                }
+
+                handler.callBack(params);
+            });
+        }
+    },
+
+    _loginToRoar : function(handler) {
+        if (!this.isAdmin()) {
+            console.log("About to log in to roar ", this.fb_auth_token);
+            var url = Roar.buildMethodUrl(Roar.LOGIN_OAUTH);
+            var _self = this;
+            $.post(url, { oauth_token: this.fb_auth_token  }, function(data) {
+                var loggedIn = Roar.getStatus(data, 'login_oauth');
+                console.log("Logged into roar: ", loggedIn);
+                var _params = [loggedIn];
+
+                if (loggedIn) {
+                    _params.push($(data).find('auth_token').text());
+                    _params.push($(data).find('player_id').text());
+                }
+                handler.callBack(_params);
+            });
+        }
+    },
+
+    /**
+     * Returns true or false if this object is for an admin
+     */
+    isAdmin : function() {
+        return isSomethingMeaningful(this.admin_token);
+    }
+});
