@@ -8,5 +8,14 @@
   - if !@player
     =partial 'base/login'
   - else
+    .row
+      .navbar
+        .navbar-inner
+          %a.brand #{@player.name}
+          %ul.nav
+            %li.active
+              %a Recent Activity
+            %li
+              %a Invite FB Friends
     -content_for :app_js, partial("base/app_js")
 -content_for :lib_js, partial("base/lib_js")

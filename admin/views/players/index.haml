@@ -1,0 +1,37 @@
+.block
+  .secondary-navigation
+    %ul.wat-cf
+      %li.first.active=link_to pat(:list), url(:players, :index)
+      %li=link_to pat(:new), url(:players, :new)
+  .content
+    %h2.title
+      =pat(:all)
+      =mt(:players)
+    .inner
+      %table.table
+        %tr
+          %th.first=mat(:player, :id)
+          %th=mat(:player, :fb_id)
+          %th=mat(:player, :name)
+          %th=mat(:player, :created_at)
+          %th=mat(:player, :updated_at)
+          %th=mat(:player, :roar_id)
+          %th=mat(:player, :last_logged_in)
+          %th.last="&nbsp;"
+        -@players.each do |player|
+          %tr
+            %td.first=player.id
+            %td=player.fb_id
+            %td=player.name
+            %td=player.created_at
+            %td=player.updated_at
+            %td=player.roar_id
+            %td=player.last_logged_in
+            %td.last
+              =button_to pat(:edit), url(:players, :edit, :id => player.id), :method => :get, :class => :button_to
+              ="|"
+              =button_to pat(:delete), url(:players, :destroy, :id => player.id), :method => :delete, :class => :button_to, :onsubmit => "return confirm('#{pat(:confirm)}')"
+      .actions-bar.wat-cf
+        .actions="&nbsp;"
+
+-content_for :sidebar, partial("base/sidebar")

@@ -54,6 +54,24 @@ var Roar = JS.Class({
         this._loginToRoar(loginHandler);
     },
 
+    /**
+     * Calls the /user/view method
+     *
+     * @param handler
+     */
+    viewUser : function(handler) {
+        if (this.isLoggedIn() && !this.isAdmin()) {
+            console.log("About to view a user with token : ", this.roar_auth_token);
+            var url = Roar.buildMethodUrl("/user/view/");
+            $.post(url, { auth_token: this.roar_auth_token }, function(data) {
+                var success = Roar.getStatus(data, 'view');
+                console.log("View Data ", data, success);
+
+                handler.callBack([success, data]);
+            });
+        }
+    },
+
     _facebookCreateOAuth : function(handler) {
         if (!this.isAdmin()) {
             console.log("About to create user in roar ", this.fb_auth_token);
@@ -91,6 +109,13 @@ var Roar = JS.Class({
                 handler.callBack(_params);
             });
         }
+    },
+
+    /**
+     * Is there an auth token
+     */
+    isLoggedIn : function() {
+        return isSomethingMeaningful(this.roar_auth_token);
     },
 
     /**

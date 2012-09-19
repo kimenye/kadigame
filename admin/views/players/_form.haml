@@ -1,0 +1,28 @@
+.group
+  =f.label :fb_id
+  =f.error_message_on :fb_id
+  =f.text_field :fb_id, :class => :text_field, :disabled=> true
+  %span.description Ex: a simple text
+
+.group
+  =f.label :name
+  =f.error_message_on :name
+  ~f.text_area :name, :class => :text_area
+  %span.description Ex: a simple text
+
+.group
+  =f.label :roar_id
+  =f.error_message_on :roar_id
+  =f.text_field :roar_id, :class => :text_field, :disabled=> true
+  %span.description Ex: a simple text
+
+.group
+  =f.label :last_logged_in
+  =f.error_message_on :last_logged_in
+  =f.text_field :last_logged_in, :class => :text_field
+  %span.description Ex: a simple text
+
+
+.group.navform.wat-cf
+  =f.submit pat(:save), :class => :button
+  =f.submit pat(:cancel), :onclick => "window.location='#{url(:players, :index)}';return false", :class => :button
