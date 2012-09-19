@@ -2,8 +2,8 @@
   .secondary-navigation
     %ul.wat-cf
       %li.first.active=link_to pat(:list), url(:players, :index)
-      %li=link_to pat(:new), url(:players, :new)
-  .content
+      -#%li=link_to pat(:new), url(:players, :new)
+  #players.content
     %h2.title
       =pat(:all)
       =mt(:players)
@@ -29,8 +29,10 @@
             %td=player.last_logged_in
             %td.last
               =button_to pat(:edit), url(:players, :edit, :id => player.id), :method => :get, :class => :button_to
-              ="|"
-              =button_to pat(:delete), url(:players, :destroy, :id => player.id), :method => :delete, :class => :button_to, :onsubmit => "return confirm('#{pat(:confirm)}')"
+              =button_to pat(:delete), url(:players, :destroy, :id => player.id), :method => :delete, :class => :hide, :id => "delete-form-#{player.id}"
+              -#=button_to pat(:delete), url(:players, :destroy, :id => player.id), :method => :delete, :class => :button_to, :onsubmit => "return confirm('#{pat(:confirm)}')"
+              -#myFunction.bind($data, 'param1', 'param2')
+              %a{:href => '#','data-bind' => "click: $root.deletePlayer.bind($data, #{player.id} ,'#{player.name}', '#{player.roar_id}')"} Delete
       .actions-bar.wat-cf
         .actions="&nbsp;"
 

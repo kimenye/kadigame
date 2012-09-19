@@ -72,6 +72,25 @@ var Roar = JS.Class({
         }
     },
 
+    /**
+     * Delete a player from the Roar engine. Requires an admin token.
+     *
+     * @param playerId
+     * @param handler
+     */
+    deletePlayer : function(playerId, handler) {
+        if (this.isAdmin()) {
+            var url = Roar.buildMethodUrl('/admin/delete_player/');
+            console.log("Going to delete user with id ", playerId);
+            $.post(url, { admin_token: this.admin_token, player_id: playerId }, function(data) {
+                var success = Roar.getStatus(data, 'delete_player');
+                handler.callBack(success);
+            });
+        }
+        else
+            handler.callBack(false);
+    },
+
     _facebookCreateOAuth : function(handler) {
         if (!this.isAdmin()) {
             console.log("About to create user in roar ", this.fb_auth_token);

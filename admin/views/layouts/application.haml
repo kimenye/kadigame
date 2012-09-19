@@ -5,7 +5,7 @@
     %title KADI Admin
     =stylesheet_link_tag :base, "themes/warehouse/style"
     =javascript_include_tag "/javascripts/jquery.1.7.2.js"
-    =javascript_include_tag "/javascripts/pubnub.js"
+    -#=javascript_include_tag "/javascripts/pubnub.js"
     -#=javascript_include_tag "http://cdn.pubnub.com/pubnub-3.1.min.js"
   %body
     #container
@@ -33,3 +33,9 @@
                 =link_to "Sprout Consulting", "http://www.sprout.co.ke", :target => :_blank
         #sidebar=yield_content :sidebar
     =yield_content :js
+    =javascript_include_tag "/javascripts/js.class.min.js"
+    =javascript_include_tag "/javascripts/knockout.js"
+    =javascript_include_tag "/javascripts/underscore-min.js"
+    =javascript_include_tag "/javascripts/util.js"
+    =javascript_include_tag "/javascripts/game/roar.js"
+    =javascript_include_tag "/javascripts/game/admin.js"
