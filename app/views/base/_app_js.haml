@@ -1,5 +1,6 @@
 =javascript_include_tag "/javascripts/game/roar.js"
 =javascript_include_tag "/javascripts/game/player.js"
+=javascript_include_tag "/javascripts/game/dashboard-ui.js"
 :javascript
   $(document).ready(function () {
     var access_token = "#{@token}";
@@ -12,7 +13,14 @@
     var createOrLoginHandler = new Handler(function(params) {
       console.log("Success: %s The player is %s ", params[0], params[1]);
 
-      var player = new Player(params[1], fb_id, name, roar);
+      var dashboard = new DashboardApplication();
+      var syncHandler = new Handler(function(player) {
+         dashboard.setPlayer(player);
+      });
+      var player = new Player(params[1], fb_id, name, roar, syncHandler);
+
+
+      ko.applyBindings(dashboard, $("#dashboard")[0]);
     });
 
 

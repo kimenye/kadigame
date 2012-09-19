@@ -65,9 +65,11 @@ var Roar = JS.Class({
             var url = Roar.buildMethodUrl("/user/view/");
             $.post(url, { auth_token: this.roar_auth_token }, function(data) {
                 var success = Roar.getStatus(data, 'view');
-                console.log("View Data ", data, success);
+//                console.log("View Data ", data, success);
 
-                handler.callBack([success, data]);
+                var view = $(data).find('view');
+
+                handler.callBack([success, view]);
             });
         }
     },

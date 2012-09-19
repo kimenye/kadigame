@@ -1,10 +1,11 @@
 var Player = JS.Class({
-    construct: function(roarPlayerId,fbId,name,roarApi) {
+    construct: function(roarPlayerId,fbId,name,roarApi, syncHandler) {
         this.roarPlayerId = roarPlayerId;
         this.fbId = fbId;
         this.name = name;
         this.roarApi = roarApi;
         this.synced = false;
+        this.syncHandler = syncHandler;
         this.sync();
     },
 
@@ -20,13 +21,32 @@ var Player = JS.Class({
     },
 
     _readRoarUserData: function(result) {
-//        window.roarData = result[1];
         var success = result[0];
         var raw = result[1];
+        window.raw = raw;
         if (success) {
-            _.each($(raw).find('view').find('attributes'), function(attribute) {
-                console.log("Analyzing attribute ", attribute);
-            }, this);
+            var attributes = raw.find('attribute');
+
+            this.xp = this._findAttributeValue(attributes, 'xp');
+            this.level = this._findAttributeValue(attributes, 'level');
+            this.credits = this._findAttributeValue(attributes, 'premium_currency');
+
+            if (isSomethingMeaningful(this.syncHandler)) {
+                this.syncHandler.callBack(this);
+            }
         }
+    },
+
+    _findAttributeValue : function(collection, name) {
+        var attr = this._findAttribute(collection, name);
+        if (isSomethingMeaningful(attr)) {
+            return $(attr).attr('value');
+        }
+    },
+
+    _findAttribute: function(collection, name) {
+        return _.detect(collection, function(item) {
+            return $(item).attr('ikey') == name;
+        });
     }
 });

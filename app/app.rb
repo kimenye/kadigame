@@ -37,52 +37,48 @@ class Kadi < Padrino::Application
     end
   end
 
-  # the facebook session expired! reset ours and restart the process
-  error(Koala::Facebook::APIError) do
-    puts ">>> The Facebook Session has expired"
-    session[:access_token] = nil
-    redirect "/auth/facebook"
-  end
 
   get :index do
     @graph  = Koala::Facebook::API.new(session[:access_token])
-    #binding.pry
-    #puts ">>> Graph #{@graph}"
-
-    # Get public details of current application
-    #@app  =  @graph.get_object(ENV["FACEBOOK_APP_ID"])
-
-    puts ">>> Access token #{session[:access_token]}"
-
     @token = session[:access_token]
 
     #If we have a valid access token
     if session[:access_token]
-      #read the object from the fb graph
-      @user = @graph.get_object("me")
+      begin
+        #read the object from the fb graph
+        @user = @graph.get_object("me")
+        puts ">> User #{@user}"
+        fb_id = @user['id']
+        name = @user['name']
 
-      puts ">> User #{@user}"
-      fb_id = @user['id']
-      name = @user['name']
-      puts ">> FB ID #{fb_id}"
+        @player = Player.find_by_fb_id(fb_id)
+        if @player.nil?
+          @player = Player.new({:fb_id => fb_id, :name => name})
 
-      @player = Player.find_by_fb_id(fb_id)
-      puts ">> Player in db #{@player}"
-
-      if @player.nil?
-        @player = Player.new({:fb_id => fb_id, :name => name})
-
-        if @player.save
-          puts ">>successfully saved to the database"
-        else
-          puts ">> there was a problem saving that player to the database"
+          if @player.save
+            puts ">>successfully saved to the database"
+          else
+            puts ">> there was a problem saving that player to the database"
+          end
         end
+
+        all_friends = @graph.get_connections('me', 'friends')
+        friends_using_app = @graph.fql_query("SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1")
+
+        @friends = all_friends.collect { |f|
+          using_app = friends_using_app.detect { |friend_using| friend_using['id'] == f['id'] }
+          {
+            :id => f['id'],
+            :name => f['name'],
+            :using_app => !using_app.nil?
+          }
+        }
+
+      rescue Koala::Facebook::APIError
+        puts ">>> The Facebook Session has expired"
+        session[:access_token] = nil
+        redirect "/auth/facebook"
       end
-
-      #@friends = @graph.get_connections('me', 'friends')
-
-      # for other data you can always run fql
-      #@friends_using_app = @graph.fql_query("SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1")
     end
 
     render :index
@@ -113,6 +109,11 @@ class Kadi < Padrino::Application
     redirect '/'
   end
 
+  get :logout do
+    session[:access_token] = nil
+    redirect '/'
+  end
+
   ##
   # Caching support
   #
@@ -131,7 +132,7 @@ class Kadi < Padrino::Application
   ##
   # Application configuration options
   #
-  # set :raise_errors, true       # Raise exceptions (will stop application) (default for test)
+  #set :raise_errors, true       # Raise exceptions (will stop application) (default for test)
   # set :dump_errors, true        # Exception backtraces are written to STDERR (default for production/development)
   # set :show_exceptions, true    # Shows a stack trace in browser (default for development)
   # set :logging, true            # Logging in STDOUT for development and file for production (default only for development)

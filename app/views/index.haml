@@ -8,14 +8,68 @@
   - if !@player
     =partial 'base/login'
   - else
-    .row
-      .navbar
-        .navbar-inner
-          %a.brand #{@player.name}
-          %ul.nav
-            %li.active
-              %a Recent Activity
-            %li
-              %a Invite FB Friends
+    -#.row
+      .container
+        %a.span1.offset11{:href=>'/logout'} Logout
+    .row#dashboard
+      .container
+        .row
+          .span1
+            .container
+              =image_tag "https://graph.facebook.com/#{@player.fb_id}/picture"
+          .span10
+            .container
+              .row
+                .span2
+                  %h5 Credits
+                .span2
+                  %h5 XP
+                .span2
+                  %h5 Level
+              .row
+                .span2
+                  %p{'data-bind' => 'text: credits'}
+                .span2
+                  %p{'data-bind' => 'text: xp'}
+                .span2
+                  %p{'data-bind' => 'text: level'}
+        .row
+          %br
+        .row
+          .navbar
+            .navbar-inner
+              %a.brand{:href=>'/logout'} #{@player.name}
+              %ul.nav{'data-bind' => "foreach: views"}
+                %li
+                  %a{'data-bind' => "text: name"}
+                -#%li.active
+                -#  %a Invite FB Friends
+                -#%li
+                -#  %a Recent Activity
+      .container{'data-bind' => "fadeVisible: selectedView() != null, with: selectedView"}
+        .row{'data-bind' => "template: {name: template} "}
+
+    %section
+      %script#profile{:type=>'text/html'}
+
+      %script#invite-friends{:type=> 'text/html'}
+        - if @friends
+          %table.table.table-bordered
+            %thead
+              %th Friends
+              %th Invite
+            %tbody
+              -@friends.each do |friend|
+                %tr
+                  %td
+                    =image_tag "https://graph.facebook.com/#{friend[:id]}/picture"
+                    %small=friend[:name]
+                  %td
+                    - if friend[:using_app]
+                      %span Already playing KADI!
+                    - else
+                      %button.btn.btn-success{'data-bind' => ''} Invite!
+
+
     -content_for :app_js, partial("base/app_js")
 -content_for :lib_js, partial("base/lib_js")
