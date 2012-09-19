@@ -1,0 +1,68 @@
+-#=javascript_include_tag "/javascripts/pubnub.js"
+=javascript_include_tag "/javascripts/tambur.js"
+
+-#<input type="submit" value="connect" onclick="connect(); return false;" />
+%input{'type' => 'submit', :value => 'Connect', :onclick => 'connect(); return false;' }
+#status
+
+-##pubnub{ 'pub-key' => 'pub-65335e90-6f51-4378-a307-c6ee83a27931', 'sub-key' => 'sub-5fb01873-fb3e-11e1-b760-112b06073279', 'origin' => 'pubsub.pubnub.com', 'ssl' => 'off'}
+:javascript
+  //$(document).ready(function () {
+    console.log("Ready to run test");
+
+    function status(text){
+       var date = new Date();
+       document.getElementById('status').innerHTML = document.getElementById('status').innerHTML + date + ": " + text + "<br>";
+    }
+
+    var con;
+     function connect(){
+         con = new tambur.Connection({
+                 api_key : "4190293636c7486aa080733652c8d1a6",
+                 app_id : "kadi-1",
+             ready : function() {status("tambur websocket ready")}
+         });
+         status("trying to open a tambur websocket")
+     }
+
+     function subscribe(strm){
+         var stream = conn.get_stream(strm);
+         stream.ready = function () {status("Subscribed to stream:" + strm)};
+         stream.onmessage = function(msg) {
+             status("Tambur sent the following message:" + msg );
+         }
+     }
+
+    /*var conn = new tambur.Connection({
+        api_key : '4190293636c7486aa080733652c8d1a6',
+        app_id : 'kadi-1',
+
+        // you can also provide other options here such as:
+
+        ready : function () {
+          console.log("The connection is ready");
+
+          var stream = conn.get_stream("test_stream");
+          stream.ready = function() {
+            console.log("The stream is ready");
+            stream.enable_presence('dfasdf','sdfdsfs');
+          }
+
+
+          stream.onpresence = function(notification) {
+              var user =  notification[0];     // the username configured by the other subscriber
+              var status = notification[1];   // the presence status, either "up" or "down"
+
+              console.log("User %s logged in with status %", user, status);
+          };
+
+          stream.onmessage = function(msg) {
+
+              console.log("Message ", msg);
+          };
+        },   // a callback that is fired when the connection is up
+        ssl : true,               // enforcing ssl (default false)
+        max_retries : 10,         // nr of maximal re-connects (default 10)
+    });*/
+
+  //});

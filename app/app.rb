@@ -6,19 +6,14 @@ class Kadi < Padrino::Application
 
   enable :sessions
 
-  def one_method
-    @martha  = "kool"
-  end
-
-  def another
-    puts "#{@martha}"
-  end
-
-
   get :index do
     # url is generated as '/'
     # url_for(:index) => "/"
-    render :haml, "%p This is a sample blog created to demonstrate how Padrino works!"
+    render :index
+  end
+
+  get :test  do
+    render "test"
   end
 
   ##

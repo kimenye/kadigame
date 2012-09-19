@@ -4,6 +4,9 @@
     %meta{:content => "text/html; charset=utf-8", "http-equiv" => "Content-Type"}
     %title KADI Admin
     =stylesheet_link_tag :base, "themes/warehouse/style"
+    =javascript_include_tag "/javascripts/jquery.1.7.2.js"
+    =javascript_include_tag "/javascripts/pubnub.js"
+    -#=javascript_include_tag "http://cdn.pubnub.com/pubnub-3.1.min.js"
   %body
     #container
       #header
@@ -29,3 +32,4 @@
                 KADI - A profuct of
                 =link_to "Sprout Consulting", "http://www.sprout.co.ke", :target => :_blank
         #sidebar=yield_content :sidebar
+    =yield_content :js
