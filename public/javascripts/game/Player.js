@@ -15,7 +15,7 @@ var Player = JS.Class({
     initRealtime: function() {
         var self = this;
         Pusher.log = function(message) {
-            if (window.console && window.console.log) window.console.log(message);
+//            if (window.console && window.console.log) window.console.log(message);
         };
         Pusher.channel_auth_endpoint = "/pusher/presence/auth";
 

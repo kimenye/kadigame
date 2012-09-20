@@ -75,14 +75,24 @@ function DashboardApplication(debug) {
         var acceptedHandler = new Handler(function() {
             $('#btn-accept-' + player.id()).button('loading');
             $('#btn-accept-' + player.id()).toggleClass('btn-success');
+            self.startGame(player.id());
         }, this);
         self.player.acceptInvite(player.invite, acceptedHandler);
+    }
+
+    this.startGame = function(opponentId) {
+        $('#dashboard').slideUp();
+        var other = self.getPlayer(opponentId);
+        window.game = new GameUI(self.player, [{
+            id: other.id(),
+            name: other.name()
+        }]);
     }
 
     this.handleInviteAccepted = function(invite) {
         console.log("Invite from %s has been accepted, time to start a new game ", invite.from);
         $('#btn-' + invite.from).button('complete');
-        $('#dashboard').slideUp();
+        this.startGame(invite.from);
     }
 
     this.handleInviteReceived = function(invite) {

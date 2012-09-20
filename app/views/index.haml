@@ -47,7 +47,7 @@
           %br
       .container
         .row{'data-bind' => 'if: numPlayersOnline() < 2'}
-          %p.lead Lonely? Other players are coming soon...
+          %p.lead Oops! Lonely? Other players are coming soon...
         .row{'data-bind' => 'if: numPlayersOnline() > 1'}
           %table.table.table-bordered.span4
             %thead
