@@ -7,6 +7,8 @@ var Player = JS.Class({
         this.synced = false;
         this.syncHandler = syncHandler;
         this.membershipChangedHandler = null;
+        this.inviteReceviedHandler = null;
+        this.inviteAcceptedHandler = null;
         this.sync();
     },
 
@@ -17,7 +19,6 @@ var Player = JS.Class({
         };
         Pusher.channel_auth_endpoint = "/pusher/presence/auth";
 
-//        var _pusher = new Pusher("3b40830094bf454823f2", { encrypted: true }); //, auth: { params: { userid: this.id, nickname: this.nickname } } });
         var _pusher = new Pusher("3b40830094bf454823f2", { encrypted: true, auth: { params: { userid: this.fbId, name: this.name } } });
 
         _pusher.connection.bind('connected', function() {
@@ -52,11 +53,63 @@ var Player = JS.Class({
                 self.membershipChangedHandler.callBack(self._presence.members.count)
             }
         });
+
+        this._presence.bind('client-game-invite', function(invite) {
+            self._simplyHandle(self.inviteReceviedHandler, invite);
+        });
+
+        this._presence.bind('client-game-invite-accepted', function(invite) {
+            self._simplyHandle(self.inviteAcceptedHandler, invite);
+        });
     },
 
-    getPlayersOnline: function() {
+    /**
+     * Accepts an invite from another player
+     *
+     * @param invite
+     * @param acceptHandler
+     */
+    acceptInvite : function(invite, acceptHandler) {
+        this._simplySend(this._presence,'client-game-invite-accepted', { to: invite.from, from: this.fbId }, acceptHandler);
+    },
+
+    /**
+     * Sends an invite to another player
+     *
+     * @param id
+     * @param inviteHandler
+     */
+    invite: function(id, inviteHandler) {
+        this._simplySend(this._presence,'client-game-invite', { to: id, from: this.fbId }, inviteHandler);
+    },
+
+    /**
+     * Returns the players online, excluding the current user
+     */
+    getPlayersOnLine: function() {
+        var players = [];
         if (isSomethingMeaningful(this._presence)) {
-            return this._presence.members.count;
+            var self = this;
+            this._presence.members.each(function(member) {
+                if (member.id != self._presence.members.me.id) {
+                    players.push({
+                        id: member.id,
+                        name: member.info.name
+                    });
+                }
+            });
+        }
+        return players;
+    },
+
+    /**
+     * Returns the number of players online. This includes the current user
+     *
+     * @return {*}
+     */
+    getNumberOfPlayersOnline: function() {
+        if (isSomethingMeaningful(this._presence)) {
+            return Math.max(this._presence.members.count,1);
         }
         else
             return 1; //yourself
@@ -74,6 +127,12 @@ var Player = JS.Class({
         });
     },
 
+    /**
+     * Reads attributes from ROAR
+     *
+     * @param result
+     * @private
+     */
     _readRoarUserData: function(result) {
         var success = result[0];
         var raw = result[1];
@@ -89,6 +148,46 @@ var Player = JS.Class({
                 this.syncHandler.callBack(this);
             }
         }
+    },
+
+    /**
+     * This is a simple send method that sends a client event
+     *
+     * @param channel
+     * @param event
+     * @param message
+     * @param handler
+     * @private
+     */
+    _simplySend: function(channel, event, message, handler) {
+        if (isSomethingMeaningful(channel)) {
+            channel.trigger(event, message);
+            handler.callBack(true);
+        }
+    },
+
+    /**
+     * This is a simple handler for very basic events. It just checks if the message
+     * is for the intended recipient then it runs the callback with the message as
+     * the parameter
+     *
+     * @param handler
+     * @param message
+     * @private
+     */
+    _simplyHandle: function(handler,message) {
+        if (this._msgIsForMe(message)) {
+            this._invoke(handler,message);
+        }
+    },
+
+    _invoke : function(handler,params) {
+        if (isSomethingMeaningful(handler))
+            handler.callBack(params);
+    },
+
+    _msgIsForMe : function(msg) {
+        return (isSomethingMeaningful(msg.to) && msg.to == this.fbId)
     },
 
     _findAttributeValue : function(collection, name) {
