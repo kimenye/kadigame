@@ -37,6 +37,7 @@ var GameUI = JS.Class({
         height: 600
     },
     construct: function(me, opponents) {
+        var self = this;
         this.me = me;
         this.opponents = [];
         this.opponents = _.collect(opponents, function(opponent) {
@@ -55,5 +56,18 @@ var GameUI = JS.Class({
 
         this.bg = new BackgroundUI("images/woodback.jpg", this.backgroundLayer, 0, 0);
         this.stage.add(this.backgroundLayer);
+
+//        var bBox = new BoundingBox(600, 200,150,180);
+//        var pickingDeck = new PickingDeck({ bBox: bBox, cardSize: new Size(146,180) }, 54);
+//        this.cards = [];
+//        _.each(pickingDeck.cards, function(c) {
+//            self.cards.push(new Card(self.backgroundLayer, { x:c.xMin(), y:c.yMin(), idx: c.idx }));
+//        });
+
+        var ace = new CardUI(Card.ACE, Suite.CLUBS);
+        ace.draw(self.backgroundLayer, {x: 300, y: 100 });
+
+        var two = new CardUI("2", Suite.DIAMONDS);
+        two.draw(self.backgroundLayer, {x: 320, y: 110 });
     }
 });
