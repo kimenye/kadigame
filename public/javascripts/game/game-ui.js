@@ -67,7 +67,13 @@ var GameUI = JS.Class({
         var ace = new CardUI(Card.ACE, Suite.CLUBS);
         ace.draw(self.backgroundLayer, {x: 300, y: 100 });
 
-        var two = new CardUI("2", Suite.DIAMONDS);
-        two.draw(self.backgroundLayer, {x: 320, y: 110 });
+//        var two = new CardUI("2", Suite.DIAMONDS);
+//        two.draw(self.backgroundLayer, {x: 320, y: 110 });
+
+        var joker = new CardUI(Card.JOKER, Suite.DIAMONDS);
+        joker.draw(self.backgroundLayer, {x: 420, y: 110 });
+
+        var king = new CardUI(Card.KING, Suite.HEARTS);
+        king.draw(self.backgroundLayer, {x: 220, y: 110 });
     }
 });
