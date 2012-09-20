@@ -20,8 +20,9 @@ var PlayerUI = JS.Class({
     }
 });
 
-function DashboardApplication() {
+function DashboardApplication(debug) {
     var self = this;
+    this.debug = debug;
     this.xp = ko.observable();
     this.level = ko.observable();
     this.credits = ko.observable();
@@ -49,6 +50,14 @@ function DashboardApplication() {
             users.push(new PlayerUI(p));
         });
         self.playersOnline(users);
+
+        if (self.debug)
+        {
+            var first = _.first(self.playersOnline());
+            if (isSomethingMeaningful(first)) {
+                self.inviteToPlay(first);
+            }
+        }
     }
 
     this.inviteToPlay = function(player) {
@@ -73,6 +82,7 @@ function DashboardApplication() {
     this.handleInviteAccepted = function(invite) {
         console.log("Invite from %s has been accepted, time to start a new game ", invite.from);
         $('#btn-' + invite.from).button('complete');
+        $('#dashboard').slideUp();
     }
 
     this.handleInviteReceived = function(invite) {
@@ -82,6 +92,10 @@ function DashboardApplication() {
         if (isSomethingMeaningful(from)){
             from.canAcceptInvite(true);
             from.invite = invite;
+
+            if (this.debug) {
+                this.acceptInvite(from);
+            }
         }
     }
 

@@ -45,22 +45,6 @@
                         %p{'data-bind' => 'text: numPlayersOnline'}
         .row
           %br
-        -#.row
-          .navbar
-            .navbar-inner
-              %a.brand{:href=>'/logout'} #{@player.name}
-              %ul.nav{'data-bind' => "foreach: views"}
-                %li
-                  %a{'data-bind' => "text: name"}
-                -#%li.active
-                -#  %a Invite FB Friends
-                -#%li
-                -#  %a Recent Activity
-      -#.container{'data-bind' => "fadeVisible: selectedView() != null, with: selectedView"}
-        .row{'data-bind' => "template: {name: template} "}
-
-      -#.container
-      -#  .row{'data-bind' => "template: { name: 'whos-online' } "}
       .container
         .row{'data-bind' => 'if: numPlayersOnline() < 2'}
           %p.lead Lonely? Other players are coming soon...
@@ -68,11 +52,6 @@
           %table.table.table-bordered.span4
             %thead
               %th Players
-              %th
-            -#%tbody
-              %tr
-                %td {'colspan' => '2'} No other players are online at this time
-
             %tbody{'data-bind' => 'foreach: playersOnline'}
               %tr
                 %td
@@ -84,43 +63,8 @@
                       %button.btn.btn-warning{'data-toggle' => 'button', 'data-bind' => "click: $root.acceptInvite, attr: { id: 'btn-accept-' + id(), 'data-loading-text' : 'Preparing game...' }" } Accept!
                     .row{'data-bind' => 'fadeVisible: disableInvite'}
                       %button.btn.btn-success{'data-toggle' => 'button', 'data-bind' => "click: $root.inviteToPlay, disable: canAcceptInvite, attr: { id: 'btn-' + id(), 'data-loading-text': 'Contacting ' + name() + ' ...', 'data-progress-text' : 'Sent! Waiting for response...', 'data-complete-text' : 'Accepted! Preparing game...'} "} Play!
-                  -#%button.btn.btn-warning{'data-toggle' => 'button', 'data-bind' => "click: $root.acceptInvite, attr: { id: 'btn-' + id(), 'data-loading-text': 'Contacting ' + name() + ' ...', 'data-progress-text' : 'Sent! Waiting for response...'} "} Accept!
-    -#%section
-      %script#whos-online{:type=>'text/html'}
-        %p{'data-bind' => 'text: numPlayersOnline'}
-        %table.table.table-bordered.span3
-          %thead
-            %th Players
-            %th
-          -#%tbody
-            %tr
-              %td {'colspan' => '2'} No other players are online at this time
-
-          %tbody{'data-bind' => 'foreach: playersOnline'}
-            %tr
-              %td
-                %img{'data-bind' => "attr{ src: 'photo'   }"}
-                %p{'data-bind' => 'text: name'}
-
-
-
-      %script#invite-friends{:type=> 'text/html'}
-        - if @friends
-          %table.table.table-bordered
-            %thead
-              %th Friends
-              %th Invite
-            %tbody
-              -@friends.each do |friend|
-                %tr
-                  %td
-                    =image_tag "https://graph.facebook.com/#{friend[:id]}/picture"
-                    %small=friend[:name]
-                  %td
-                    - if friend[:using_app]
-                      %span Already playing KADI!
-                    - else
-                      %button.btn.btn-success{'data-bind' => ''} Invite!
+    .row#board
+      #game.container.span9.offset2
 
 
     -content_for :app_js, partial("base/app_js")
