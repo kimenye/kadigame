@@ -43,6 +43,7 @@ var Roar = JS.Class({
 
             if (loggedIn) {
                 self.roar_auth_token = roarAuthToken;
+                console.log("Roar token is : ", roarAuthToken);
                 handler.callBack([loggedIn, roarPlayerId]);
             }
             else {
