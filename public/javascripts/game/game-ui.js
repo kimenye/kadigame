@@ -65,15 +65,43 @@ var GameUI = JS.Class({
 //        });
 
         var ace = new CardUI(Card.ACE, Suite.CLUBS);
-        ace.draw(self.backgroundLayer, {x: 300, y: 100 });
+        ace.draw(self.backgroundLayer, {x: 120, y: 50 });
 
-//        var two = new CardUI("2", Suite.DIAMONDS);
-//        two.draw(self.backgroundLayer, {x: 320, y: 110 });
+        var two = new CardUI("2", Suite.DIAMONDS);
+        two.draw(self.backgroundLayer, {x: 220, y: 50 });
 
         var joker = new CardUI(Card.JOKER, Suite.DIAMONDS);
-        joker.draw(self.backgroundLayer, {x: 420, y: 110 });
+        joker.draw(self.backgroundLayer, {x: 520, y: 200 });
 
-        var king = new CardUI(Card.KING, Suite.HEARTS);
-        king.draw(self.backgroundLayer, {x: 220, y: 110 });
+        var seven = new CardUI("7", Suite.HEARTS);
+        seven.draw(self.backgroundLayer, {x: 320, y: 50 });
+
+        var three = new CardUI("3", Suite.HEARTS);
+        three.draw(self.backgroundLayer, {x: 420, y: 50 });
+
+        var eight = new CardUI("8", Suite.SPADES);
+        eight.draw(self.backgroundLayer, {x: 520, y: 50 });
+
+        var four = new CardUI("4", Suite.DIAMONDS);
+        four.draw(self.backgroundLayer, {x: 120, y: 200 });
+
+        var five = new CardUI("5", Suite.SPADES);
+        five.draw(self.backgroundLayer, {x: 220, y: 200 });
+
+        var six = new CardUI("6", Suite.CLUBS);
+        six.draw(self.backgroundLayer, {x: 320, y: 200 });
+
+        var nine = new CardUI("9", Suite.DIAMONDS);
+        nine.draw(self.backgroundLayer, {x: 420, y: 200 });
+
+        var queen = new CardUI(Card.QUEEN, Suite.DIAMONDS);
+        queen.draw(self.backgroundLayer, {x: 120, y: 350 });
+
+        var jack = new CardUI(Card.JACK, Suite.DIAMONDS);
+        jack.draw(self.backgroundLayer, {x: 220, y: 350 });
+
+        var king = new CardUI(Card.KING, Suite.DIAMONDS);
+        king.draw(self.backgroundLayer, {x: 320, y: 350 });
+
     }
 });

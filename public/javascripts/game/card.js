@@ -38,7 +38,26 @@ var Card = JS.Class({
         this.rank = rank;
         this.isJoker = function() {
             return this.rank == Card.JOKER;
-        }
+        };
+        this.isAce = function() {
+            return this.rank == Card.ACE;
+        };
+
+        this.isQueen = function() {
+            return this.rank == Card.QUEEN;
+        };
+
+        this.isEight = function() {
+            return this.rank == 8;
+        };
+
+        this.isKing = function() {
+            return this.rank == Card.KING;
+        };
+
+        this.isJack = function() {
+            return this.rank == Card.JACK;
+        };
     }
 });
 
@@ -67,14 +86,22 @@ var CardUI = Card.extend({
                 height: 136
             });
 
-            var group = new Kinetic.Group({ draggable: true })
+            var group = new Kinetic.Group({ draggable: true });
             group.add(img);
+
+            group.on('click', function() {
+                group.moveToTop();
+            });
+
+            group.on("dragstart", function() {
+                group.moveToTop();
+            });
 
             if (!self.isJoker()) {
                 var rankText = new Kinetic.Text({
                     x: options.x + 10,
                     y: options.y + 10,
-                    fontSize: 12,
+                    fontSize: 18,
                     fontFamily: 'MuseoSans-500',
                     text: self.rank,
                     textFill: self.color()
@@ -82,11 +109,27 @@ var CardUI = Card.extend({
 
                 var suiteSymbol = new Kinetic.Text({
                     x: options.x + 9,
-                    y: options.y + 30,
-                    fontSize: 10,
+                    y: options.y + 35,
+                    fontSize: 12,
+                    fontFamily: 'MuseoSans-500',
                     text: Suite.getSuiteSymbol(self.suite),
                     textFill: self.color()
                 });
+
+                if (!self.isQueen() && !self.isKing() && !self.isJack()) {
+
+                    var suiteSymbolMain = new Kinetic.Text({
+                        x: options.x + 20,
+                        y: options.y + 55,
+                        fontSize: 48,
+                        fontFamily: 'MuseoSans-500',
+                        text: Suite.getSuiteSymbol(self.suite),
+                        textFill: self.color()
+                    });
+
+                    group.add(suiteSymbolMain);
+                }
+
 
                 group.add(rankText);
                 group.add(suiteSymbol);
