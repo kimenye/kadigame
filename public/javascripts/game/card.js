@@ -61,10 +61,49 @@ var Card = JS.Class({
     }
 });
 
+var HandUI = JS.Class({
+
+    construct: function(origin,parent) {
+        this.origin = origin;
+        this.parent = parent;
+        this.cards = [];
+    },
+    draw: function() {
+        var circle = new Kinetic.Circle({
+            x: this.origin.x,
+            y: this.origin.y,
+            radius: 5,
+            fill: "black",
+            stroke: "black",
+            strokeWidth: 1
+        });
+        parent.add(circle);
+        parent.draw();
+    },
+    addCard: function(card,draw) {
+        this.cards.push(card);
+//        if (draw,)
+    },
+    calculatePosition: function(card, idx, numCards) {
+//        if (idx =)
+    },
+    _drawCards : function() {
+        if (this.cards.length == 0) {
+
+        }
+    }
+});
+
 var CardUI = Card.extend({
 
-    construct: function(rank,suite) {
+    statics: {
+        height: 136,
+        width: 100
+    },
+
+    construct: function(rank,suite,showFace) {
         this.parent.construct.apply(this, [rank,suite]);
+        this.showFace = isSomethingMeaningful(showFace) ? showFace : false;
     },
 
     color: function() {
@@ -73,21 +112,39 @@ var CardUI = Card.extend({
         else
             return "red";
     },
+    rotate : function(degrees) {
+        this.group.rotate(degrees);
+        this.p.draw();
+    },
+
+    moveOffset: function(x,y) {
+        this.group.setOffset(x,y);
+        this.p.draw();
+    },
+
     draw: function(parent, options) {
         var bgImageObj = new Image();
+//        var backImageObj = new Image();
         var self = this;
+        self.p = parent;
         bgImageObj.onload = function() {
             var img = new Kinetic.Image({
                 x: options.x,
                 y: options.y,
                 image: bgImageObj,
                 draggable: true,
-                width: 100,
-                height: 136
+                width: CardUI.width,
+                height: CardUI.height
             });
 
             var group = new Kinetic.Group({ draggable: true });
+//            group.setOffset(320, 320);
+
+            console.log("Offset", group.getOffset());
+//            group.rotate(.18);
             group.add(img);
+
+//            img.setScale({x:-1});
 
             group.on('click', function() {
                 group.moveToTop();
@@ -127,12 +184,15 @@ var CardUI = Card.extend({
                         textFill: self.color()
                     });
 
-                    group.add(suiteSymbolMain);
+                    if (self.showFace)
+                        group.add(suiteSymbolMain);
                 }
 
-
-                group.add(rankText);
-                group.add(suiteSymbol);
+                if (self.showFace)
+                {
+                    group.add(rankText);
+                    group.add(suiteSymbol);
+                }
                 parent.add(group);
                 parent.draw();
             }
@@ -163,12 +223,22 @@ var CardUI = Card.extend({
                     text: "J\n0\nK\nE\n\R",
                     textFill: self.color()
                 });
-                group.add(rankText);
+
+//                rankText.setScale({x:-1});
+//                rankText.scale(-1,-1);
+                if (self.showFace)
+                    group.add(rankText);
+//                group.setScale({x:-1,y:-1});
             }
+//            group.rotate(-.1);
             parent.add(group);
             parent.draw();
+            self.group = group;
         }
-        bgImageObj.src = 'images/card_back_small.png';
+        if (self.showFace)
+            bgImageObj.src = 'images/card_back_small.png';
+        else
+            bgImageObj.src = 'images/card_back_coke.png';
     }
 
 });

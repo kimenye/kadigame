@@ -2,6 +2,10 @@ function isSomethingMeaningful(val) {
     return !_.isUndefined(val) && !_.isNull(val);
 }
 
+function xCenterInFrame(parent, child) {
+    return (parent - child) / 2;
+}
+
 var Handler = JS.Class({
     construct : function(func,scope) {
         this.func = func;
