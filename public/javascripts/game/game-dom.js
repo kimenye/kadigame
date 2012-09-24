@@ -26,7 +26,9 @@ window.kadi.game = (function(me, $, undefined){
 
     me.PlayerDeck = me.Box.extend({
         statics: {
-            WIDTH: 400
+            WIDTH: 400,
+            Y: 500,
+            X: 200
         },
         construct: function() {
             this.parent.construct.apply(this, ['game', 'player_deck_div', 'player_deck']);
@@ -36,8 +38,18 @@ window.kadi.game = (function(me, $, undefined){
 
         addCard: function(card) {
             this.cards.push(card);
-            $(card.div).appendTo($(this.div));
-            this.redrawCards();
+            var self = this;
+            var cardElem = $(card.div);
+
+//            $(card.div).appendTo($(this.div));
+            cardElem.animate({
+                left: kadi.game.PlayerDeck.X + kadi.centerInFrame(kadi.game.PlayerDeck.WIDTH,kadi.game.CardUI.WIDTH),
+                top: kadi.game.PlayerDeck.Y
+            },1000);
+
+            _.delay(function() {
+                self.redrawCards();
+            }, 1000);
         },
 
         redrawCards: function() {
@@ -49,7 +61,7 @@ window.kadi.game = (function(me, $, undefined){
                 var elem = $(self.div);
                 console.log("Card: %s, Idx: %d x: %d", card.translate(), idx, blade.x);
                 cardElem.animate({
-                    left: blade.x
+                    left: kadi.game.PlayerDeck.X + blade.x
                 }, 200);
             });
         }
