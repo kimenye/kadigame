@@ -1,10 +1,34 @@
-function isSomethingMeaningful(val) {
-    return !_.isUndefined(val) && !_.isNull(val);
-}
+window.kadi = (function(me, $, undefined){
 
-function xCenterInFrame(parent, child) {
-    return (parent - child) / 2;
-}
+    /**
+     * Check if an item is null or empty
+     *
+     * @param val
+     * @return {Boolean}
+     */
+    me.isSomethingMeaningful = function(val) {
+        return !_.isUndefined(val) && !_.isNull(val);
+    }
+
+    /**
+     * Centers a child element in a parent
+     *
+     * @param parentDimension
+     * @param childDimension
+     * @return {Number}
+     */
+    me.centerInFrame = function (parentDimension, childDimension) {
+        return (parentDimension - childDimension) / 2;
+    }
+
+
+    return me;
+})(window.kadi || {}, jQuery);
+
+//function isSomethingMeaningful(val) {
+//    return !_.isUndefined(val) && !_.isNull(val);
+//}
+
 
 var Handler = JS.Class({
     construct : function(func,scope) {

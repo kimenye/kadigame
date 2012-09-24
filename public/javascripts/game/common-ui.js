@@ -60,12 +60,31 @@ var PickingDeck = JS.Class({
     }
 });
 
-var GamePlayerUI = JS.Class({
-    construct : function(id, name) {
-        this.id = id;
-        this.name = name;
-    },
-    display: function() {
 
-    }
-});
+
+
+
+//window.kadi = function(me, $, undefined) {
+//
+//}
+
+window.kadi.ui = (function(me, $, undefined){
+
+    /**
+     * Hide the loading text
+     *
+     * @param elementToDisplay
+     */
+    me.disableLoading  = function(elementToDisplay) {
+        $('#loading').hide();
+        $('#' + elementToDisplay).show();
+        return true;
+    };
+
+    me.updateLoadingText = function(text) {
+        $('#loading-text').html(text);
+    };
+
+
+    return me;
+})(window.kadi.ui || {}, jQuery);
