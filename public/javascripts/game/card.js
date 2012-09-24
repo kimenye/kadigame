@@ -131,28 +131,22 @@ window.kadi.game = (function(me, $, undefined){
             $(this.div).click(function() {
                 self.handleClick();
             });
-//            this.div = document.createElement("DIV");
+
             this.div.id = this.id();
             this.div.className = "card_container";
 
             var card_container = document.createElement("div");
             card_container.className = "card";
 
-            card_container.appendChild(this.buildFront());
             card_container.appendChild(this.buildBack());
+            card_container.appendChild(this.buildFront());
 
-//            this.div.appendChild(this.buildFront());
-//            this.div.appendChild(this.buildBack());
             this.div.appendChild(card_container);
         },
 
         buildBack: function() {
             var div = document.createElement("div");
             div.className = "face back";
-
-            var label = document.createTextNode("Back");
-            div.appendChild(label);
-
             return div;
         },
 
@@ -160,14 +154,17 @@ window.kadi.game = (function(me, $, undefined){
             var div = document.createElement("div");
             div.className = "face front";
 
-            var label = document.createTextNode("Front");
-            div.appendChild(label);
+            div.appendChild(this.buildRankText());
 
             return div;
         },
 
+        buildRankText: function() {
+            return kadi.createSpan(this.rank, "rank");
+        },
+
         handleClick: function(element) {
-            console.log("Clicked ", this.translate(), $(this.div));
+//            console.log("Clicked ", this.translate(), $(this.div));
             $(this.div).find('.card').toggleClass('flipped');
         },
 

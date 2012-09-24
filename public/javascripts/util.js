@@ -21,6 +21,27 @@ window.kadi = (function(me, $, undefined){
         return (parentDimension - childDimension) / 2;
     }
 
+    /**
+     * Create a span
+     *
+     * @param text
+     * @param className
+     * @param id
+     * @return {Element}
+     */
+    me.createSpan = function(text, className, id) {
+        var span = document.createElement("span");
+        span.innerHTML = text;
+        if (me.isSomethingMeaningful(className)) {
+            span.className = className;
+        }
+
+        if (me.isSomethingMeaningful(id)) {
+            span.id = id;
+        }
+        return span;
+    }
+
 
     return me;
 })(window.kadi || {}, jQuery);

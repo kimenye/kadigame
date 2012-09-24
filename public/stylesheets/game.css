@@ -17,7 +17,7 @@
 }
 
 .card {
-    border: 1px solid #000000;
+    /*border: 1px solid #000000;*/
 }
 .card_container {
     perspective: 800px;
@@ -40,9 +40,15 @@
 }
 .card_container .card .front {
     position: absolute;
+    background: url(../images/card_back_small.png);
     z-index: 1;
-
 }
+
 .card_container .card .back {
+    background: url(../images/card_back_coke.png);
     transform: rotateY(-180deg);
-}​
+}
+
+.rank {
+    font-size: 32px;
+}
