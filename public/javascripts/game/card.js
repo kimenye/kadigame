@@ -1,244 +1,181 @@
-var Suite = JS.Class({
-   statics : {
-       CLUBS: "C",
-       HEARTS: "H",
-       DIAMONDS: "D",
-       SPADES: "S",
-       getSuiteSymbol: function(suite) {
-           var symbol = "\u00a0" ;
-           switch (suite) {
-               case Suite.CLUBS:
-                   symbol = "\u2663";
-                   break;
-               case Suite.DIAMONDS:
-                   symbol = "\u2666";
-                   break;
-               case Suite.HEARTS:
-                   symbol = "\u2665";
-                   break;
-               case Suite.SPADES:
-                   symbol = "\u2660";
-                   break;
-           }
-           return symbol
-       }
-   }
-});
-
-var Card = JS.Class({
-    statics : {
-        JOKER: "JOKER",
-        QUEEN: "Q",
-        JACK: "J",
-        KING: "K",
-        ACE: "A"
-    },
-    construct : function(rank,suite) {
-        this.suite = suite;
-        this.rank = rank;
-        this.isJoker = function() {
-            return this.rank == Card.JOKER;
-        };
-        this.isAce = function() {
-            return this.rank == Card.ACE;
-        };
-
-        this.isQueen = function() {
-            return this.rank == Card.QUEEN;
-        };
-
-        this.isEight = function() {
-            return this.rank == 8;
-        };
-
-        this.isKing = function() {
-            return this.rank == Card.KING;
-        };
-
-        this.isJack = function() {
-            return this.rank == Card.JACK;
-        };
-    }
-});
-
-var HandUI = JS.Class({
-
-    construct: function(origin,parent) {
-        this.origin = origin;
-        this.parent = parent;
-        this.cards = [];
-    },
-    draw: function() {
-        var circle = new Kinetic.Circle({
-            x: this.origin.x,
-            y: this.origin.y,
-            radius: 5,
-            fill: "black",
-            stroke: "black",
-            strokeWidth: 1
-        });
-        parent.add(circle);
-        parent.draw();
-    },
-    addCard: function(card,draw) {
-        this.cards.push(card);
-//        if (draw,)
-    },
-    calculatePosition: function(card, idx, numCards) {
-//        if (idx =)
-    },
-    _drawCards : function() {
-        if (this.cards.length == 0) {
-
-        }
-    }
-});
-
-var CardUI = Card.extend({
-
-    statics: {
-        height: 136,
-        width: 100
-    },
-
-    construct: function(rank,suite,showFace) {
-        this.parent.construct.apply(this, [rank,suite]);
-        this.showFace = isSomethingMeaningful(showFace) ? showFace : false;
-    },
-
-    color: function() {
-        if(this.suite == Suite.CLUBS || this.suite == Suite.SPADES)
-            return "black";
-        else
-            return "red";
-    },
-    rotate : function(degrees) {
-        this.group.rotate(degrees);
-        this.p.draw();
-    },
-
-    moveOffset: function(x,y) {
-        this.group.setOffset(x,y);
-        this.p.draw();
-    },
-
-    draw: function(parent, options) {
-        var bgImageObj = new Image();
-//        var backImageObj = new Image();
-        var self = this;
-        self.p = parent;
-        bgImageObj.onload = function() {
-            var img = new Kinetic.Image({
-                x: options.x,
-                y: options.y,
-                image: bgImageObj,
-                draggable: true,
-                width: CardUI.width,
-                height: CardUI.height
-            });
-
-            var group = new Kinetic.Group({ draggable: true });
-//            group.setOffset(320, 320);
-
-            console.log("Offset", group.getOffset());
-//            group.rotate(.18);
-            group.add(img);
-
-//            img.setScale({x:-1});
-
-            group.on('click', function() {
-                group.moveToTop();
-            });
-
-            group.on("dragstart", function() {
-                group.moveToTop();
-            });
-
-            if (!self.isJoker()) {
-                var rankText = new Kinetic.Text({
-                    x: options.x + 10,
-                    y: options.y + 10,
-                    fontSize: 18,
-                    fontFamily: 'MuseoSans-500',
-                    text: self.rank,
-                    textFill: self.color()
-                });
-
-                var suiteSymbol = new Kinetic.Text({
-                    x: options.x + 9,
-                    y: options.y + 35,
-                    fontSize: 12,
-                    fontFamily: 'MuseoSans-500',
-                    text: Suite.getSuiteSymbol(self.suite),
-                    textFill: self.color()
-                });
-
-                if (!self.isQueen() && !self.isKing() && !self.isJack()) {
-
-                    var suiteSymbolMain = new Kinetic.Text({
-                        x: options.x + 20,
-                        y: options.y + 55,
-                        fontSize: 48,
-                        fontFamily: 'MuseoSans-500',
-                        text: Suite.getSuiteSymbol(self.suite),
-                        textFill: self.color()
-                    });
-
-                    if (self.showFace)
-                        group.add(suiteSymbolMain);
+window.kadi.game = (function(me, $, undefined){
+    me.Suite = JS.Class({
+        statics : {
+            CLUBS: "C",
+            HEARTS: "H",
+            DIAMONDS: "D",
+            SPADES: "S",
+            JOKERS: "-",
+            getSuiteSymbol: function(suite) {
+                var symbol = "\u00a0" ;
+                switch (suite) {
+                    case kadi.game.Suite.CLUBS:
+                        symbol = "\u2663";
+                        break;
+                    case kadi.game.Suite.DIAMONDS:
+                        symbol = "\u2666";
+                        break;
+                    case kadi.game.Suite.HEARTS:
+                        symbol = "\u2665";
+                        break;
+                    case kadi.game.Suite.SPADES:
+                        symbol = "\u2660";
+                        break;
                 }
-
-                if (self.showFace)
-                {
-                    group.add(rankText);
-                    group.add(suiteSymbol);
+                return symbol;
+            },
+            getSuiteName: function(suite) {
+                var name = "Joker";
+                switch (suite) {
+                    case kadi.game.Suite.CLUBS:
+                        name = "Clubs";
+                        break;
+                    case kadi.game.Suite.DIAMONDS:
+                        name = "Diamonds";
+                        break;
+                    case kadi.game.Suite.HEARTS:
+                        name = "Hearts";
+                        break;
+                    case kadi.game.Suite.SPADES:
+                        name =  "Spades";
+                        break;
                 }
-                parent.add(group);
-                parent.draw();
+                return name;
             }
-            else
-            {
-                /*var imgJoker = new Image();
-                imgJoker.onload = function() {
-
-                    var jokerImg = new Kinetic.Image({
-                        x: options.x + 10,
-                        y: options.y + 10,
-                        image: imgJoker,
-                        draggable: true,
-                        width: 100,
-                        height: 136
-                    });
-
-                    group.add(jokerImg);
-                    parent.add(group);
-                    parent.draw();
-                }
-                imgJoker.src = 'images/makmende.png';*/
-                var rankText = new Kinetic.Text({
-                    x: options.x + 10,
-                    y: options.y + 10,
-                    fontSize: 12,
-                    fontFamily: 'MuseoSans-500',
-                    text: "J\n0\nK\nE\n\R",
-                    textFill: self.color()
-                });
-
-//                rankText.setScale({x:-1});
-//                rankText.scale(-1,-1);
-                if (self.showFace)
-                    group.add(rankText);
-//                group.setScale({x:-1,y:-1});
-            }
-//            group.rotate(-.1);
-            parent.add(group);
-            parent.draw();
-            self.group = group;
         }
-        if (self.showFace)
-            bgImageObj.src = 'images/card_back_small.png';
-        else
-            bgImageObj.src = 'images/card_back_coke.png';
-    }
+    });
 
-});
+    me.Card = JS.Class({
+        statics : {
+            JOKER_A: "0",
+            JOKER_B: "1",
+            QUEEN: "Q",
+            JACK: "J",
+            KING: "K",
+            ACE: "A",
+            getRankName: function(rank) {
+                var name = "" + rank;
+                switch (rank) {
+                    case kadi.game.Card.JOKER_A:
+                        name = "Joker A ";
+                        break;
+                    case kadi.game.Card.JOKER_B:
+                        name = "Joker B ";
+                        break;
+                    case kadi.game.Card.QUEEN:
+                        name = "Queen";
+                        break;
+                    case kadi.game.Card.JACK:
+                        name = "Jack";
+                        break;
+                    case kadi.game.Card.KING:
+                        name = "King";
+                        break;
+                    case kadi.game.Card.ACE:
+                        name = "Ace ";
+                        break;
+                }
+                return name;
+            }
+        },
+        construct : function(rank,suite) {
+            this.suite = suite;
+            this.rank = rank;
+            this.isJoker = function() {
+                return this.rank == kadi.game.Card.JOKER_A || this.rank == kadi.game.Card.JOKER_B;
+            };
+            this.isAce = function() {
+                return this.rank == kadi.game.Card.ACE;
+            };
+
+            this.isQueen = function() {
+                return this.rank == kadi.game.Card.QUEEN;
+            };
+
+            this.isEight = function() {
+                return this.rank == "8";
+            };
+
+            this.isKing = function() {
+                return this.rank == kadi.game.Card.KING;
+            };
+
+            this.isJack = function() {
+                return this.rank == kadi.game.Card.JACK;
+            };
+
+            this.id = function() {
+                return this.suite + ";" + this.rank;
+            };
+
+            this.translate = function(id) {
+                var suiteName = kadi.game.Suite.getSuiteName(this.suite);
+                var rankName = kadi.game.Card.getRankName(this.rank);
+                return rankName + " of " + suiteName;
+            }
+        }
+    });
+
+    me.CardUI = me.Card.extend({
+        construct : function(rank,suite,revealed) {
+            this.parent.construct.apply(this, [rank, suite]);
+            this.revealed = revealed;
+            this.buildNode();
+        },
+
+        buildNode: function() {
+
+            var self = this;
+            this.div = document.createElement("div");
+
+            $(this.div).click(function() {
+                self.handleClick();
+            });
+//            this.div = document.createElement("DIV");
+            this.div.id = this.id();
+            this.div.className = "card_container";
+
+            var card_container = document.createElement("div");
+            card_container.className = "card";
+
+            card_container.appendChild(this.buildFront());
+            card_container.appendChild(this.buildBack());
+
+//            this.div.appendChild(this.buildFront());
+//            this.div.appendChild(this.buildBack());
+            this.div.appendChild(card_container);
+        },
+
+        buildBack: function() {
+            var div = document.createElement("div");
+            div.className = "face back";
+
+            var label = document.createTextNode("Back");
+            div.appendChild(label);
+
+            return div;
+        },
+
+        buildFront: function() {
+            var div = document.createElement("div");
+            div.className = "face front";
+
+            var label = document.createTextNode("Front");
+            div.appendChild(label);
+
+            return div;
+        },
+
+        handleClick: function(element) {
+            console.log("Clicked ", this.translate(), $(this.div));
+            $(this.div).find('.card').toggleClass('flipped');
+        },
+
+        display: function(parentDiv) {
+            var parent = document.getElementById(parentDiv);
+            parent.appendChild(this.div);
+        }
+    });
+
+    return me;
+}) (window.kadi.game || {}, jQuery);

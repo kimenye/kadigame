@@ -4,5 +4,45 @@
     position: relative;
     top: 150px;
     left: 500px;
+}
+
+* {
+    /*border: 1px solid #000000;*/
+}
+
+.card, .card_container {
+    width: 100px;
+    height: 136px;
+    position: relative;
+}
+
+.card {
     border: 1px solid #000000;
 }
+.card_container {
+    perspective: 800px;
+}
+.card_container .card.flipped {
+    transform: rotateY(-180deg);
+}
+.card_container .card {
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: 0.5s;
+}
+.card_container .card .face {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden ;
+    z-index: 2;
+}
+.card_container .card .front {
+    position: absolute;
+    z-index: 1;
+
+}
+.card_container .card .back {
+    transform: rotateY(-180deg);
+}​
