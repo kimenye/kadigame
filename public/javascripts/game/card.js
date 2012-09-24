@@ -174,14 +174,26 @@ window.kadi.game = (function(me, $, undefined){
             var div = document.createElement("div");
             div.className = "front face";
 
-            if (!this.isJoker()) {
-                div.appendChild(this.buildRankText());
-                div.appendChild(this.buildSymbol());
-                div.appendChild(this.buildSymbol("large"));
-            } else {
-                div.appendChild(this.buildJokerText());
+
+            var divInner = document.createElement("div");
+            divInner.className = "inner";
+
+            if (!this.revealed) {
+                divInner.className += " hidden";
+                $(this.div).toggleClass('flipped');
             }
 
+
+
+            if (!this.isJoker()) {
+                divInner.appendChild(this.buildRankText());
+                divInner.appendChild(this.buildSymbol());
+                divInner.appendChild(this.buildSymbol("large"));
+            } else {
+                divInner.appendChild(this.buildJokerText());
+            }
+
+            div.appendChild(divInner);
 
             return div;
         },
@@ -207,9 +219,10 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         handleClick: function() {
-//            console.log("Clicked ", this.translate(), $(this.div));
-//            $(this.div).css('z-index',900);
-//            $(this.div).toggleClass('flipped');
+            var before = this.revealed;
+            this.revealed = !this.revealed;
+            $(this.div).toggleClass('flipped');
+            $(this.div).find('.inner').toggleClass('hidden');
         },
 
         display: function(parentDiv, x, y) {
