@@ -187,10 +187,10 @@ window.kadi.game = (function(me, $, undefined){
             $(this.div).find('.card').toggleClass('flipped');
         },
 
-        display: function(parentDiv, x,y) {
+        display: function(parentDiv, x, y) {
             var parent = document.getElementById(parentDiv);
-            this.div.style['top'] = x + "px";
-            this.div.style['left'] = y + "px";
+            this.div.style['left'] = x + "px";
+            this.div.style['top'] = y + "px";
 
 //            console.log(this.div.style);
 

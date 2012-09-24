@@ -4,6 +4,7 @@
     position: relative;
     top: 150px;
     left: 500px;
+    float: right;
 }
 
 * {
@@ -14,14 +15,14 @@
     width: 100px;
     height: 136px;
     position: relative;
+    /*border: 1px solid;*/
 }
 
-.card {
-    /*border: 1px solid #000000;*/
-}
 .card_container {
     perspective: 800px;
+    display: inline-block;
 }
+
 .card_container .card.flipped {
     transform: rotateY(-180deg);
 }
