@@ -16,7 +16,7 @@
     height: 136px;
     display: inline-block;
     transform-style: preserve-3d;
-    transition: all .5s linear;
+    transition: transform .5s linear;
     position: absolute;
 }
 .flipped {

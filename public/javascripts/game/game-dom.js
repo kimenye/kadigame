@@ -62,51 +62,50 @@ window.kadi.game = (function(me, $, undefined){
             kadi.ui.disableLoading('game');
 
             var card;
-
-            card = new kadi.game.CardUI(kadi.game.Card.KING,kadi.game.Suite.HEARTS,false);
+            card = new kadi.game.CardUI(kadi.game.Card.KING,kadi.game.Suite.HEARTS,true);
             card.display(this.id,5,5);
 
-            card = new kadi.game.CardUI(kadi.game.Card.QUEEN,kadi.game.Suite.DIAMONDS,false);
+            card = new kadi.game.CardUI(kadi.game.Card.QUEEN,kadi.game.Suite.DIAMONDS,true);
             card.display(this.id,110,5);
 
-            card = new kadi.game.CardUI(kadi.game.Card.JACK,kadi.game.Suite.HEARTS,false);
+            card = new kadi.game.CardUI(kadi.game.Card.JACK,kadi.game.Suite.HEARTS,true);
             card.display(this.id,215,5);
 
-            card = new kadi.game.CardUI(kadi.game.Card.ACE,kadi.game.Suite.SPADES,false);
+            card = new kadi.game.CardUI(kadi.game.Card.ACE,kadi.game.Suite.SPADES,true);
             card.display(this.id,320,5);
-
-            card = new kadi.game.CardUI(kadi.game.Card.TEN,kadi.game.Suite.SPADES,false);
-            card.display(this.id,425,5);
-
-            card = new kadi.game.CardUI(kadi.game.Card.NINE,kadi.game.Suite.CLUBS,false);
-            card.display(this.id,530,5);
-
-            card = new kadi.game.CardUI(kadi.game.Card.EIGHT,kadi.game.Suite.DIAMONDS,false);
-            card.display(this.id,635,5);
-
-            card = new kadi.game.CardUI(kadi.game.Card.SEVEN,kadi.game.Suite.HEARTS,false);
-            card.display(this.id,5,145);
-
-            card = new kadi.game.CardUI(kadi.game.Card.SIX,kadi.game.Suite.SPADES,false);
-            card.display(this.id,110,145);
-
-            card = new kadi.game.CardUI(kadi.game.Card.FIVE,kadi.game.Suite.CLUBS,false);
-            card.display(this.id,215,145);
-
-            card = new kadi.game.CardUI(kadi.game.Card.FOUR,kadi.game.Suite.HEARTS,false);
-            card.display(this.id,320,145);
-
-            card = new kadi.game.CardUI(kadi.game.Card.THREE,kadi.game.Suite.SPADES,false);
-            card.display(this.id,425,145);
-
-            card = new kadi.game.CardUI(kadi.game.Card.TWO,kadi.game.Suite.DIAMONDS,false);
-            card.display(this.id,530,145);
-
-            card = new kadi.game.CardUI(kadi.game.Card.JOKER_B,kadi.game.Suite.JOKERS,false);
-            card.display(this.id,635,145);
-
-            card = new kadi.game.CardUI(kadi.game.Card.JOKER_A,kadi.game.Suite.JOKERS,true);
-            card.display(this.id,5,285);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.TEN,kadi.game.Suite.SPADES,false);
+//            card.display(this.id,425,5);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.NINE,kadi.game.Suite.CLUBS,false);
+//            card.display(this.id,530,5);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.EIGHT,kadi.game.Suite.DIAMONDS,false);
+//            card.display(this.id,635,5);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.SEVEN,kadi.game.Suite.HEARTS,false);
+//            card.display(this.id,5,145);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.SIX,kadi.game.Suite.SPADES,false);
+//            card.display(this.id,110,145);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.FIVE,kadi.game.Suite.CLUBS,false);
+//            card.display(this.id,215,145);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.FOUR,kadi.game.Suite.HEARTS,false);
+//            card.display(this.id,320,145);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.THREE,kadi.game.Suite.SPADES,false);
+//            card.display(this.id,425,145);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.TWO,kadi.game.Suite.DIAMONDS,false);
+//            card.display(this.id,530,145);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.JOKER_B,kadi.game.Suite.JOKERS,false);
+//            card.display(this.id,635,145);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.JOKER_A,kadi.game.Suite.JOKERS,true);
+//            card.display(this.id,5,285);
         }
     });
 

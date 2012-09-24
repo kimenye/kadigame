@@ -220,18 +220,25 @@ window.kadi.game = (function(me, $, undefined){
 
         handleClick: function() {
             var before = this.revealed;
+            var elem = $(this.div);
             this.revealed = !this.revealed;
-            $(this.div).toggleClass('flipped');
-            $(this.div).find('.inner').toggleClass('hidden');
+
+            if (before) {
+                elem.find('.inner').toggleClass('hidden');
+            }
+            elem.toggleClass('flipped');
+
+            _.delay(function() {
+                if (!before)
+                    elem.find('.inner').toggleClass('hidden');
+            }, 200);
+
         },
 
         display: function(parentDiv, x, y) {
             var parent = document.getElementById(parentDiv);
             this.div.style['left'] = x + "px";
             this.div.style['top'] = y + "px";
-
-//            console.log(this.div.style);
-
             parent.appendChild(this.div);
         }
     });
