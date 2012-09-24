@@ -11,43 +11,31 @@
     /*border: 1px solid #000000;*/
 }
 
-.card, .card_container {
+.card {
     width: 100px;
     height: 136px;
-    position: relative;
-    /*border: 1px solid;*/
-}
-
-.card_container {
-    perspective: 800px;
     display: inline-block;
-}
-
-.card_container .card.flipped {
-    transform: rotateY(-180deg);
-}
-.card_container .card {
-    width: 100%;
-    height: 100%;
     transform-style: preserve-3d;
-    transition: 0.5s;
-}
-.card_container .card .face {
-    width: 100%;
-    height: 100%;
+    transition: all .5s linear;
     position: absolute;
-    backface-visibility: hidden ;
-    z-index: 2;
 }
-.card_container .card .front {
+.flipped {
+    transform: rotateY(180deg);
+}
+.face {
     position: absolute;
-    background: url(../images/card_back_small.png) no-repeat;
-    z-index: 1;
+    width: 100px;
+    height: 136px;
+    backface-visibility: hidden;
 }
 
-.card_container .card .back {
+.front {
+    background: url(../images/card_back_small.png) no-repeat;
+}
+
+.face.back {
     background: url(../images/card_back_coke.png) no-repeat;
-    transform: rotateY(-180deg);
+    transform: rotateY(180deg);
 }
 
 .red {
@@ -69,9 +57,15 @@
 
 
 .suite {
-    position: relative;
-    top: 30px;
-    left: 5px;
-    font-weight: bold;
     font-size: 24px;
+    left: 5px;
+    position: absolute;
+    top: 25px;
+}
+
+.large {
+    font-size: 100px;
+    left: 20px;
+    position: absolute;
+    top: 60px;
 }

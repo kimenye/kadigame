@@ -55,20 +55,25 @@ window.kadi.game = (function(me, $, undefined){
             this.opponents = _.collect(opponents, function(opponent) {
                 return new me.GamePlayerUI(opponent.id, opponent.name);
             });
-            this.pickingDeck = new me.PickingDeck(52);
+//            this.pickingDeck = new me.PickingDeck(52);
         },
 
         display : function() {
             kadi.ui.disableLoading('game');
 
-            var card = new kadi.game.CardUI(kadi.game.Card.JACK,kadi.game.Suite.HEARTS,false);
-            card.display(this.id,0,0);
+            var card;
 
-//            card = new kadi.game.CardUI(kadi.game.Card.KING,kadi.game.Suite.HEARTS,false);
-//            card.display(this.id,-200,0);
-//
-//            card = new kadi.game.CardUI(kadi.game.Card.QUEEN,kadi.game.Suite.HEARTS,false);
-//            card.display(this.id,-200,200);
+            card = new kadi.game.CardUI(kadi.game.Card.KING,kadi.game.Suite.HEARTS,false);
+            card.display(this.id,0,5);
+
+            card = new kadi.game.CardUI(kadi.game.Card.QUEEN,kadi.game.Suite.DIAMONDS,false);
+            card.display(this.id,100,5);
+
+            card = new kadi.game.CardUI(kadi.game.Card.JACK,kadi.game.Suite.HEARTS,false);
+            card.display(this.id,200,5);
+
+            card = new kadi.game.CardUI(kadi.game.Card.ACE,kadi.game.Suite.SPADES,false);
+            card.display(this.id,300,5);
         }
     });
 

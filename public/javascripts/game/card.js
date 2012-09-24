@@ -147,15 +147,9 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             this.div.id = this.id();
-            this.div.className = "card_container";
-
-            var card_container = document.createElement("div");
-            card_container.className = "card";
-
-            card_container.appendChild(this.buildBack());
-            card_container.appendChild(this.buildFront());
-
-            this.div.appendChild(card_container);
+            this.div.className = "card";
+            this.div.appendChild(this.buildFront());
+            this.div.appendChild(this.buildBack());
         },
 
         buildBack: function() {
@@ -166,25 +160,36 @@ window.kadi.game = (function(me, $, undefined){
 
         buildFront: function() {
             var div = document.createElement("div");
-            div.className = "face front";
+            div.className = "front face";
 
             div.appendChild(this.buildRankText());
-//            div.getSuiteSymbol(this.buildB)
+            div.appendChild(this.buildSymbol());
+            div.appendChild(this.buildSymbol("large"));
+
             return div;
         },
 
-        buildSymbol: function() {
+        getSymbol: function() {
+            return kadi.game.Suite.getSuiteSymbol(this.suite);
+        },
 
+        buildSymbol: function(size) {
+            var symbol = this.getSymbol();
+            var classes = "suite " + kadi.game.Suite.getColorClass(this.suite, this.rank);
+
+            classes = kadi.isSomethingMeaningful(size) ? classes + " " + size : classes;
+            return kadi.createSpan(symbol, classes, null);
+//            return kadi.createSpan(symbol, "suite " + kadi.game.Suite.getColorClass(this.suite, this.rank) + " " + size,null);
         },
 
         buildRankText: function() {
             return kadi.createSpan(this.rank, "rank " + kadi.game.Suite.getColorClass(this.suite, this.rank),null);
-//            return kadi.createSpan(this.rank, "rank " + kadi.game.Suite.getColorClass(this.suite, this.rank),null);
         },
 
-        handleClick: function(element) {
-//            console.log("Clicked ", this.translate(), $(this.div));
-            $(this.div).find('.card').toggleClass('flipped');
+        handleClick: function() {
+            console.log("Clicked ", this.translate(), $(this.div));
+            $(this.div).css('z-index',900);
+            $(this.div).toggleClass('flipped');
         },
 
         display: function(parentDiv, x, y) {
