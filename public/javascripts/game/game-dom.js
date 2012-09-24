@@ -59,11 +59,17 @@ window.kadi.game = (function(me, $, undefined){
             var self = this;
             _.each(fan, function(blade, idx) {
                 var card = self.cards[idx];
+                card.disableClick = true;
                 var cardElem = $(card.div);
-                cardElem.animate({
-                    left: kadi.game.PlayerDeck.X + blade.x
-//                    rotate: blade.rotate + 'deg'
-                }, 200,'linear');
+                var options = {
+                    left: kadi.game.PlayerDeck.X + blade.x,
+                    rotate: blade.rotate + 'deg'
+                }
+                if (!card.revealed)
+                {
+                    _.extend(options, { rotateY: '180deg' });
+                }
+                cardElem.animate(options, 200,'linear');
             });
         }
     })

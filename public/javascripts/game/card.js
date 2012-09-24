@@ -150,6 +150,7 @@ window.kadi.game = (function(me, $, undefined){
         construct : function(rank,suite,revealed) {
             this.parent.construct.apply(this, [rank, suite]);
             this.revealed = revealed;
+            this.disableClick = false;
             this.buildNode();
         },
 
@@ -220,20 +221,21 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         handleClick: function() {
-            var before = this.revealed;
-            var elem = $(this.div);
-            this.revealed = !this.revealed;
+            if (!this.disableClick) {
+                var before = this.revealed;
+                var elem = $(this.div);
+                this.revealed = !this.revealed;
 
-            if (before) {
-                elem.find('.inner').toggleClass('hidden');
-            }
-            elem.toggleClass('flipped');
-
-            _.delay(function() {
-                if (!before)
+                if (before) {
                     elem.find('.inner').toggleClass('hidden');
-            }, 200);
+                }
+                elem.toggleClass('flipped');
 
+                _.delay(function() {
+                    if (!before)
+                        elem.find('.inner').toggleClass('hidden');
+                }, 200);
+            }
         },
 
         display: function(parentDiv, x, y) {
