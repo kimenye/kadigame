@@ -62,8 +62,13 @@ window.kadi.game = (function(me, $, undefined){
             kadi.ui.disableLoading('game');
 
             var card = new kadi.game.CardUI(kadi.game.Card.JACK,kadi.game.Suite.HEARTS,false);
-            console.log("Picking deck id ", this.pickingDeck.id);
-            card.display(this.id);
+            card.display(this.id,-200,0);
+
+            card = new kadi.game.CardUI(kadi.game.Card.KING,kadi.game.Suite.HEARTS,false);
+            card.display(this.id,-200,100);
+
+            card = new kadi.game.CardUI(kadi.game.Card.QUEEN,kadi.game.Suite.HEARTS,false);
+            card.display(this.id,-200,200);
         }
     });
 

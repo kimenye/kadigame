@@ -6,6 +6,20 @@ window.kadi.game = (function(me, $, undefined){
             DIAMONDS: "D",
             SPADES: "S",
             JOKERS: "-",
+            getColorClass: function(suite, rank) {
+                var color = "black";
+                switch(suite) {
+                    case kadi.game.Suite.HEARTS:
+                    case kadi.game.Suite.DIAMONDS:
+                        color = "red";
+                        break;
+                    case kadi.game.Suite.JOKERS:
+                        if (rank == kadi.game.Card.JOKER_A)
+                            color = "red";
+                        break;
+                }
+                return color;
+            },
             getSuiteSymbol: function(suite) {
                 var symbol = "\u00a0" ;
                 switch (suite) {
@@ -155,12 +169,17 @@ window.kadi.game = (function(me, $, undefined){
             div.className = "face front";
 
             div.appendChild(this.buildRankText());
-
+//            div.getSuiteSymbol(this.buildB)
             return div;
         },
 
+        buildSymbol: function() {
+
+        },
+
         buildRankText: function() {
-            return kadi.createSpan(this.rank, "rank");
+            return kadi.createSpan(this.rank, "rank " + kadi.game.Suite.getColorClass(this.suite, this.rank),null);
+//            return kadi.createSpan(this.rank, "rank " + kadi.game.Suite.getColorClass(this.suite, this.rank),null);
         },
 
         handleClick: function(element) {
@@ -168,8 +187,13 @@ window.kadi.game = (function(me, $, undefined){
             $(this.div).find('.card').toggleClass('flipped');
         },
 
-        display: function(parentDiv) {
+        display: function(parentDiv, x,y) {
             var parent = document.getElementById(parentDiv);
+            this.div.style['top'] = x + "px";
+            this.div.style['left'] = y + "px";
+
+//            console.log(this.div.style);
+
             parent.appendChild(this.div);
         }
     });

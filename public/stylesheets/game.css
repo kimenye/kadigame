@@ -40,15 +40,37 @@
 }
 .card_container .card .front {
     position: absolute;
-    background: url(../images/card_back_small.png);
+    background: url(../images/card_back_small.png) no-repeat;
     z-index: 1;
 }
 
 .card_container .card .back {
-    background: url(../images/card_back_coke.png);
+    background: url(../images/card_back_coke.png) no-repeat;
     transform: rotateY(-180deg);
 }
 
+.red {
+    color: red;
+}
+
 .rank {
-    font-size: 32px;
+    position: relative;
+    top: 5px;
+    left: 5px;
+    width: 15px;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.black {
+    color: black;
+}
+
+
+.suite {
+    position: relative;
+    top: 30px;
+    left: 5px;
+    font-weight: bold;
+    font-size: 24px;
 }

@@ -41,4 +41,6 @@ body {
     height: 600px;
     display:block;
     margin:auto;
+    position: relative;
+    overflow: hidden;
 }
