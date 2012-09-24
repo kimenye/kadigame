@@ -7,7 +7,7 @@
 
 :javascript
   $(document).ready(function () {
-    //console.log("Kadi ", kadi);
-    kadi.game.initGameUI(null,[]);
+    var me = new kadi.game.GamePlayerUI('#{@player.id}', "#{@player.name}");
+    kadi.game.initGameUI(me,[]);
 
   });

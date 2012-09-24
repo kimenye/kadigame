@@ -11,18 +11,53 @@ window.kadi.game = (function(me, $, undefined){
     });
 
 
+    me.Box = JS.Class({
+        construct: function(parent,id,className,x,y,width,height) {
+            this.div = document.createElement("DIV");
+            this.div.id = id;
+            this.div.className = className;
+            this.parent = document.getElementById(parent);
+        },
+
+        display: function() {
+            this.parent.appendChild(this.div);
+        }
+    });
+
+    me.PickingDeck = me.Box.extend({
+        statics : {
+            WIDTH:  150,
+            HEIGHT: 200,
+            X: 500,
+            Y: 150
+        },
+        construct : function(numCards) {
+            this.parent.construct.apply(this, ['game', 'picking_box_div', 'picking_box']);
+            this.display();
+            this.numCards = numCards;
+        }
+    });
+
+
+
+
     me.GameUI = JS.Class({
         statics: {
             width: 800,
             height: 600
         },
-        construct: function(me, opponents) {
+        construct: function(player, opponents) {
             var self = this;
-            this.me = me;
+            this.player = player;
             this.opponents = [];
             this.opponents = _.collect(opponents, function(opponent) {
                 return new me.GamePlayerUI(opponent.id, opponent.name);
             });
+            this.pickingDeck = new me.PickingDeck(52);
+        },
+
+        display : function() {
+            kadi.ui.disableLoading('game');
         }
     });
 
@@ -33,10 +68,9 @@ window.kadi.game = (function(me, $, undefined){
      * @param opponents
      */
     me.initGameUI = function(player, opponents) {
-
-        kadi.ui.updateLoadingText('Preparing the board...');
-
+        kadi.ui.updateLoadingText('Welcome ' + player.name + '. Preparing the game...');
         me.gameObject = new me.GameUI(player, opponents);
+        me.gameObject.display();
     }
 
     return me;

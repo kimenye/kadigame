@@ -100,7 +100,8 @@ class Kadi < Padrino::Application
     end
   end
 
-  get :test  do
+  get :test, :with => :id do
+    @player = Player.find_by_id(params[:id])
     render "test"
   end
 

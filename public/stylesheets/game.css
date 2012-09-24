@@ -1,0 +1,8 @@
+.picking_box {
+    height: 200px;
+    width: 150px;
+    position: relative;
+    top: 150px;
+    left: 500px;
+    border: 1px solid #000000;
+}
