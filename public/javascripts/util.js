@@ -46,6 +46,25 @@ window.kadi = (function(me, $, undefined){
             var prior = coords[ctr-1].x + itemWidth + margin;
             coords.push(new kadi.Pos(prior,0));
         }
+
+        _.each(coords, function(c, idx) {
+            if (numItems > 2) {
+                var mid = Math.floor(numItems / 2);
+                var left = idx < numItems / 2;
+                var right = !left;
+
+                var center = idx == mid;
+
+                console.log("Mid: %d, Idx: %d of %d, L: %s, R: %s, Center: %s", mid, idx, numItems, left, right,center);
+                if (!center && left)
+                    c.rotate = -5;
+                else if (!center && right)
+                    c.rotate = 5;
+                else
+                    c.rotate = 0;
+            }
+        });
+
         return coords;
     }
 
@@ -67,7 +86,6 @@ window.kadi = (function(me, $, undefined){
 
             while (!canFit) {
                 newInnerWidth = kadi.calculateFanWidthWithoutOverlap(newWidth,0,numItems);
-                console.log("Width: %d", newInnerWidth, containerWidth);
                 if (newInnerWidth <= containerWidth) {
                     canFit = true;
                 }
@@ -81,9 +99,10 @@ window.kadi = (function(me, $, undefined){
     }
 
     me.Pos = JS.Class({
-        construct : function(x,y) {
+        construct : function(x,y,rotate) {
             this.x = x;
             this.y = y;
+            this.rotate = rotate;
         }
     });
 
