@@ -6,7 +6,25 @@
       %small Kenyan Style Poker
 .container
   .row
-    #game{'style' => 'display:block;margin:auto;'}
+    #loading.loading
+      %h5#loading-text PREPARING THE BOARD...
+      %ul.drops.red
+        %li
+        %li
+        %li
+        %li
+        -#%li
+    #game{:style => "display:none;"}
+-#.container
+  .row
+    %hr
+    .span4
+      %h6 ABOUT US
+    .span4
+      %h6 HOW TO PLAY
+    .span4
+      %h6 PRIVACY
+
 
 -content_for :lib_js, partial("base/lib_js")
 -content_for :app_js, partial("base/test_js")

@@ -59,3 +59,13 @@ var PickingDeck = JS.Class({
         }, this);
     }
 });
+
+var GamePlayerUI = JS.Class({
+    construct : function(id, name) {
+        this.id = id;
+        this.name = name;
+    },
+    display: function() {
+
+    }
+});

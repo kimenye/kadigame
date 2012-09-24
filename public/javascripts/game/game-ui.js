@@ -21,15 +21,7 @@ var BackgroundUI = JS.Class({
     }
 });
 
-var GamePlayerUI = JS.Class({
-    construct : function(id, name) {
-        this.id = id;
-        this.name = name;
-    },
-    display: function() {
 
-    }
-});
 
 var GameUI = JS.Class({
     statics: {

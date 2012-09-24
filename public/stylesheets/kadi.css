@@ -30,16 +30,25 @@ body {
     margin-left: 0px;
 }
 
-.loading {
-    position: relative;
-    left: 0px;
-    top: 0px;
-    display: none;
-    background: gold;
-    padding: 0.3em;
-    font-weight: bold;
-}​
+/*.loading {*/
+    /*position: relative;*/
+    /*left: 0px;*/
+    /*top: 0px;*/
+    /*display: none;*/
+    /*background: gold;*/
+    /*padding: 0.3em;*/
+    /*font-weight: bold;*/
+/*}​*/
 
 .hidden {
     display: none;
+}
+
+#game {
+    background: url(../images/woodback.jpg);
+    /*background:radial-gradient(rgba(80,0,0,0.1) 0%, rgba(80,0,0,0.2) 30%, rgba(21,11,1,0.9) 100% ), url(../images/woodback.jpg);*/
+    width: 800px;
+    height: 600px;
+    display:block;
+    margin:auto;
 }
