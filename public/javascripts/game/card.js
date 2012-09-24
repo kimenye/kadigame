@@ -145,7 +145,7 @@ window.kadi.game = (function(me, $, undefined){
     me.CardUI = me.Card.extend({
         statics: {
             WIDTH: 100,
-            MARGIN: 5
+            MARGIN: 1
         },
         construct : function(rank,suite,revealed) {
             this.parent.construct.apply(this, [rank, suite]);
@@ -154,7 +154,6 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         buildNode: function() {
-
             var self = this;
             this.div = document.createElement("div");
 
@@ -186,8 +185,6 @@ window.kadi.game = (function(me, $, undefined){
                 divInner.className += " hidden";
                 $(this.div).toggleClass('flipped');
             }
-
-
 
             if (!this.isJoker()) {
                 divInner.appendChild(this.buildRankText());

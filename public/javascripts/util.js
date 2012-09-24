@@ -36,6 +36,19 @@ window.kadi = (function(me, $, undefined){
         return minWidth;
     }
 
+    me.buildFan = function(containerWidth,innerWidth, itemWidth, numItems, margin) {
+        var first = kadi.centerInFrame(containerWidth, innerWidth);
+        var x = kadi.centerInFrame(containerWidth, innerWidth);
+        var coords = [];
+        coords.push(new kadi.Pos(x,0));
+
+        for(var ctr=1;ctr<numItems;ctr++) {
+            var prior = coords[ctr-1].x + itemWidth + margin;
+            coords.push(new kadi.Pos(prior,0));
+        }
+        return coords;
+    }
+
     /**
      * returns an array of left values for items
      */
@@ -44,22 +57,25 @@ window.kadi = (function(me, $, undefined){
         var coords = [];
 
         if (widthWithoutOverlap <= containerWidth) {
-//            _.each(_.range(numItems), function(item) {
-//                console.log("Processing ", item);
-//                var x = kadi.centerInFrame(containerWidth, widthWithoutOverlap)
-//                coords.push(new kadi.Pos(x,0));
-//            });
-            var first = kadi.centerInFrame(containerWidth, widthWithoutOverlap);
-            var x = kadi.centerInFrame(containerWidth, widthWithoutOverlap);
-            coords.push(new kadi.Pos(x,0));
-//            var ctr=1;
+            coords = kadi.buildFan(containerWidth,widthWithoutOverlap,itemWidth,numItems,optionalMargin);
+        }
+        else {
+            var overlapStep = 5;
+            var canFit = false;
+            var newWidth = itemWidth;
+            var newInnerWidth = 0;
 
-            for(var ctr=1;ctr<numItems;ctr++) {
-                var prior = coords[ctr-1].x + itemWidth + optionalMargin;
-//                coords.push(new )
-//                var left = x + (numItems)
-                coords.push(new kadi.Pos(prior,0));
+            while (!canFit) {
+                newInnerWidth = kadi.calculateFanWidthWithoutOverlap(newWidth,0,numItems);
+                console.log("Width: %d", newInnerWidth, containerWidth);
+                if (newInnerWidth <= containerWidth) {
+                    canFit = true;
+                }
+                else {
+                    newWidth -= overlapStep;
+                }
             }
+            coords = kadi.buildFan(containerWidth,newInnerWidth,newWidth,numItems,0);
         }
         return coords;
     }
