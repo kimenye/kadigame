@@ -21,6 +21,56 @@ window.kadi = (function(me, $, undefined){
         return (parentDimension - childDimension) / 2;
     }
 
+    me.numThatCanFit = function(parent,child,margin) {
+        var max = Math.floor(parent / (child + margin));
+        return max;
+//        var widthWithoutOverlap = kadi.calculateFanWidthWithoutOverlap(itemWidth,optionalMargin,numItems);
+    }
+
+
+    me.calculateFanWidthWithoutOverlap = function(itemWidth, optionalMargin, numItems) {
+        var minWidth = optionalMargin;
+        _.each(_.range(numItems), function(item) {
+           minWidth += (itemWidth + optionalMargin);
+        });
+        return minWidth;
+    }
+
+    /**
+     * returns an array of left values for items
+     */
+    me.flatChineseFan = function(containerWidth, itemWidth, optionalMargin, numItems) {
+        var widthWithoutOverlap = kadi.calculateFanWidthWithoutOverlap(itemWidth,optionalMargin,numItems);
+        var coords = [];
+
+        if (widthWithoutOverlap <= containerWidth) {
+//            _.each(_.range(numItems), function(item) {
+//                console.log("Processing ", item);
+//                var x = kadi.centerInFrame(containerWidth, widthWithoutOverlap)
+//                coords.push(new kadi.Pos(x,0));
+//            });
+            var first = kadi.centerInFrame(containerWidth, widthWithoutOverlap);
+            var x = kadi.centerInFrame(containerWidth, widthWithoutOverlap);
+            coords.push(new kadi.Pos(x,0));
+//            var ctr=1;
+
+            for(var ctr=1;ctr<numItems;ctr++) {
+                var prior = coords[ctr-1].x + itemWidth + optionalMargin;
+//                coords.push(new )
+//                var left = x + (numItems)
+                coords.push(new kadi.Pos(prior,0));
+            }
+        }
+        return coords;
+    }
+
+    me.Pos = JS.Class({
+        construct : function(x,y) {
+            this.x = x;
+            this.y = y;
+        }
+    });
+
     /**
      * Create a span
      *

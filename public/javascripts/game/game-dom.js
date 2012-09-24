@@ -24,6 +24,37 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
+    me.PlayerDeck = me.Box.extend({
+        statics: {
+            WIDTH: 400
+        },
+        construct: function() {
+            this.parent.construct.apply(this, ['game', 'player_deck_div', 'player_deck']);
+            this.display();
+            this.cards = [];
+        },
+
+        addCard: function(card) {
+            this.cards.push(card);
+            $(card.div).appendTo($(this.div));
+            this.redrawCards();
+        },
+
+        redrawCards: function() {
+            var fan = kadi.flatChineseFan(kadi.game.PlayerDeck.WIDTH,kadi.game.CardUI.WIDTH,kadi.game.CardUI.MARGIN,this.cards.length);
+            var self = this;
+            _.each(fan, function(blade, idx) {
+                var card = self.cards[idx];
+                var cardElem = $(card.div);
+                var elem = $(self.div);
+                console.log("Card: %s, Idx: %d x: %d", card.translate(), idx, blade.x);
+                cardElem.animate({
+                    left: blade.x
+                }, 200);
+            });
+        }
+    })
+
     me.PickingDeck = me.Box.extend({
         statics : {
             WIDTH:  150,
@@ -61,18 +92,28 @@ window.kadi.game = (function(me, $, undefined){
         display : function() {
             kadi.ui.disableLoading('game');
 
+            var player_deck = new kadi.game.PlayerDeck();
+
             var card;
             card = new kadi.game.CardUI(kadi.game.Card.KING,kadi.game.Suite.HEARTS,true);
             card.display(this.id,5,5);
 
+            player_deck.addCard(card);
+
             card = new kadi.game.CardUI(kadi.game.Card.QUEEN,kadi.game.Suite.DIAMONDS,true);
             card.display(this.id,110,5);
+
+            player_deck.addCard(card);
 
             card = new kadi.game.CardUI(kadi.game.Card.JACK,kadi.game.Suite.HEARTS,true);
             card.display(this.id,215,5);
 
+            player_deck.addCard(card);
+
             card = new kadi.game.CardUI(kadi.game.Card.ACE,kadi.game.Suite.SPADES,true);
             card.display(this.id,320,5);
+
+//            player_deck.addCard(card);
 //
 //            card = new kadi.game.CardUI(kadi.game.Card.TEN,kadi.game.Suite.SPADES,false);
 //            card.display(this.id,425,5);

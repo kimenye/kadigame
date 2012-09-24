@@ -143,6 +143,10 @@ window.kadi.game = (function(me, $, undefined){
     });
 
     me.CardUI = me.Card.extend({
+        statics: {
+            WIDTH: 100,
+            MARGIN: 5
+        },
         construct : function(rank,suite,revealed) {
             this.parent.construct.apply(this, [rank, suite]);
             this.revealed = revealed;
