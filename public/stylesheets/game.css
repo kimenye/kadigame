@@ -63,6 +63,11 @@
     top: 25px;
 }
 
+.rank.joker {
+    font-size: 16px;
+    line-height: 2px;
+}
+
 .large {
     font-size: 100px;
     left: 20px;

@@ -67,6 +67,15 @@ window.kadi.game = (function(me, $, undefined){
             JACK: "J",
             KING: "K",
             ACE: "A",
+            TEN: "10",
+            NINE: "9",
+            EIGHT: "8",
+            SEVEN: "7",
+            SIX: "6",
+            FIVE: "5",
+            FOUR: "4",
+            THREE: "3",
+            TWO: "2",
             getRankName: function(rank) {
                 var name = "" + rank;
                 switch (rank) {
@@ -90,6 +99,9 @@ window.kadi.game = (function(me, $, undefined){
                         break;
                 }
                 return name;
+            },
+            getJokerRankText : function() {
+                return "J" + "<br />" + "O" + "<br />" + "K" + "<br />" + "E" + "<br />" + "R";
             }
         },
         construct : function(rank,suite) {
@@ -162,9 +174,14 @@ window.kadi.game = (function(me, $, undefined){
             var div = document.createElement("div");
             div.className = "front face";
 
-            div.appendChild(this.buildRankText());
-            div.appendChild(this.buildSymbol());
-            div.appendChild(this.buildSymbol("large"));
+            if (!this.isJoker()) {
+                div.appendChild(this.buildRankText());
+                div.appendChild(this.buildSymbol());
+                div.appendChild(this.buildSymbol("large"));
+            } else {
+                div.appendChild(this.buildJokerText());
+            }
+
 
             return div;
         },
@@ -179,7 +196,10 @@ window.kadi.game = (function(me, $, undefined){
 
             classes = kadi.isSomethingMeaningful(size) ? classes + " " + size : classes;
             return kadi.createSpan(symbol, classes, null);
-//            return kadi.createSpan(symbol, "suite " + kadi.game.Suite.getColorClass(this.suite, this.rank) + " " + size,null);
+        },
+
+        buildJokerText: function() {
+            return kadi.createSpan(kadi.game.Card.getJokerRankText(),"rank joker " + kadi.game.Suite.getColorClass(this.suite, this.rank),null);
         },
 
         buildRankText: function() {
@@ -187,9 +207,9 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         handleClick: function() {
-            console.log("Clicked ", this.translate(), $(this.div));
-            $(this.div).css('z-index',900);
-            $(this.div).toggleClass('flipped');
+//            console.log("Clicked ", this.translate(), $(this.div));
+//            $(this.div).css('z-index',900);
+//            $(this.div).toggleClass('flipped');
         },
 
         display: function(parentDiv, x, y) {

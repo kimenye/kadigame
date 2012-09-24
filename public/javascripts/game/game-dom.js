@@ -55,7 +55,7 @@ window.kadi.game = (function(me, $, undefined){
             this.opponents = _.collect(opponents, function(opponent) {
                 return new me.GamePlayerUI(opponent.id, opponent.name);
             });
-//            this.pickingDeck = new me.PickingDeck(52);
+            this.pickingDeck = new me.PickingDeck(52);
         },
 
         display : function() {
@@ -74,6 +74,39 @@ window.kadi.game = (function(me, $, undefined){
 
             card = new kadi.game.CardUI(kadi.game.Card.ACE,kadi.game.Suite.SPADES,false);
             card.display(this.id,300,5);
+
+            card = new kadi.game.CardUI(kadi.game.Card.TEN,kadi.game.Suite.SPADES,false);
+            card.display(this.id,400,5);
+
+            card = new kadi.game.CardUI(kadi.game.Card.NINE,kadi.game.Suite.CLUBS,false);
+            card.display(this.id,500,5);
+
+            card = new kadi.game.CardUI(kadi.game.Card.EIGHT,kadi.game.Suite.DIAMONDS,false);
+            card.display(this.id,600,5);
+
+            card = new kadi.game.CardUI(kadi.game.Card.SEVEN,kadi.game.Suite.HEARTS,false);
+            card.display(this.id,700,5);
+
+            card = new kadi.game.CardUI(kadi.game.Card.SIX,kadi.game.Suite.SPADES,false);
+            card.display(this.id,0,145);
+
+            card = new kadi.game.CardUI(kadi.game.Card.FIVE,kadi.game.Suite.CLUBS,false);
+            card.display(this.id,100,145);
+
+            card = new kadi.game.CardUI(kadi.game.Card.FOUR,kadi.game.Suite.HEARTS,false);
+            card.display(this.id,200,145);
+
+            card = new kadi.game.CardUI(kadi.game.Card.THREE,kadi.game.Suite.SPADES,false);
+            card.display(this.id,300,145);
+
+            card = new kadi.game.CardUI(kadi.game.Card.TWO,kadi.game.Suite.DIAMONDS,false);
+            card.display(this.id,400,145);
+
+            card = new kadi.game.CardUI(kadi.game.Card.JOKER_B,kadi.game.Suite.JOKERS,false);
+            card.display(this.id,500,145);
+
+            card = new kadi.game.CardUI(kadi.game.Card.JOKER_A,kadi.game.Suite.JOKERS,false);
+            card.display(this.id,600,145);
         }
     });
 
