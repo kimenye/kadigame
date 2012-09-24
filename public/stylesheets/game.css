@@ -27,6 +27,7 @@
     display: inline-block;
     transform-style: preserve-3d;
     transition: transform .5s linear;
+    /*border: 1px solid;*/
     position: absolute;
 }
 .flipped {

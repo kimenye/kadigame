@@ -119,7 +119,7 @@ window.kadi.game = (function(me, $, undefined){
 
             var card;
             card = new kadi.game.CardUI(kadi.game.Card.KING,kadi.game.Suite.HEARTS,true);
-            card.display(this.id,5,5);
+            card.display(this.id,350,5);
 
             player_deck.addCard(card);
 
@@ -142,16 +142,16 @@ window.kadi.game = (function(me, $, undefined){
             card.display(this.id,425,5);
 
             player_deck.addCard(card);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.NINE,kadi.game.Suite.CLUBS,true);
+//            card.display(this.id,530,5);
+//
+//            player_deck.addCard(card);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.EIGHT,kadi.game.Suite.DIAMONDS,true);
+//            card.display(this.id,635,5);
 
-            card = new kadi.game.CardUI(kadi.game.Card.NINE,kadi.game.Suite.CLUBS,true);
-            card.display(this.id,530,5);
-
-            player_deck.addCard(card);
-
-            card = new kadi.game.CardUI(kadi.game.Card.EIGHT,kadi.game.Suite.DIAMONDS,true);
-            card.display(this.id,635,5);
-
-            player_deck.addCard(card);
+//            player_deck.addCard(card);
 //
 //            card = new kadi.game.CardUI(kadi.game.Card.SEVEN,kadi.game.Suite.HEARTS,false);
 //            card.display(this.id,5,145);

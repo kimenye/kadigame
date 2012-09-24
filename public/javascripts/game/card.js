@@ -175,7 +175,7 @@ window.kadi.game = (function(me, $, undefined){
 
         buildFront: function() {
             var div = document.createElement("div");
-            div.className = "front face";
+            div.className = "face front";
 
 
             var divInner = document.createElement("div");
