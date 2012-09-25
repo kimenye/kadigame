@@ -243,21 +243,21 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         handleClick: function() {
-            if (!this.disableClick) {
-                var before = this.revealed;
-                var elem = $(this.div);
-                this.revealed = !this.revealed;
-
-                if (before) {
-                    elem.find('.inner').toggleClass('hidden');
-                }
-                elem.toggleClass('flipped');
-
-                _.delay(function() {
-                    if (!before)
-                        elem.find('.inner').toggleClass('hidden');
-                }, 200);
-            }
+//            if (!this.disableClick) {
+//                var before = this.revealed;
+//                var elem = $(this.div);
+//                this.revealed = !this.revealed;
+//
+//                if (before) {
+//                    elem.find('.inner').toggleClass('hidden');
+//                }
+//                elem.toggleClass('flipped');
+//
+//                _.delay(function() {
+//                    if (!before)
+//                        elem.find('.inner').toggleClass('hidden');
+//                }, 200);
+//            }
         },
 
         display: function(parentDiv, x, y) {

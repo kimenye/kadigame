@@ -68,7 +68,6 @@ window.kadi = (function(me, $, undefined){
 
 
     me.randomizeCardLocations = function(numCards, boundingBox) {
-        console.log("Bounding box ", boundingBox);
         var locations = [];
         _.each(_.range(numCards), function(idx) {
             var ranX = Math.floor( Math.random() * 10 );
@@ -152,6 +151,18 @@ window.kadi = (function(me, $, undefined){
         }
         return span;
     }
+
+    me.Handler = JS.Class({
+        construct : function(func,scope) {
+            this.func = func;
+            this.scope = scope;
+        },
+
+        callBack : function(params) {
+            var _mthd = _.bind(this.func,this.scope,params);
+            _mthd();
+        }
+    });
 
 
     return me;

@@ -99,6 +99,21 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
+    me.Button = me.Box.extend({
+        construct : function(id, clickHandler) {
+            var self = this;
+            this.id = id;
+            this.element = $('#' + id);
+            this.element.click(function() {
+                clickHandler.callBack();
+            });
+        },
+
+        display: function() {
+
+        }
+    });
+
     me.GameUI = JS.Class({
         statics: {
             width: 800,
@@ -119,9 +134,15 @@ window.kadi.game = (function(me, $, undefined){
         display : function() {
             kadi.ui.disableLoading('game');
 
-//            var player_deck = new kadi.game.PlayerDeck();
+//            var self = this;
+            this.startGameButton = new me.Button('start-game',new kadi.Handler(function() {
+                $('#start-game').hide();
+                this.startGame();
+            }, this));
+
+            this.playerDeck = new kadi.game.PlayerDeck();
 //
-            var card;
+//            var card;
 //            card = new kadi.game.CardUI(kadi.game.Card.KING,kadi.game.Suite.HEARTS,true);
 //            card.display(this.id,350,5);
 //
@@ -184,6 +205,35 @@ window.kadi.game = (function(me, $, undefined){
 //
 //            card = new kadi.game.CardUI(kadi.game.Card.JOKER_A,kadi.game.Suite.JOKERS,true);
 //            card.display(this.id,5,285);
+        },
+
+        startGame : function() {
+            console.log("Starting game");
+//            var card;
+//            card = new kadi.game.CardUI(kadi.game.Card.KING,kadi.game.Suite.HEARTS,true);
+//            card.display(this.id,350,5);
+//
+//            this.playerDeck.addCard(card);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.QUEEN,kadi.game.Suite.DIAMONDS,true);
+//            card.display(this.id,110,5);
+//
+//            this.playerDeck.addCard(card);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.JACK,kadi.game.Suite.HEARTS,true);
+//            card.display(this.id,215,5);
+//
+//            this.playerDeck.addCard(card);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.ACE,kadi.game.Suite.SPADES,true);
+//            card.display(this.id,320,5);
+//
+//            this.playerDeck.addCard(card);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.TEN,kadi.game.Suite.SPADES,true);
+//            card.display(this.id,425,5);
+//
+//            this.playerDeck.addCard(card);
         }
     });
 
