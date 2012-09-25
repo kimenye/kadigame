@@ -76,6 +76,7 @@ window.kadi.game = (function(me, $, undefined){
                 cards.push(new me.CardUI(kadi.game.Card.JOKER_A,kadi.game.Suite.JOKERS));
                 cards.push(new me.CardUI(kadi.game.Card.JOKER_A,kadi.game.Suite.JOKERS));
 
+                cards = _.shuffle(cards);
                 return cards;
             }
         }
@@ -156,7 +157,7 @@ window.kadi.game = (function(me, $, undefined){
                 return this.suite + ";" + this.rank;
             };
 
-            this.translate = function(id) {
+            this.toS = function(id) {
                 var suiteName = kadi.game.Suite.getSuiteName(this.suite);
                 var rankName = kadi.game.Card.getRankName(this.rank);
                 return rankName + " of " + suiteName;
@@ -243,21 +244,22 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         handleClick: function() {
-//            if (!this.disableClick) {
-//                var before = this.revealed;
-//                var elem = $(this.div);
-//                this.revealed = !this.revealed;
-//
-//                if (before) {
-//                    elem.find('.inner').toggleClass('hidden');
-//                }
-//                elem.toggleClass('flipped');
-//
-//                _.delay(function() {
-//                    if (!before)
-//                        elem.find('.inner').toggleClass('hidden');
-//                }, 200);
-//            }
+        },
+
+        flip : function() {
+            var before = this.revealed;
+            var elem = $(this.div);
+            this.revealed = !this.revealed;
+
+            if (before) {
+                elem.find('.inner').toggleClass('hidden');
+            }
+            elem.toggleClass('flipped');
+
+            _.delay(function () {
+                if (!before)
+                    elem.find('.inner').toggleClass('hidden');
+            }, 200);
         },
 
         display: function(parentDiv, x, y) {

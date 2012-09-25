@@ -8,19 +8,24 @@
 }
 
 .player_deck {
-    position: relative;
-    height: 100px;
+    position: absolute;
     /*border: 1px solid #000000;*/
-    width: 400px;
-    left: 200px;
-    top: 500px;
     overflow: hidden;
 }
 
+.player_deck.A {
+    height: 100px;
+    top: 500px;
+}
+
+.player_deck.A, .player_deck.B {
+    width: 400px;
+    left: 200px;
+    height: 100px;
+}
+
 .player_deck.B {
-    position: relative;
-    height: 80px;
-    border: 1px solid #000000;
+    top: 0;
 }
 
 * {

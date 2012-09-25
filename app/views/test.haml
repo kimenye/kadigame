@@ -1,11 +1,11 @@
-.container.hidden
+.container
   .page-header
     %h1
       %a
         =image_tag "/images/logo_fb.png", :class => 'logo'
       %small Kenyan Style Poker
 .container
-  .row
+  -#.row
     %br
   .row
     #loading.loading
@@ -17,8 +17,8 @@
         %li
         -#%li
     #game{:style => "display:none;"}
-      %input.rdobutton{:type=> 'radio', :name => 'start-game'}
-      %label#start-game.rdobuttonlabel{:for => 'start-game'} Start Game
+      -#%input.rdobutton{:type=> 'radio', :name => 'start-game'}
+      -#%label#start-game.rdobuttonlabel{:for => 'start-game'} Start Game
 -#.container
   .row
     %hr
