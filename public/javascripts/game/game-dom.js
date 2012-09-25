@@ -30,7 +30,7 @@ window.kadi.game = (function(me, $, undefined){
             Y_A: 500,
             X_A: 200,
             X_B: 200,
-            Y_B: 0,
+            Y_B: -20,
             TYPE_A: 'A',
             TYPE_B: 'B',
             TYPE_C: 'C',
@@ -44,7 +44,7 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         left: function() {
-            if (this.type == kadi.game.PlayerDeck.TYPE_A) {
+            if (this.type == kadi.game.PlayerDeck.TYPE_A || this.type == kadi.game.PlayerDeck.TYPE_B) {
                 return kadi.game.PlayerDeck.X_A;
             }
         },
@@ -52,6 +52,9 @@ window.kadi.game = (function(me, $, undefined){
         top : function() {
             if (this.type == kadi.game.PlayerDeck.TYPE_A) {
                 return kadi.game.PlayerDeck.Y_A;
+            }
+            else if (this.type == kadi.game.PlayerDeck.TYPE_B) {
+                return kadi.game.PlayerDeck.Y_B;
             }
         },
 
@@ -66,8 +69,8 @@ window.kadi.game = (function(me, $, undefined){
 
             cardElem.animate({
                 left: this.left() + kadi.centerInFrame(this.width(),kadi.game.CardUI.WIDTH),
-                top: this.top(),
-                transform: "rotate(30deg);"
+                top: this.top()
+//                transform: "rotate(30deg);"
             },500);
 
             _.delay(function() {
@@ -179,7 +182,7 @@ window.kadi.game = (function(me, $, undefined){
 
                 cardA.flip();
                 this.playerDeck.addCard(cardA);
-//                this.playerDeckB.addCard(cardB);
+                this.playerDeckB.addCard(cardB);
             },this);
         }
     });
