@@ -17,6 +17,7 @@ window.kadi.game = (function(me, $, undefined){
             this.div.id = id;
             this.div.className = className;
             this.parent = document.getElementById(parent);
+            $(this.div).css('z-index','0');
         },
 
         display: function() {
@@ -181,6 +182,8 @@ window.kadi.game = (function(me, $, undefined){
                 var cardB = this.pickingDeck.deal();
 
                 cardA.flip();
+                cardA.playable = true;
+
                 this.playerDeck.addCard(cardA);
                 this.playerDeckB.addCard(cardB);
             },this);

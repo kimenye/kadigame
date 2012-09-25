@@ -175,14 +175,30 @@ window.kadi.game = (function(me, $, undefined){
             this.revealed = revealed;
             this.disableClick = false;
             this.buildNode();
+            this.playable = this.revealed;
         },
 
         buildNode: function() {
             var self = this;
             this.div = document.createElement("div");
 
+            $(this.div).css('z-index','5000');
             $(this.div).click(function() {
                 self.handleClick();
+            });
+
+            $(this.div).hover(function() {
+               if (self.playable) {
+                   $(self.div).animate({
+                       top: Math.max(kadi.game.PlayerDeck.Y_A - 20, $(self.div).position().top - 20)
+                   },0).css( 'cursor', 'pointer' );;
+               }
+            }, function() {
+                if (self.playable) {
+                    $(self.div).animate({
+                        top: $(self.div).position().top + 20
+                    },0);
+                }
             });
 
             this.div.id = this.id();
@@ -200,7 +216,6 @@ window.kadi.game = (function(me, $, undefined){
         buildFront: function() {
             var div = document.createElement("div");
             div.className = "face front";
-
 
             var divInner = document.createElement("div");
             divInner.className = "inner";
@@ -244,6 +259,7 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         handleClick: function() {
+            console.log("Clicked : ", this.toS());
         },
 
         flip : function() {
