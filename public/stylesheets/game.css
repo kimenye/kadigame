@@ -45,7 +45,8 @@
 }
 
 .face.back {
-    background: url(../images/card_back_coke.png) no-repeat;
+    /*background: url(../images/card_back_coke.png) no-repeat;*/
+    background: url(../images/card_back_generic.png) no-repeat;
     transform: rotateY(180deg);
 }
 

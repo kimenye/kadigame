@@ -6,6 +6,7 @@ window.kadi.game = (function(me, $, undefined){
             DIAMONDS: "D",
             SPADES: "S",
             JOKERS: "-",
+            DECK_SIZE: 52,
             getColorClass: function(suite, rank) {
                 var color = "black";
                 switch(suite) {
@@ -55,6 +56,27 @@ window.kadi.game = (function(me, $, undefined){
                         break;
                 }
                 return name;
+            },
+            getDeckOfCards: function() {
+                var suites = [kadi.game.Suite.CLUBS,kadi.game.Suite.HEARTS,
+                    kadi.game.Suite.DIAMONDS,kadi.game.Suite.SPADES];
+
+                var ranks = [kadi.game.Card.ACE,kadi.game.Card.TWO,kadi.game.Card.THREE,kadi.game.Card.FOUR,
+                    kadi.game.Card.FIVE,kadi.game.Card.SIX,kadi.game.Card.SEVEN,kadi.game.Card.EIGHT,
+                    kadi.game.Card.NINE,kadi.game.Card.TEN,kadi.game.Card.JACK,kadi.game.Card.QUEEN,
+                    kadi.game.Card.KING];
+
+                var cards = [];
+                _.each(suites, function(suite) {
+                    _.each(ranks, function(rank) {
+                        cards.push(new me.CardUI(rank,suite));
+                    });
+                });
+
+                cards.push(new me.CardUI(kadi.game.Card.JOKER_A,kadi.game.Suite.JOKERS));
+                cards.push(new me.CardUI(kadi.game.Card.JOKER_A,kadi.game.Suite.JOKERS));
+
+                return cards;
             }
         }
     });
@@ -80,10 +102,10 @@ window.kadi.game = (function(me, $, undefined){
                 var name = "" + rank;
                 switch (rank) {
                     case kadi.game.Card.JOKER_A:
-                        name = "Joker A ";
+                        name = "Joker A";
                         break;
                     case kadi.game.Card.JOKER_B:
-                        name = "Joker B ";
+                        name = "Joker B";
                         break;
                     case kadi.game.Card.QUEEN:
                         name = "Queen";

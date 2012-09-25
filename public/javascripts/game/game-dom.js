@@ -81,83 +81,91 @@ window.kadi.game = (function(me, $, undefined){
             X: 500,
             Y: 150
         },
-        construct : function(numCards) {
+        construct : function() {
             this.parent.construct.apply(this, ['game', 'picking_box_div', 'picking_box']);
+            this.deck = kadi.game.Suite.getDeckOfCards();
+            this.topLeft = function() { return new kadi.Pos(me.PickingDeck.X, me.PickingDeck.Y) }
+            this.bBox = function() { return new kadi.BBox(this.topLeft(), me.PickingDeck.WIDTH, me.PickingDeck.HEIGHT) }
             this.display();
-            this.numCards = numCards;
         },
 
-        init: function() {
 
+        display: function() {
+            var positions = kadi.randomizeCardLocations(this.deck.length, this.bBox());
+            _.each(this.deck, function(card,idx) {
+                var pos = positions[idx];
+                card.display(me.GameUI.ID, pos.x, pos.y);
+            });
         }
     });
 
     me.GameUI = JS.Class({
         statics: {
             width: 800,
-            height: 600
+            height: 600,
+            ID: 'game'
         },
         construct: function(player, opponents) {
             var self = this;
             this.player = player;
-            this.id = 'game';
+            this.id = me.GameUI.ID;
             this.opponents = [];
             this.opponents = _.collect(opponents, function(opponent) {
                 return new me.GamePlayerUI(opponent.id, opponent.name);
             });
-            this.pickingDeck = new me.PickingDeck(52);
+            this.pickingDeck = new me.PickingDeck();
         },
 
         display : function() {
             kadi.ui.disableLoading('game');
 
-            var player_deck = new kadi.game.PlayerDeck();
-
+//            var player_deck = new kadi.game.PlayerDeck();
+//
             var card;
-            card = new kadi.game.CardUI(kadi.game.Card.KING,kadi.game.Suite.HEARTS,true);
-            card.display(this.id,350,5);
-
-            player_deck.addCard(card);
-
-            card = new kadi.game.CardUI(kadi.game.Card.QUEEN,kadi.game.Suite.DIAMONDS,true);
-            card.display(this.id,110,5);
-
-            player_deck.addCard(card);
-
-            card = new kadi.game.CardUI(kadi.game.Card.JACK,kadi.game.Suite.HEARTS,true);
-            card.display(this.id,215,5);
-
-            player_deck.addCard(card);
-
-            card = new kadi.game.CardUI(kadi.game.Card.ACE,kadi.game.Suite.SPADES,true);
-            card.display(this.id,320,5);
-
-            player_deck.addCard(card);
-
-            card = new kadi.game.CardUI(kadi.game.Card.TEN,kadi.game.Suite.SPADES,true);
-            card.display(this.id,425,5);
-
-            player_deck.addCard(card);
-
-            card = new kadi.game.CardUI(kadi.game.Card.NINE,kadi.game.Suite.CLUBS,true);
-            card.display(this.id,530,5);
-
-            player_deck.addCard(card);
-
-            card = new kadi.game.CardUI(kadi.game.Card.EIGHT,kadi.game.Suite.DIAMONDS,true);
-            card.display(this.id,635,5);
-
-            player_deck.addCard(card);
-
-            card = new kadi.game.CardUI(kadi.game.Card.SEVEN,kadi.game.Suite.HEARTS,true);
-            card.display(this.id,5,145);
-
-            player_deck.addCard(card);
-
-            card = new kadi.game.CardUI(kadi.game.Card.SIX,kadi.game.Suite.SPADES,true);
-            card.display(this.id,110,145);
-
-            player_deck.addCard(card);
+//            card = new kadi.game.CardUI(kadi.game.Card.KING,kadi.game.Suite.HEARTS,true);
+//            card.display(this.id,350,5);
+//
+//            player_deck.addCard(card);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.QUEEN,kadi.game.Suite.DIAMONDS,true);
+//            card.display(this.id,110,5);
+//
+//            player_deck.addCard(card);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.JACK,kadi.game.Suite.HEARTS,true);
+//            card.display(this.id,215,5);
+//
+//            player_deck.addCard(card);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.ACE,kadi.game.Suite.SPADES,true);
+//            card.display(this.id,320,5);
+//
+//            player_deck.addCard(card);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.TEN,kadi.game.Suite.SPADES,true);
+//            card.display(this.id,425,5);
+//
+//            player_deck.addCard(card);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.NINE,kadi.game.Suite.CLUBS,true);
+//            card.display(this.id,530,5);
+//
+//            player_deck.addCard(card);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.EIGHT,kadi.game.Suite.DIAMONDS,true);
+//            card.display(this.id,635,5);
+//
+//            player_deck.addCard(card);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.SEVEN,kadi.game.Suite.HEARTS,true);
+//            card.display(this.id,5,145);
+//
+//            player_deck.addCard(card);
+//
+//            card = new kadi.game.CardUI(kadi.game.Card.SIX,kadi.game.Suite.SPADES,true);
+//            card.display(this.id,110,145);
+//
+//            player_deck.addCard(card);
 //
 //            card = new kadi.game.CardUI(kadi.game.Card.FIVE,kadi.game.Suite.CLUBS,false);
 //            card.display(this.id,215,145);

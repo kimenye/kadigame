@@ -54,8 +54,6 @@ window.kadi = (function(me, $, undefined){
                 var right = !left;
 
                 var center = idx == mid;
-
-                console.log("Mid: %d, Idx: %d of %d, L: %s, R: %s, Center: %s", mid, idx, numItems, left, right,center);
                 if (!center && left)
                     c.rotate = -7;
                 else if (!center && right)
@@ -66,6 +64,20 @@ window.kadi = (function(me, $, undefined){
         });
 
         return coords;
+    }
+
+
+    me.randomizeCardLocations = function(numCards, boundingBox) {
+        console.log("Bounding box ", boundingBox);
+        var locations = [];
+        _.each(_.range(numCards), function(idx) {
+            var ranX = Math.floor( Math.random() * 10 );
+            var ranY = Math.floor( Math.random() * 5 );
+            var left = boundingBox.left() + ranX;
+            var top = boundingBox.top() + ranY;
+            locations.push(new me.Pos(left, top));
+        });
+        return locations;
     }
 
     /**
@@ -103,6 +115,20 @@ window.kadi = (function(me, $, undefined){
             this.x = x;
             this.y = y;
             this.rotate = rotate;
+        }
+    });
+
+    me.BBox = JS.Class({
+        construct: function(topLeft,width,height) {
+            this.topLeft = topLeft;
+            this.width = width;
+            this.height = height;
+            this.left = function() {
+                return this.topLeft.x;
+            }
+            this.top = function() {
+                return this.topLeft.y;
+            }
         }
     });
 
