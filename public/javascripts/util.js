@@ -57,9 +57,9 @@ window.kadi = (function(me, $, undefined){
 
                 console.log("Mid: %d, Idx: %d of %d, L: %s, R: %s, Center: %s", mid, idx, numItems, left, right,center);
                 if (!center && left)
-                    c.rotate = -5;
+                    c.rotate = -7;
                 else if (!center && right)
-                    c.rotate = 5;
+                    c.rotate = 7;
                 else
                     c.rotate = 0;
             }

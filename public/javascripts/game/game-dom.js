@@ -149,12 +149,15 @@ window.kadi.game = (function(me, $, undefined){
 
             player_deck.addCard(card);
 
-            card = new kadi.game.CardUI(kadi.game.Card.SEVEN,kadi.game.Suite.HEARTS,false);
+            card = new kadi.game.CardUI(kadi.game.Card.SEVEN,kadi.game.Suite.HEARTS,true);
             card.display(this.id,5,145);
 
             player_deck.addCard(card);
-//            card = new kadi.game.CardUI(kadi.game.Card.SIX,kadi.game.Suite.SPADES,false);
-//            card.display(this.id,110,145);
+
+            card = new kadi.game.CardUI(kadi.game.Card.SIX,kadi.game.Suite.SPADES,true);
+            card.display(this.id,110,145);
+
+            player_deck.addCard(card);
 //
 //            card = new kadi.game.CardUI(kadi.game.Card.FIVE,kadi.game.Suite.CLUBS,false);
 //            card.display(this.id,215,145);
