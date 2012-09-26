@@ -269,10 +269,12 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         select: function() {
-            if (this.active)
-            {
-                this.elem().toggleClass('selected');
-                this.selected = true;
+            var before = this.selected;
+            this.selected = !this.selected;
+            this.container().toggleClass('selected');
+            if (before) {
+                //we are now selected
+//                this.container().draggable();
             }
         },
 

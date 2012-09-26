@@ -20,8 +20,22 @@ window.kadi.game = (function(me, $, undefined){
             $(this.div).css('z-index','0');
         },
 
+        node : function() {
+            return $(this.div);
+        },
+
         display: function() {
             this.parent.appendChild(this.div);
+        },
+        moveTo: function(x,y) {
+            var options = {};
+            if (kadi.isSomethingMeaningful(x)) {
+                _.extend(options, {x: x + "px" });
+            }
+            if (kadi.isSomethingMeaningful(y)) {
+                _.extend(options, {y: y + "px" });
+            }
+            this.node().transition(options, 500, 'snap');
         }
     });
 
@@ -128,18 +142,59 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
-    me.Button = me.Box.extend({
+    me.ActionButton = me.Box.extend({
+        statics: {
+            WIDTH: 200
+        },
         construct : function(id, clickHandler) {
+            this.parent.construct.apply(this, ['game','action_button_div', 'button action_button_cell'])
             var self = this;
             this.id = id;
-            this.element = $('#' + id);
-            this.element.click(function() {
+            this.node().click(function() {
                 clickHandler.callBack();
             });
+            var x = me.PlayerDeck.X_A + kadi.centerInFrame(me.PlayerDeck.WIDTH_H, me.ActionButton.WIDTH);
+            this.display(x,400);
         },
 
-        display: function() {
+        buildButton: function() {
+            var div = document.createElement("div");
+            div.className = "share-wrapper below";
 
+//            <div class="cell">
+//                <div class="share-wrapper below">
+//                    <div class="rc10 share-action icon-share"></div>
+//                    <div class="share-container rc10 ">
+//                        <a class="share-btn tl icon-google-plus" href='#'></a>
+//                        <a class="share-btn tr icon-twitter" href='#'></a>
+//                        <a class="share-btn br icon-facebook" href='#'></a>
+//                        <a class="share-btn bl icon-pinterest" href='#'></a>
+//                    </div>
+//                </div>
+//            </div>
+
+            var shareAction = kadi.createDiv("rc10 share-action");
+            div.appendChild(shareAction);
+
+            var shareContainer = kadi.createDiv("share-container rc10");
+            shareContainer.appendChild(kadi.createLink("share-btn tl"));
+            shareContainer.appendChild(kadi.createLink("share-btn tr"));
+//            shareContainer.appendChild(kadi.createLink("share-btn br icon-facebook"));
+//            shareContainer.appendChild(kadi.createLink("share-btn bl icon-pinterest"));
+
+            div.appendChild(shareContainer);
+
+            return div;
+        },
+
+        display: function(x,y) {
+            var elem = this.buildButton();
+            this.div.appendChild(elem);
+//            this.container().css('z-index','5000');
+            this.node().css('z-index','600');
+            this.parent.appendChild(this.div);
+//            this.moveTo(x,y);
+            this.moveTo(200,200);
         }
     });
 
@@ -158,6 +213,7 @@ window.kadi.game = (function(me, $, undefined){
                 return new me.GamePlayerUI(opponent.id, opponent.name);
             });
             this.pickingDeck = new me.PickingDeck();
+//            this.actionButton = new me.ActionButton();
         },
 
         display : function() {

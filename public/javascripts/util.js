@@ -64,6 +64,20 @@ window.kadi = (function(me, $, undefined){
         return minWidth;
     }
 
+    me.createLink = function(className) {
+        var elem = document.createElement("a");
+        elem.className = className;
+        return elem;
+    }
+
+    me.createDiv = function(className,id) {
+        var elem = document.createElement("div");
+        elem.className = className;
+        if (kadi.isSomethingMeaningful(id))
+            elem.id = id;
+        return elem;
+    }
+
     me.buildFan = function(containerWidth,innerWidth, itemWidth, numItems, margin) {
         var first = kadi.centerInFrame(containerWidth, innerWidth);
         var x = kadi.centerInFrame(containerWidth, innerWidth);
