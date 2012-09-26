@@ -66,17 +66,10 @@ window.kadi.game = (function(me, $, undefined){
         addCard: function(card) {
             this.cards.push(card);
             var self = this;
-            var cardElem = $(card.div);
+            var left = this.left() + kadi.centerInFrame(this.width(),kadi.game.CardUI.WIDTH);
+            var top = this.top();
 
-            cardElem.animate({
-                left: this.left() + kadi.centerInFrame(this.width(),kadi.game.CardUI.WIDTH),
-                top: this.top()
-//                transform: "rotate(30deg);"
-            },500);
-
-            _.delay(function() {
-                self.redrawCards();
-            }, 0);
+            card.moveTo(left,top);
         },
 
         redrawCards: function() {
@@ -84,16 +77,7 @@ window.kadi.game = (function(me, $, undefined){
             var self = this;
             _.each(fan, function(blade, idx) {
                 var card = self.cards[idx];
-                var cardElem = card.elem();
-                var options = {
-                    left: self.left() + blade.x,
-                    rotate: blade.rotate + 'deg'
-                }
-                if (!card.revealed)
-                {
-                    _.extend(options, { rotateY: '180deg' });
-                }
-                cardElem.animate(options, 200,'linear');
+                card.moveTo(self.left() + blade.x,null,blade.rotate);
             });
         }
     })
@@ -118,7 +102,7 @@ window.kadi.game = (function(me, $, undefined){
             var positions = kadi.randomizeCardLocations(this.deck.length, this.bBox());
             _.each(this.deck, function(card,idx) {
                 var pos = positions[idx];
-                card.display(me.GameUI.ID, pos.x, pos.y);
+                card.display(me.GameUI.ID, pos.x, pos.y, pos.rotate);
             });
         },
 
@@ -180,10 +164,6 @@ window.kadi.game = (function(me, $, undefined){
             kadi.ui.disableLoading('game');
 
             var self = this;
-//            this.startGameButton = new me.Button('start-game',new kadi.Handler(function() {
-//                $('#start-game').hide();
-//                this.startGame();
-//            }, this));
 
             this.playerDeck = new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A);
             this.playerDeckB = new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_B);
@@ -194,17 +174,18 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         startGame : function() {
-//            console.log("Starting game");
             _.each(_.range(4), function(idx) {
                 var cardA = this.pickingDeck.deal();
                 var cardB = this.pickingDeck.deal();
 
+                cardA.active = true;
                 cardA.flip();
-                cardA.playable = true;
 
                 this.playerDeck.addCard(cardA);
                 this.playerDeckB.addCard(cardB);
             },this);
+            this.playerDeck.redrawCards();
+            this.playerDeckB.redrawCards();
         }
     });
 

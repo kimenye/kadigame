@@ -11,6 +11,35 @@ window.kadi = (function(me, $, undefined){
     }
 
     /**
+     * Safe check for value. Returns false if is null or undefined.
+     * @param val
+     * @return {*}
+     */
+    me.getVal = function(val) {
+        if (!me.isSomethingMeaningful(val))
+            return false;
+        else
+            return val;
+    }
+
+    me.safeAssign = function(val, prev) {
+        if (me.isSomethingMeaningful(val)) {
+            prev = val;
+        }
+    }
+
+    String.prototype.hashCode = function() {
+        var hash = 0;
+        if (this.length == 0) return hash;
+        for (var i = 0; i < this.length; i++) {
+            var char = this.charCodeAt(i);
+            hash = ((hash<<5)-hash)+char;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return hash;
+    }
+
+    /**
      * Centers a child element in a parent
      *
      * @param parentDimension
@@ -24,7 +53,6 @@ window.kadi = (function(me, $, undefined){
     me.numThatCanFit = function(parent,child,margin) {
         var max = Math.floor(parent / (child + margin));
         return max;
-//        var widthWithoutOverlap = kadi.calculateFanWidthWithoutOverlap(itemWidth,optionalMargin,numItems);
     }
 
 

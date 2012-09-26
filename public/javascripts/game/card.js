@@ -172,45 +172,44 @@ window.kadi.game = (function(me, $, undefined){
         },
         construct : function(rank,suite,revealed) {
             this.parent.construct.apply(this, [rank, suite]);
-            this.revealed = revealed;
+            this.revealed = kadi.getVal(revealed);
             this.disableClick = false;
             this.buildNode();
-            this.playable = this.revealed;
+            this.active = this.revealed;
             this.selected = false;
+            this.x = -1;
+            this.y = -1;
         },
 
         buildNode: function() {
             var self = this;
-            this.div = document.createElement("div");
+            this.card_container = document.createElement('section')
+            this.card_container.className = "card_container";
 
-            $(this.div).css('z-index','5000');
-            $(this.div).click(function() {
+            this.card_container.id = this.id();
+            this.container().css('z-index','5000');
+            this.container().click(function() {
                 self.handleClick();
             });
-
-            $(this.div).dblclick(function() {
-//                self.handle
-//                console.log("Double click");
-            });
-
-            $(this.div).hover(function() {
-               if (self.playable) {
-                   $(self.div).animate({
-                       top: Math.max(kadi.game.PlayerDeck.Y_A - 20, $(self.div).position().top - 20)
-                   },0).css( 'cursor', 'pointer' );
-               }
+            this.container().hover(function() {
+                if (self.active) {
+                    var top = Math.max(kadi.game.PlayerDeck.Y_A - 20, self.container().position().top - 20)
+                    self.moveTo(null,top,null);
+                }
             }, function() {
-                if (self.playable) {
-                    $(self.div).animate({
-                        top: $(self.div).position().top + 20
-                    },0);
+                if (self.active && !self.selected) {
+                    var top = kadi.game.PlayerDeck.Y_A;
+                    self.moveTo(null,top,null);
                 }
             });
 
-            this.div.id = this.id();
+            this.div = document.createElement("div");
             this.div.className = "card";
-            this.div.appendChild(this.buildFront());
+
             this.div.appendChild(this.buildBack());
+            this.div.appendChild(this.buildFront());
+
+            this.card_container.appendChild(this.div);
         },
 
         buildBack: function() {
@@ -228,7 +227,6 @@ window.kadi.game = (function(me, $, undefined){
 
             if (!this.revealed) {
                 divInner.className += " hidden";
-                $(this.div).toggleClass('flipped');
             }
 
             if (!this.isJoker()) {
@@ -265,13 +263,21 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         handleClick: function() {
-            console.log("Clicked : ", this.toS());
-            this.select();
+            if (this.active) {
+                this.select();
+            }
         },
 
         select: function() {
-//            var elem = $(this.div);
-            this.elem().toggleClass('selected');
+            if (this.active)
+            {
+                this.elem().toggleClass('selected');
+                this.selected = true;
+            }
+        },
+
+        container : function() {
+            return $(this.card_container);
         },
 
         elem : function() {
@@ -279,26 +285,32 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         flip : function() {
-            var before = this.revealed;
-            var elem = this.elem();
             this.revealed = !this.revealed;
-
-            if (before) {
-                elem.find('.inner').toggleClass('hidden');
-            }
-            elem.toggleClass('flipped');
-
-            _.delay(function () {
-                if (!before)
-                    elem.find('.inner').toggleClass('hidden');
-            }, 200);
+            this.elem().find('.inner').toggleClass('hidden');
+            this.elem().toggleClass('flip');
         },
 
-        display: function(parentDiv, x, y) {
+        moveTo: function(x,y,rotation) {
+            var options = {};
+            kadi.safeAssign(x, this.x);
+            kadi.safeAssign(y, this.y);
+
+            if (kadi.isSomethingMeaningful(x)) {
+                _.extend(options, {x: x + "px" });
+            }
+            if (kadi.isSomethingMeaningful(y)) {
+                _.extend(options, {y: y + "px" });
+            }
+            if (kadi.isSomethingMeaningful(rotation)) {
+                _.extend(options, { rotate: rotation + 'deg' });
+            }
+            this.container().transition(options, 500, 'snap');
+        },
+
+        display: function(parentDiv, x, y,rotation) {
             var parent = document.getElementById(parentDiv);
-            this.div.style['left'] = x + "px";
-            this.div.style['top'] = y + "px";
-            parent.appendChild(this.div);
+            parent.appendChild(this.card_container);
+            this.moveTo(x,y,rotation);
         },
 
         rotate : function(degrees) {
@@ -309,8 +321,6 @@ window.kadi.game = (function(me, $, undefined){
             if (!this.revealed) {
                 options = _.extend(options, { rotateY: '-180deg' });
             }
-
-            console.log("options : ", options);
 
             $(this.div).animate(options,100);
         }
