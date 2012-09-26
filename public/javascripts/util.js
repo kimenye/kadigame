@@ -74,7 +74,14 @@ window.kadi = (function(me, $, undefined){
             var ranY = Math.floor( Math.random() * 5 );
             var left = boundingBox.left() + ranX;
             var top = boundingBox.top() + ranY;
-            locations.push(new me.Pos(left, top));
+
+            var randomRotation = Math.floor( Math.random() * 10 );
+            var negative = Math.floor( Math.random() * 2 ) == 1;
+
+            if (negative) randomRotation = 0 - randomRotation;
+
+
+            locations.push(new me.Pos(left, top, randomRotation));
         });
         return locations;
     }

@@ -176,6 +176,7 @@ window.kadi.game = (function(me, $, undefined){
             this.disableClick = false;
             this.buildNode();
             this.playable = this.revealed;
+            this.selected = false;
         },
 
         buildNode: function() {
@@ -187,11 +188,16 @@ window.kadi.game = (function(me, $, undefined){
                 self.handleClick();
             });
 
+            $(this.div).dblclick(function() {
+//                self.handle
+//                console.log("Double click");
+            });
+
             $(this.div).hover(function() {
                if (self.playable) {
                    $(self.div).animate({
                        top: Math.max(kadi.game.PlayerDeck.Y_A - 20, $(self.div).position().top - 20)
-                   },0).css( 'cursor', 'pointer' );;
+                   },0).css( 'cursor', 'pointer' );
                }
             }, function() {
                 if (self.playable) {
@@ -260,11 +266,21 @@ window.kadi.game = (function(me, $, undefined){
 
         handleClick: function() {
             console.log("Clicked : ", this.toS());
+            this.select();
+        },
+
+        select: function() {
+//            var elem = $(this.div);
+            this.elem().toggleClass('selected');
+        },
+
+        elem : function() {
+            return $(this.div);
         },
 
         flip : function() {
             var before = this.revealed;
-            var elem = $(this.div);
+            var elem = this.elem();
             this.revealed = !this.revealed;
 
             if (before) {
@@ -283,6 +299,20 @@ window.kadi.game = (function(me, $, undefined){
             this.div.style['left'] = x + "px";
             this.div.style['top'] = y + "px";
             parent.appendChild(this.div);
+        },
+
+        rotate : function(degrees) {
+            var options = {
+                rotate: degrees + 'deg'
+            };
+
+            if (!this.revealed) {
+                options = _.extend(options, { rotateY: '-180deg' });
+            }
+
+            console.log("options : ", options);
+
+            $(this.div).animate(options,100);
         }
     });
 

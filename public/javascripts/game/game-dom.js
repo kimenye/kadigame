@@ -84,7 +84,7 @@ window.kadi.game = (function(me, $, undefined){
             var self = this;
             _.each(fan, function(blade, idx) {
                 var card = self.cards[idx];
-                var cardElem = $(card.div);
+                var cardElem = card.elem();
                 var options = {
                     left: self.left() + blade.x,
                     rotate: blade.rotate + 'deg'
@@ -108,8 +108,8 @@ window.kadi.game = (function(me, $, undefined){
         construct : function() {
             this.parent.construct.apply(this, ['game', 'picking_box_div', 'picking_box']);
             this.deck = kadi.game.Suite.getDeckOfCards();
-            this.topLeft = function() { return new kadi.Pos(me.PickingDeck.X, me.PickingDeck.Y) }
-            this.bBox = function() { return new kadi.BBox(this.topLeft(), me.PickingDeck.WIDTH, me.PickingDeck.HEIGHT) }
+            this.topLeft = function() { return new kadi.Pos(me.PickingDeck.X, me.PickingDeck.Y) };
+            this.bBox = function() { return new kadi.BBox(this.topLeft(), me.PickingDeck.WIDTH, me.PickingDeck.HEIGHT) };
             this.display();
         },
 
@@ -124,6 +124,23 @@ window.kadi.game = (function(me, $, undefined){
 
         deal: function() {
             return this.deck.shift();
+        }
+    });
+
+    me.TableDeck = me.Box.extend({
+        statics: {
+            WIDTH: 150,
+            HEIGHT: 200,
+            X: 250,
+            Y: 200
+        },
+        construct : function() {
+            this.parent.construct.apply(this, ['game', 'table_deck_div', 'table_deck']);
+            this.cards = [];
+            this.display();
+        },
+        addCard: function(card) {
+
         }
     });
 
@@ -170,6 +187,7 @@ window.kadi.game = (function(me, $, undefined){
 
             this.playerDeck = new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A);
             this.playerDeckB = new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_B);
+            this.tableDeck = new kadi.game.TableDeck();
             _.delay(function() {
                 self.startGame();
             },1000);

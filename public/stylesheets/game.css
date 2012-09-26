@@ -7,6 +7,15 @@
     float: right;
 }
 
+.table_deck {
+    width: 150px;
+    height: 200px;
+    left: 300px;
+    top: 200px;
+    /*border: 1px solid #000000;*/
+    position: absolute;
+}
+
 .player_deck {
     position: absolute;
     /*border: 1px solid #000000;*/
@@ -49,6 +58,11 @@
     width: 100px;
     height: 136px;
     backface-visibility: hidden;
+}
+
+.card.selected {
+    border-radius: 3px;
+    box-shadow: -1px -1px 3px rgba(0,0,0,0.5);
 }
 
 .front {
