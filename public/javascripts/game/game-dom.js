@@ -87,7 +87,7 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         redrawCards: function() {
-            var fan = kadi.flatChineseFan(this.width(),kadi.game.CardUI.WIDTH,kadi.game.CardUI.MARGIN,this.cards.length);
+            var fan = kadi.flatChineseFan(this.width(),kadi.game.CardUI.WIDTH,kadi.game.CardUI.MARGIN,this.cards.length,this.type == kadi.game.PlayerDeck.TYPE_A);
             var self = this;
             _.each(fan, function(blade, idx) {
                 var card = self.cards[idx];
