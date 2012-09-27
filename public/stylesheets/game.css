@@ -7,6 +7,36 @@
     float: right;
 }
 
+#game {
+}
+
+.player {
+    margin: auto;
+    width: 80px;
+    height: 70px;
+    display: block;
+    background-position: top center;
+    background-position:50% 50%;
+    background-size: 80%;
+}
+
+.playerB {
+    background: url(../images/avatars/FD03.png) no-repeat;
+    background-position: 8px;
+}
+
+.avatar {
+    max-height: 80%;
+}
+
+.playerA {
+    background: url(../images/avatars/O03.png) no-repeat;
+    margin-top: 5px;
+    /*width: 125px;*/
+    /*background-size: 50%;*/
+}
+
+
 .table_deck {
     width: 150px;
     height: 200px;
@@ -158,4 +188,67 @@
     /*height: 200px;*/
     position: absolute;
     border: 1px solid #000000;
+}
+
+.button_holder{
+    width: 125px;
+    height: 32px;
+    display: block;
+    position: relative;
+    top: 20px;
+    left: 70px;
+}
+
+*,*:before,*:after {
+    box-sizing:border-box;
+}
+
+.box {
+    /*margin:20px auto 50px;*/
+    /*text-align:center;*/
+    /*width:80%;*/
+    position: absolute;
+}
+
+.circle {
+    background-color: #b14336;
+    border-radius:50%;
+    display:inline-block;
+    /*margin:10px;*/
+    height:125px;
+    width:125px;
+}
+
+.stitch {
+    background-color: #b14336;
+/*//background-image: -webkit-radial-gradient(60% 55%,  circle  closest-corner,  red,  green 20%,  yellow 70%,  black);*/
+    box-shadow: 0 0 10px rgba(0,0,0,0.1), 1px 1px 0 8px #b14336, inset 0 0 18px rgba(0,0,0,.2);
+    position:relative;
+    background-clip: padding,content;
+}
+.stitch:before{
+    content:" ";
+    background-color:transparent;
+    border-radius:inherit;
+    border:2px dashed #CACDAC;
+    display:block;
+    height:inherit;
+    left:0px;
+    position:absolute;
+    top:0px;
+    width:inherit;
+    z-index:4;
+}
+.stitch:after{
+    content:" ";
+    background-color:transparent;
+    border-radius:inherit;
+    border:2px dashed #65261F;
+    display:block;
+    height:inherit;
+    left:1px;
+    position:absolute;
+    top:2px;
+    width:inherit;
+    z-index:3;
 }

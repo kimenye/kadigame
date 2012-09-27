@@ -116,21 +116,24 @@ window.kadi = (function(me, $, undefined){
     }
 
 
+    me.getRandomLocation = function(containerBox, xMax, yMax, rotationMax) {
+        var ranX = Math.floor( Math.random() * xMax );
+        var ranY = Math.floor( Math.random() * yMax );
+        var left = containerBox.left() + ranX;
+        var top = containerBox.top() + ranY;
+
+        var randomRotation = Math.floor( Math.random() * rotationMax );
+        var negative = Math.floor( Math.random() * 2 ) == 1;
+
+        if (negative) randomRotation = 0 - randomRotation;
+
+        return new me.Pos(left, top, randomRotation);
+    }
+
     me.randomizeCardLocations = function(numCards, boundingBox) {
         var locations = [];
         _.each(_.range(numCards), function(idx) {
-            var ranX = Math.floor( Math.random() * 10 );
-            var ranY = Math.floor( Math.random() * 5 );
-            var left = boundingBox.left() + ranX;
-            var top = boundingBox.top() + ranY;
-
-            var randomRotation = Math.floor( Math.random() * 10 );
-            var negative = Math.floor( Math.random() * 2 ) == 1;
-
-            if (negative) randomRotation = 0 - randomRotation;
-
-
-            locations.push(new me.Pos(left, top, randomRotation));
+            locations.push(me.getRandomLocation(boundingBox, 10, 5, 10));
         });
         return locations;
     }

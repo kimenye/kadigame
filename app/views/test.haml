@@ -1,4 +1,4 @@
-.container
+-#.container
   .page-header
     %h1
       %a
@@ -15,10 +15,14 @@
         %li
         %li
         %li
-        -#%li
+
+    .player.playerB.hidden
     #game{:style => "display:none;"}
-      -#%input.rdobutton{:type=> 'radio', :name => 'start-game'}
-      -#%label#start-game.rdobuttonlabel{:for => 'start-game'} Start Game
+    .player.playerA.hidden
+      .btn-group.button_holder
+        %btn.btn.btn-move.btn-success Move
+        %btn.btn.btn-pick.btn-success Pick
+        %btn.btn.btn-kadi.disabled Kadi
 -#.container
   .row
     %hr

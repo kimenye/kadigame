@@ -129,7 +129,7 @@ window.kadi.game = (function(me, $, undefined){
         statics: {
             WIDTH: 150,
             HEIGHT: 200,
-            X: 250,
+            X: 300,
             Y: 200
         },
         construct : function() {
@@ -137,8 +137,21 @@ window.kadi.game = (function(me, $, undefined){
             this.cards = [];
             this.display();
         },
-        addCard: function(card) {
 
+        addCard: function(card, flip) {
+            this.cards.push(card);
+            if (flip) {
+                card.flip();
+            }
+            var pos = kadi.getRandomLocation(this.bBox(), 15, 10, 15);
+            if (this.cards.length == 1)
+                pos.rotate = 0;
+            card.moveTo(pos.x, pos.y, pos.rotate);
+        },
+
+        bBox : function() {
+            var topLeft = new kadi.Pos(kadi.game.TableDeck.X,kadi.game.TableDeck.Y);
+            return new kadi.BBox(topLeft, kadi.game.TableDeck.WIDTH, kadi.game.TableDeck.HEIGHT);
         }
     });
 
@@ -230,7 +243,8 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         startGame : function() {
-            _.each(_.range(4), function(idx) {
+            $('.player').toggleClass('hidden');
+            _.each(_.range(3), function(idx) {
                 var cardA = this.pickingDeck.deal();
                 var cardB = this.pickingDeck.deal();
 
@@ -240,6 +254,10 @@ window.kadi.game = (function(me, $, undefined){
                 this.playerDeck.addCard(cardA);
                 this.playerDeckB.addCard(cardB);
             },this);
+
+            var startingCard = this.pickingDeck.deal();
+            this.tableDeck.addCard(startingCard, true);
+
             this.playerDeck.redrawCards();
             this.playerDeckB.redrawCards();
         }
