@@ -272,10 +272,10 @@ window.kadi.game = (function(me, $, undefined){
             var before = this.selected;
             this.selected = !this.selected;
             this.container().toggleClass('selected');
-            if (before) {
-                //we are now selected
-//                this.container().draggable();
-            }
+            if (before)
+                SHOTGUN.fire(kadi.game.Events.CARD_DESELECTED, [this]);
+            else
+                SHOTGUN.fire(kadi.game.Events.CARD_SELECTED, [this]);
         },
 
         container : function() {

@@ -1,12 +1,137 @@
 window.kadi.game = (function(me, $, undefined){
 
-    me.GamePlayerUI = JS.Class({
-        construct : function(id, name) {
+    me.Events = JS.Class({
+        statics : {
+            CARD_SELECTED : "card-selected",
+            CARD_DESELECTED: "card-deselected",
+            PICK_CARD: "pick-card",
+            CARDS_DEALT: "cards-dealt",
+            END_TURN: "end-turn",
+            RECEIVE_TURN: "receive-turn"
+        }
+    });
+
+    me.Game = JS.Class({
+        construct: function(player, opponents) {
+            this.me = player;
+            this.opponents = opponents;
+            this.players = this.opponents;
+            this.players.push(this.me);
+            console.log("The players are : ", this.players);
+            this.pickingDeck = new kadi.game.PickingDeck();
+            this.tableDeck = new kadi.game.TableDeck();
+        },
+
+        startGame: function() {
+            console.log("Players in game", this.players.length, this.players);
+            var starter = kadi.coinToss(this.players);
+
+            _.each(this.players, function(p) {
+                p.initHandlers();
+            });
+//            this.order = new me.Order(this.players,starter);
+            this.dealCards();
+        },
+
+        dealCards: function() {
+            _.each(_.range(3), function(idx) {
+                _.each(this.players, function(p) {
+                    var card = this.pickingDeck.deal();
+                    console.log("To deal card %s to %s", card.toS(), p.name);
+                    p.addCard(card);
+                },this);
+            },this);
+
+            SHOTGUN.fire(kadi.game.Events.CARDS_DEALT,[]);
+
+//            this.tableDeck.addCard(startingCard, true);
+        }
+    });
+
+    me.Player = JS.Class({
+        construct : function(id, name,live) {
             this.id = id;
             this.name = name;
+            this.live = live;
+        }
+    });
+
+    me.GamePlayerUI = me.Player.extend({
+        construct : function(player, deck) {
+            this.parent.construct.apply(this, [player.id,player.name,player.live]);
+            this.deck = deck;
+            this.turnToPlay = false;
+            this.selections = [];
+        },
+        addCard: function(card,redraw) {
+            if (this.live)
+                card.flip();
+            this.deck.addCard(card);
+            if (redraw)
+                this.deck.redrawCards();
+        },
+        initHandlers: function() {
+            var self = this;
+            if (this.live) {
+                console.log("Setting up ", this.name);
+                SHOTGUN.listen(kadi.game.Events.CARD_SELECTED, function(card) {
+                    self.handleCardSelected(card);
+                    self.selections.push(card);
+                });
+
+                SHOTGUN.listen(kadi.game.Events.CARD_DESELECTED, function(card) {
+                    self.handleCardDeselected(card);
+                });
+
+                this.btnMove = $('.btn-move').click(function(btn) {
+                    if (kadi.isEnabled(this))
+                        self.move();
+                });
+                this.btnPick = $('.btn-pick').click(function() {
+                    if (kadi.isEnabled(this))
+                        self.pick();
+                });
+                this.btnKadi = $('.btn-kadi').click(function() {
+                    if (kadi.isEnabled(this))
+                        self.kadi();
+                });
+            }
+
+            SHOTGUN.listen(kadi.game.Events.CARDS_DEALT, function() {
+                self.deck.redrawCards();
+            });
+        },
+
+        kadi: function() {
+
+        },
+
+        pick: function() {
+            console.log("%s Picking a card ", this.name);
+            SHOTGUN.fire(kadi.game.Events.PICK_CARD, [this, 1]);
+            SHOTGUN.fire(kadi.game.Events.END_TURN, [this]);
+        },
+
+        move: function() {
+
+        },
+        handleCardSelected: function(card) {
+            console.log("selected ", card.toS());
+        },
+        handleCardDeselected: function(card) {
+            console.log("deselected ", card.toS())
         },
         display: function() {
+             if (this.turnToPlay == false) {
+                 $('.btn').attr("disabled", true);
+             }
+        },
+        giveTurn : function() {
+            this.turnToPlay = true;
 
+        },
+        endTurn : function() {
+            this.turnToPlay = false;
         }
     });
 
@@ -109,10 +234,18 @@ window.kadi.game = (function(me, $, undefined){
             this.topLeft = function() { return new kadi.Pos(me.PickingDeck.X, me.PickingDeck.Y) };
             this.bBox = function() { return new kadi.BBox(this.topLeft(), me.PickingDeck.WIDTH, me.PickingDeck.HEIGHT) };
             this.display();
+            var self = this;
+            SHOTGUN.listen(kadi.game.Events.PICK_CARD, function(player, quantity) {
+                self.giveCard(player, quantity);
+            });
         },
 
+        giveCard : function(player, quantity) {
+
+        },
 
         display: function() {
+            this.parent.appendChild(this.div);
             var positions = kadi.randomizeCardLocations(this.deck.length, this.bBox());
             _.each(this.deck, function(card,idx) {
                 var pos = positions[idx];
@@ -217,49 +350,20 @@ window.kadi.game = (function(me, $, undefined){
             height: 600,
             ID: 'game'
         },
-        construct: function(player, opponents) {
-            var self = this;
-            this.player = player;
+        construct: function(player, vs) {
             this.id = me.GameUI.ID;
-            this.opponents = [];
-            this.opponents = _.collect(opponents, function(opponent) {
-                return new me.GamePlayerUI(opponent.id, opponent.name);
+            this.me = new kadi.game.GamePlayerUI(player, new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A));
+
+            this.opponents = _.collect(vs, function(opponent) {
+               return new me.GamePlayerUI(opponent,new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_B));
             });
-            this.pickingDeck = new me.PickingDeck();
-//            this.actionButton = new me.ActionButton();
+            this.game = new me.Game(this.me,this.opponents);
         },
 
         display : function() {
             kadi.ui.disableLoading('game');
-
-            var self = this;
-
-            this.playerDeck = new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A);
-            this.playerDeckB = new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_B);
-            this.tableDeck = new kadi.game.TableDeck();
-            _.delay(function() {
-                self.startGame();
-            },1000);
-        },
-
-        startGame : function() {
             $('.player').toggleClass('hidden');
-            _.each(_.range(3), function(idx) {
-                var cardA = this.pickingDeck.deal();
-                var cardB = this.pickingDeck.deal();
-
-                cardA.active = true;
-                cardA.flip();
-
-                this.playerDeck.addCard(cardA);
-                this.playerDeckB.addCard(cardB);
-            },this);
-
-            var startingCard = this.pickingDeck.deal();
-            this.tableDeck.addCard(startingCard, true);
-
-            this.playerDeck.redrawCards();
-            this.playerDeckB.redrawCards();
+            this.game.startGame();
         }
     });
 

@@ -1,10 +1,9 @@
 .picking_box {
-    height: 200px;
-    width: 150px;
-    position: relative;
-    top: 150px;
+    height: 150px;
+    width: 125px;
+    position: absolute;
+    top: 200px;
     left: 500px;
-    float: right;
 }
 
 #game {
@@ -32,8 +31,6 @@
 .playerA {
     background: url(../images/avatars/O03.png) no-repeat;
     margin-top: 5px;
-    /*width: 125px;*/
-    /*background-size: 50%;*/
 }
 
 
@@ -107,9 +104,9 @@
     transform: rotateY(180deg);
 }
 
-.card.selected {
+.card_container.selected {
     border-radius: 6px;
-    box-shadow: -1px -1px 4px rgba(0,0,0,0.5);
+    box-shadow: -2px -2px 4px rgba(0,0,0,0.5);
 }
 
 .red {
@@ -190,6 +187,14 @@
     border: 1px solid #000000;
 }
 
+.name {
+    position: relative;
+    top: -7px;
+    left: -126px;
+    display: block;
+    width: 150px;
+    font-weight: bold;
+}
 .button_holder{
     width: 125px;
     height: 32px;
@@ -199,14 +204,11 @@
     left: 70px;
 }
 
-*,*:before,*:after {
-    box-sizing:border-box;
-}
+/**,*:before,*:after {*/
+    /*box-sizing:border-box;*/
+/*}*/
 
 .box {
-    /*margin:20px auto 50px;*/
-    /*text-align:center;*/
-    /*width:80%;*/
     position: absolute;
 }
 
@@ -214,7 +216,6 @@
     background-color: #b14336;
     border-radius:50%;
     display:inline-block;
-    /*margin:10px;*/
     height:125px;
     width:125px;
 }

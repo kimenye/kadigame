@@ -20,9 +20,11 @@
     #game{:style => "display:none;"}
     .player.playerA.hidden
       .btn-group.button_holder
-        %btn.btn.btn-move.btn-success Move
-        %btn.btn.btn-pick.btn-success Pick
-        %btn.btn.btn-kadi.disabled Kadi
+        %btn.btn.btn-move.disabled.btn-success Move
+        %btn.btn.btn-pick.disabled.btn-success Pick
+        %btn.btn.btn-kadi.disabled.btn-danger KADI
+      .name
+        =@player.name
 -#.container
   .row
     %hr

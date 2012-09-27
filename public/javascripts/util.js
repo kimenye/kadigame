@@ -22,6 +22,21 @@ window.kadi = (function(me, $, undefined){
             return val;
     }
 
+    me.isEnabled = function(btn) {
+        return $(btn).attr('disabled') != 'disabled';
+    }
+
+    me.findLivePlayer = function(players) {
+        return _.filter(players, function(p) {
+            return kadi.getVal(p.live) == true;
+        })
+    }
+
+    me.coinToss = function(players) {
+        var starter = Math.floor( Math.random() * players.length);
+        return players[starter];
+    }
+
     me.safeAssign = function(val, prev) {
         if (me.isSomethingMeaningful(val)) {
             prev = val;
