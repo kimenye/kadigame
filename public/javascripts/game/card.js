@@ -198,10 +198,15 @@ window.kadi.game = (function(me, $, undefined){
                 }
             }, function() {
                 if (self.active && !self.selected) {
-                    var top = kadi.game.PlayerDeck.Y_A;
-                    self.moveTo(null,top,null);
+                    self.reset();
                 }
             });
+
+            this.reset = function() {
+                var top = kadi.game.PlayerDeck.Y_A;
+                this.container().removeClass('selected');
+                this.moveTo(null,top,null);
+            };
 
             this.div = document.createElement("div");
             this.div.className = "card";

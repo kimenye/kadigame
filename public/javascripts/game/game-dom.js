@@ -7,7 +7,9 @@ window.kadi.game = (function(me, $, undefined){
             PICK_CARD: "pick-card",
             CARDS_DEALT: "cards-dealt",
             END_TURN: "end-turn",
-            RECEIVE_TURN: "receive-turn"
+            RECEIVE_TURN: "receive-turn",
+            ACTIVATE_CARD: "activate-card",
+            DEACTIVATE_CARD: "deactivate-card"
         }
     });
 
@@ -23,28 +25,53 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         startGame: function() {
-            console.log("Players in game", this.players.length, this.players);
+            var self = this;
             var starter = kadi.coinToss(this.players);
-
             _.each(this.players, function(p) {
                 p.initHandlers();
             });
-//            this.order = new me.Order(this.players,starter);
-            this.dealCards();
+            this.dealCards(this.me.id);
+
+            SHOTGUN.listen(kadi.game.Events.PICK_CARD, function(player, num) {
+                self.giveCard(player,num);
+            });
+
+            SHOTGUN.listen(kadi.game.Events.END_TURN, function(player) {
+                self.giveNextPlayerTurn(player);
+            });
         },
 
-        dealCards: function() {
+        giveNextPlayerTurn: function(player) {
+            var nextPlayer = this.getNextTurn(player);
+            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[],''+nextPlayer.id);
+        },
+
+        getNextTurn: function(player) {
+            return _.detect(this.players, function(p) {
+                return p.id != player.id;
+            })
+        },
+
+        giveCard: function(to,qty) {
+            _.each(_.range(qty),function(){
+                var card = this.pickingDeck.deal();
+                to.addCard(card, true);
+            },this);
+        },
+
+        dealCards: function(starterId) {
             _.each(_.range(3), function(idx) {
                 _.each(this.players, function(p) {
                     var card = this.pickingDeck.deal();
-                    console.log("To deal card %s to %s", card.toS(), p.name);
                     p.addCard(card);
                 },this);
             },this);
 
             SHOTGUN.fire(kadi.game.Events.CARDS_DEALT,[]);
+            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[],''+starterId);
 
-//            this.tableDeck.addCard(startingCard, true);
+            var card = this.pickingDeck.deal();
+            this.tableDeck.addCard(card, true);
         }
     });
 
@@ -100,6 +127,30 @@ window.kadi.game = (function(me, $, undefined){
             SHOTGUN.listen(kadi.game.Events.CARDS_DEALT, function() {
                 self.deck.redrawCards();
             });
+
+            SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function() {
+                console.log("Its my turn ", self.name);
+                if (self.live) {
+                    self.activate(true);
+                } else {
+                    self.bot();
+                }
+            }, ''+this.id);
+        },
+
+        endTurn: function() {
+            SHOTGUN.fire(kadi.game.Events.END_TURN, [this]);
+            if (this.live)
+            {
+                this.activate(false);
+            }
+        },
+
+        bot: function() {
+            var self = this;
+            _.delay(function() {
+                self.pick();
+            },1000);
         },
 
         kadi: function() {
@@ -109,7 +160,7 @@ window.kadi.game = (function(me, $, undefined){
         pick: function() {
             console.log("%s Picking a card ", this.name);
             SHOTGUN.fire(kadi.game.Events.PICK_CARD, [this, 1]);
-            SHOTGUN.fire(kadi.game.Events.END_TURN, [this]);
+            this.endTurn();
         },
 
         move: function() {
@@ -121,6 +172,15 @@ window.kadi.game = (function(me, $, undefined){
         handleCardDeselected: function(card) {
             console.log("deselected ", card.toS())
         },
+        activate: function(status) {
+            if (this.live) {
+                this.deck.activateCards(status);
+                this.turnToPlay = status;
+                $('.btn').attr("disabled", !status);
+                if (status)
+                    $('.btn').removeClass('disabled');
+            }
+        },
         display: function() {
              if (this.turnToPlay == false) {
                  $('.btn').attr("disabled", true);
@@ -128,10 +188,6 @@ window.kadi.game = (function(me, $, undefined){
         },
         giveTurn : function() {
             this.turnToPlay = true;
-
-        },
-        endTurn : function() {
-            this.turnToPlay = false;
         }
     });
 
@@ -200,6 +256,17 @@ window.kadi.game = (function(me, $, undefined){
 
         width: function() {
             return kadi.game.PlayerDeck.WIDTH_H;
+        },
+
+        activateCards: function(status) {
+            _.each(this.cards, function(c) {
+                c.active = status;
+                if (!status && c.selected)
+                {
+                    c.selected = false
+                    c.reset();
+                }
+            });
         },
 
         addCard: function(card) {
