@@ -14,23 +14,32 @@
     width: 80px;
     height: 70px;
     display: block;
-    background-position: top center;
-    background-position:50% 50%;
-    background-size: 80%;
+}
+
+.name {
+}
+.button_holder{
+    display: block;
+    position: relative;
+    top: 20px;
 }
 
 .playerB {
-    background: url(../images/avatars/FD03.png) no-repeat;
-    background-position: 8px;
+}
+
+.player img {
+    max-width: 80%
 }
 
 .avatar {
-    max-height: 80%;
+    float: left;
 }
 
+/*.avatar {*/
+    /*max-height: 80%;*/
+/*}*/
+
 .playerA {
-    background: url(../images/avatars/O03.png) no-repeat;
-    margin-top: 5px;
 }
 
 
@@ -180,29 +189,11 @@
 
 /*buttons*/
 .button.action_button_cell {
-    /*float: left;*/
-    /*width: 200px;*/
-    /*height: 200px;*/
     position: absolute;
     border: 1px solid #000000;
 }
 
-.name {
-    position: relative;
-    top: -7px;
-    left: -126px;
-    display: block;
-    width: 150px;
-    font-weight: bold;
-}
-.button_holder{
-    width: 125px;
-    height: 32px;
-    display: block;
-    position: relative;
-    top: 20px;
-    left: 70px;
-}
+
 
 /**,*:before,*:after {*/
     /*box-sizing:border-box;*/

@@ -16,15 +16,19 @@
         %li
         %li
 
-    .player.playerB.hidden
+    .player.hidden
+      =image_tag "/images/avatars/FD03.png"
     #game{:style => "display:none;"}
-    .player.playerA.hidden
+    .player.hidden
+      -#.name
+        =@player.name
+      .avatar
+        =image_tag '/images/avatars/O03.png'
       .btn-group.button_holder
         %btn.btn.btn-move.disabled.btn-success Move
         %btn.btn.btn-pick.disabled.btn-success Pick
         %btn.btn.btn-kadi.disabled.btn-danger KADI
-      .name
-        =@player.name
+
 -#.container
   .row
     %hr
