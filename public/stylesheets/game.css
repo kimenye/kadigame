@@ -17,6 +17,8 @@
 }
 
 .name {
+    display: block;
+    position: absolute;
 }
 .button_holder{
     display: block;
@@ -24,7 +26,8 @@
     top: 20px;
 }
 
-.playerB {
+.playerA {
+    margin-top: 4px;
 }
 
 .player img {
@@ -39,8 +42,6 @@
     /*max-height: 80%;*/
 /*}*/
 
-.playerA {
-}
 
 
 .table_deck {

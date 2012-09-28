@@ -16,14 +16,13 @@
         %li
         %li
 
-    .player.hidden
+    .player.playerB.hidden
       =image_tag "/images/avatars/FD03.png"
     #game{:style => "display:none;"}
-    .player.hidden
-      -#.name
-        =@player.name
+    .player.playerA.hidden
       .avatar
         =image_tag '/images/avatars/O03.png'
+        %span.name=@player.name
       .btn-group.button_holder
         %btn.btn.btn-move.disabled.btn-success Move
         %btn.btn.btn-pick.disabled.btn-success Pick
