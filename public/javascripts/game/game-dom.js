@@ -390,6 +390,15 @@ window.kadi.game = (function(me, $, undefined){
             var pos = kadi.getRandomLocation(this.bBox(), 15, 10, 15);
             if (this.cards.length == 1)
                 pos.rotate = 0;
+
+            if (kadi.isSomethingMeaningful(this.topCard())
+                && this.cards.length > 1) {
+                var top = this.topCard();
+                var topZ = top.container().css('z-index');
+
+                top.container().css('z-index', topZ-1);
+                card.container().css('z-index', topZ+2);
+            }
             card.moveTo(pos.x, pos.y, pos.rotate);
         },
 
