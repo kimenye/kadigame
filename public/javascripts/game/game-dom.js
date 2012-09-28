@@ -9,7 +9,8 @@ window.kadi.game = (function(me, $, undefined){
             END_TURN: "end-turn",
             RECEIVE_TURN: "receive-turn",
             ACTIVATE_CARD: "activate-card",
-            DEACTIVATE_CARD: "deactivate-card"
+            DEACTIVATE_CARD: "deactivate-card",
+            PLAY_CARDS: "play-cards"
         }
     });
 
@@ -19,9 +20,9 @@ window.kadi.game = (function(me, $, undefined){
             this.opponents = opponents;
             this.players = this.opponents;
             this.players.push(this.me);
-            console.log("The players are : ", this.players);
             this.pickingDeck = new kadi.game.PickingDeck();
             this.tableDeck = new kadi.game.TableDeck();
+            this.ruleEngine = new kadi.game.RuleEngine();
         },
 
         startGame: function() {
@@ -39,6 +40,22 @@ window.kadi.game = (function(me, $, undefined){
             SHOTGUN.listen(kadi.game.Events.END_TURN, function(player) {
                 self.giveNextPlayerTurn(player);
             });
+
+            SHOTGUN.listen(kadi.game.Events.PLAY_CARDS, function(player, cards) {
+                self.attemptPlay(player,cards);
+            });
+        },
+
+        attemptPlay : function(player, cards) {
+            var canPlay = this.ruleEngine.canPlay(cards,this.tableDeck.topCard());
+            if (canPlay) {
+                _.each(cards, function(card) {
+                    card.active = false;
+                    player.removeCard(card, true);
+                    this.tableDeck.addCard(card);
+                }, this);
+                player.endTurn();
+            }
         },
 
         giveNextPlayerTurn: function(player) {
@@ -97,13 +114,17 @@ window.kadi.game = (function(me, $, undefined){
             if (redraw)
                 this.deck.redrawCards();
         },
+        removeCard: function(card,redraw) {
+            this.deck.removeCard(card);
+            if (redraw)
+                this.deck.redrawCards();
+        },
         initHandlers: function() {
             var self = this;
             if (this.live) {
                 console.log("Setting up ", this.name);
                 SHOTGUN.listen(kadi.game.Events.CARD_SELECTED, function(card) {
                     self.handleCardSelected(card);
-                    self.selections.push(card);
                 });
 
                 SHOTGUN.listen(kadi.game.Events.CARD_DESELECTED, function(card) {
@@ -164,13 +185,18 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         move: function() {
-
+            if (this.selections.length > 0) {
+                this.activate(false);
+                SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, this.selections]);
+            }
         },
         handleCardSelected: function(card) {
-            console.log("selected ", card.toS());
+            this.selections.push(card);
         },
         handleCardDeselected: function(card) {
-            console.log("deselected ", card.toS())
+            this.selections = _.reject(this.selections, function(c) {
+                return c.id = card.id;
+            },this);
         },
         activate: function(status) {
             if (this.live) {
@@ -278,6 +304,14 @@ window.kadi.game = (function(me, $, undefined){
             card.moveTo(left,top);
         },
 
+
+        removeCard: function(card) {
+            console.log("To remove: ", card.toS());
+            this.cards = _.reject(this.cards, function(c) {
+                return c.id == card.id;
+            })
+        },
+
         redrawCards: function() {
             var fan = kadi.flatChineseFan(this.width(),kadi.game.CardUI.WIDTH,kadi.game.CardUI.MARGIN,this.cards.length,this.type == kadi.game.PlayerDeck.TYPE_A);
             var self = this;
@@ -352,6 +386,10 @@ window.kadi.game = (function(me, $, undefined){
         bBox : function() {
             var topLeft = new kadi.Pos(kadi.game.TableDeck.X,kadi.game.TableDeck.Y);
             return new kadi.BBox(topLeft, kadi.game.TableDeck.WIDTH, kadi.game.TableDeck.HEIGHT);
+        },
+
+        topCard: function() {
+            return _.last(this.cards);
         }
     });
 

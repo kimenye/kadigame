@@ -162,6 +162,34 @@ window.kadi.game = (function(me, $, undefined){
                 var rankName = kadi.game.Card.getRankName(this.rank);
                 return rankName + " of " + suiteName;
             }
+        },
+
+        eq: function(other) {
+            return (this.suite == other.suite && this.rank == other.rank);
+        },
+
+
+
+        canEndMove: function() {
+            return !this.isQueen() && !this.isEight();
+        },
+
+        /**
+         * Can be joined with the card specified in a group
+         *
+         * @param card
+         * @return {*}
+         */
+        canPlayTogetherWith: function(card) {
+            var _follow = this.canFollow(card);
+            var _sameRank = this.rank == card.rank;
+            var _sameSuite = this.suite == card.suite;
+
+            if (this.isQueen() || this.isEight()) {
+                return _follow && (_sameSuite || _sameRank);
+            }
+            else
+                return _follow && _sameRank;
         }
     });
 
