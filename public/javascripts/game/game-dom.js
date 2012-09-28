@@ -50,10 +50,12 @@ window.kadi.game = (function(me, $, undefined){
             var canPlay = this.ruleEngine.canPlay(cards,this.tableDeck.topCard());
             if (canPlay) {
                 _.each(cards, function(card) {
+                    card.deSelect();
                     card.active = false;
                     player.removeCard(card, true);
                     this.tableDeck.addCard(card);
                 }, this);
+                player.clearSelections();
                 player.endTurn();
             }
         },
@@ -105,6 +107,9 @@ window.kadi.game = (function(me, $, undefined){
             this.parent.construct.apply(this, [player.id,player.name,player.live]);
             this.deck = deck;
             this.turnToPlay = false;
+            this.selections = [];
+        },
+        clearSelections: function() {
             this.selections = [];
         },
         addCard: function(card,redraw) {
@@ -186,7 +191,7 @@ window.kadi.game = (function(me, $, undefined){
 
         move: function() {
             if (this.selections.length > 0) {
-                this.activate(false);
+                this.activateActions(false);
                 SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, this.selections]);
             }
         },
@@ -197,6 +202,11 @@ window.kadi.game = (function(me, $, undefined){
             this.selections = _.reject(this.selections, function(c) {
                 return c.id = card.id;
             },this);
+        },
+        activateActions : function(status) {
+            $('.btn').attr("disabled", !status);
+            if (status)
+                $('.btn').removeClass('disabled');
         },
         activate: function(status) {
             if (this.live) {

@@ -232,7 +232,7 @@ window.kadi.game = (function(me, $, undefined){
 
             this.reset = function() {
                 var top = kadi.game.PlayerDeck.Y_A;
-                this.container().removeClass('selected');
+                this.deSelect();
                 this.moveTo(null,top,null);
             };
 
@@ -243,6 +243,11 @@ window.kadi.game = (function(me, $, undefined){
             this.div.appendChild(this.buildFront());
 
             this.card_container.appendChild(this.div);
+        },
+
+        deSelect: function() {
+            this.selected = false;
+            this.container().removeClass('selected');
         },
 
         buildBack: function() {
