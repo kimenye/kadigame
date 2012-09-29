@@ -93,6 +93,20 @@ window.kadi = (function(me, $, undefined){
         return elem;
     }
 
+    me.buildVerticalFan = function(containerWidth,innerWidth, itemWidth, numItems, margin, reverse) {
+        var first = kadi.centerInFrame(containerWidth, innerWidth);
+        console.log("First: ", first);
+        var coords = [];
+        coords.push(new kadi.Pos(kadi.game.PlayerDeck.X_C, first));
+
+        for(var ctr=1;ctr<numItems;ctr++) {
+            var prior = coords[ctr-1].y + itemWidth + margin;
+            coords.push(new kadi.Pos(kadi.game.PlayerDeck.X_C,prior));
+        }
+
+        return coords;
+    }
+
     me.buildFan = function(containerWidth,innerWidth, itemWidth, numItems, margin, reverse) {
         var first = kadi.centerInFrame(containerWidth, innerWidth);
         var x = kadi.centerInFrame(containerWidth, innerWidth);
@@ -151,6 +165,19 @@ window.kadi = (function(me, $, undefined){
             locations.push(me.getRandomLocation(boundingBox, 10, 5, 10));
         });
         return locations;
+    }
+
+    me.flatVerticalFan = function(containerWidth, itemWidth, optionalMargin, numItems, reverse) {
+        console.log("CW: %d, IW: %d, OM: %d, Num: %d, R: %s", containerWidth, itemWidth, optionalMargin, numItems, reverse);
+        var coords = [];
+        var widthWithoutOverlap = kadi.calculateFanWidthWithoutOverlap(itemWidth,optionalMargin,numItems);
+        console.log("Width without OL: ", widthWithoutOverlap, containerWidth);
+
+        if (widthWithoutOverlap <= containerWidth) {
+            coords = kadi.buildVerticalFan(containerWidth,widthWithoutOverlap,itemWidth,numItems,optionalMargin,reverse);
+        }
+
+        return coords;
     }
 
     /**
