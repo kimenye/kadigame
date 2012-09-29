@@ -133,7 +133,6 @@ window.kadi.game = (function(me, $, undefined){
         initHandlers: function() {
             var self = this;
             if (this.live) {
-                console.log("Setting up ", this.name);
                 SHOTGUN.listen(kadi.game.Events.CARD_SELECTED, function(card) {
                     self.handleCardSelected(card);
                 });
@@ -161,7 +160,6 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function() {
-                console.log("Its my turn ", self.name);
                 if (self.live) {
                     self.activate(true);
                 } else {
@@ -265,14 +263,34 @@ window.kadi.game = (function(me, $, undefined){
     me.PlayerDeck = me.Box.extend({
         statics: {
             WIDTH_H: 400,
+            HEIGHT_H: 100,
+            WIDTH_V: 100,
+            HEIGHT_V: 400,
             Y_A: 500,
+            Y_B: -20,
             X_A: 200,
             X_B: 200,
-            Y_B: -20,
+            Y_C: 150,
+            X_C: 700,
+            X_D: 0,
+            Y_D: 150,
             TYPE_A: 'A',
             TYPE_B: 'B',
             TYPE_C: 'C',
-            TYPE_D: 'D'
+            TYPE_D: 'D',
+            typeFromIndex: function(index) {
+                //locations on the table...
+                //A - user who is playing
+                //B - TOP
+                //C - Right
+                //D - Left
+                var types = [kadi.game.PlayerDeck.TYPE_B,kadi.game.PlayerDeck.TYPE_C,kadi.game.PlayerDeck.TYPE_D];
+                return types[index];
+            },
+            fromIndex : function(index) {
+                return new me.PlayerDeck(me.PlayerDeck.typeFromIndex(index));
+            }
+
         },
         construct: function(type) {
             this.type = type;
@@ -282,22 +300,28 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         left: function() {
-            if (this.type == kadi.game.PlayerDeck.TYPE_A || this.type == kadi.game.PlayerDeck.TYPE_B) {
+            if (this.type == kadi.game.PlayerDeck.TYPE_A || this.type == kadi.game.PlayerDeck.TYPE_B)
                 return kadi.game.PlayerDeck.X_A;
-            }
+            else if (this.type == kadi.game.PlayerDeck.TYPE_C)
+                return kadi.game.PlayerDeck.X_C;
+            else if (this.type == kadi.game.PlayerDeck.TYPE_D)
+                return kadi.game.PlayerDeck.X_D;
         },
 
         top : function() {
-            if (this.type == kadi.game.PlayerDeck.TYPE_A) {
+            if (this.type == kadi.game.PlayerDeck.TYPE_A)
                 return kadi.game.PlayerDeck.Y_A;
-            }
-            else if (this.type == kadi.game.PlayerDeck.TYPE_B) {
+            else if (this.type == kadi.game.PlayerDeck.TYPE_B)
                 return kadi.game.PlayerDeck.Y_B;
-            }
+            else
+                return kadi.game.PlayerDeck.Y_C;
         },
 
         width: function() {
-            return kadi.game.PlayerDeck.WIDTH_H;
+            if (this.type == kadi.game.PlayerDeck.TYPE_A || this.type == kadi.game.PlayerDeck.TYPE_B)
+                return kadi.game.PlayerDeck.WIDTH_H;
+            else
+                return kadi.game.PlayerDeck.WIDTH_V;
         },
 
         activateCards: function(status) {
@@ -316,13 +340,13 @@ window.kadi.game = (function(me, $, undefined){
             var self = this;
             var left = this.left() + kadi.centerInFrame(this.width(),kadi.game.CardUI.WIDTH);
             var top = this.top();
+            console.log("Adding %s x: %d, y: %d", card.toS(), left, top);
 
             card.moveTo(left,top);
         },
 
 
         removeCard: function(card) {
-            console.log("To remove: ", card.toS());
             this.cards = _.reject(this.cards, function(c) {
                 return c.id == card.id;
             })
@@ -358,8 +382,6 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function(player) {
-//                console.log("Received turn ", player.toS());
-//                self.activate()
                 self.active = player.live;
             }, 'deck');
         },
@@ -426,62 +448,6 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
-    me.ActionButton = me.Box.extend({
-        statics: {
-            WIDTH: 200
-        },
-        construct : function(id, clickHandler) {
-            this.parent.construct.apply(this, ['game','action_button_div', 'button action_button_cell'])
-            var self = this;
-            this.id = id;
-            this.node().click(function() {
-                clickHandler.callBack();
-            });
-            var x = me.PlayerDeck.X_A + kadi.centerInFrame(me.PlayerDeck.WIDTH_H, me.ActionButton.WIDTH);
-            this.display(x,400);
-        },
-
-        buildButton: function() {
-            var div = document.createElement("div");
-            div.className = "share-wrapper below";
-
-//            <div class="cell">
-//                <div class="share-wrapper below">
-//                    <div class="rc10 share-action icon-share"></div>
-//                    <div class="share-container rc10 ">
-//                        <a class="share-btn tl icon-google-plus" href='#'></a>
-//                        <a class="share-btn tr icon-twitter" href='#'></a>
-//                        <a class="share-btn br icon-facebook" href='#'></a>
-//                        <a class="share-btn bl icon-pinterest" href='#'></a>
-//                    </div>
-//                </div>
-//            </div>
-
-            var shareAction = kadi.createDiv("rc10 share-action");
-            div.appendChild(shareAction);
-
-            var shareContainer = kadi.createDiv("share-container rc10");
-            shareContainer.appendChild(kadi.createLink("share-btn tl"));
-            shareContainer.appendChild(kadi.createLink("share-btn tr"));
-//            shareContainer.appendChild(kadi.createLink("share-btn br icon-facebook"));
-//            shareContainer.appendChild(kadi.createLink("share-btn bl icon-pinterest"));
-
-            div.appendChild(shareContainer);
-
-            return div;
-        },
-
-        display: function(x,y) {
-            var elem = this.buildButton();
-            this.div.appendChild(elem);
-//            this.container().css('z-index','5000');
-            this.node().css('z-index','600');
-            this.parent.appendChild(this.div);
-//            this.moveTo(x,y);
-            this.moveTo(200,200);
-        }
-    });
-
     me.GameUI = JS.Class({
         statics: {
             width: 800,
@@ -492,9 +458,10 @@ window.kadi.game = (function(me, $, undefined){
             this.id = me.GameUI.ID;
             this.me = new kadi.game.GamePlayerUI(player, new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A));
 
-            this.opponents = _.collect(vs, function(opponent) {
-               return new me.GamePlayerUI(opponent,new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_B));
-            });
+            this.opponents = [];
+            _.each(vs, function(opponent, idx) {
+                this.opponents.push(new me.GamePlayerUI(opponent,new kadi.game.PlayerDeck.fromIndex(idx)));
+            },this);
             this.game = new me.Game(this.me,this.opponents);
         },
 

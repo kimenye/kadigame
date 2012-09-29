@@ -62,8 +62,6 @@
     /*max-height: 80%;*/
 /*}*/
 
-
-
 .table_deck {
     width: 150px;
     height: 200px;
@@ -92,6 +90,20 @@
 
 .player_deck.B {
     top: 0;
+}
+
+.player_deck.C {
+    width: 100px;
+    left: 700px;
+    top: 100px;
+    height: 400px;
+}
+
+.player_deck.D {
+    width: 100px;
+    left: 0px;
+    top: 100px;
+    height: 400px;
 }
 
 * {
