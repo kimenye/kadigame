@@ -9,6 +9,9 @@
 :javascript
   $(document).ready(function () {
     var me = new kadi.game.Player('#{@player.id}', "#{@player.name}",true);
-    var comp1 = new kadi.game.Player('12345', 'Computer',false);
-    kadi.game.initGameUI(me,[comp1]);
+    var compB = new kadi.game.Player('B', 'Computer-B',false);
+    var compC = new kadi.game.Player('C', 'Computer-C',false);
+    var compD = new kadi.game.Player('D', 'Computer-D',false);
+    kadi.game.initGameUI(me,[compB,compC,compD]);
+    //kadi.game.initGameUI(me,[compB]);
   });

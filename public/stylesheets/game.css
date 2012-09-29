@@ -30,6 +30,26 @@
     margin-top: 4px;
 }
 
+.playerC .avatar, .playerD .avatar {
+    position: relative;
+    top: 150px;
+}
+
+.playerC {
+    left: 1090px;
+}
+
+.playerC, .playerD {
+    position: absolute;
+    width: 100px;
+    height: 400px;
+    top: 175px;
+}
+
+.playerD {
+    left: 200px;
+}
+
 .player img {
     max-width: 80%
 }

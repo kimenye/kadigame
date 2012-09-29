@@ -31,7 +31,7 @@ window.kadi.game = (function(me, $, undefined){
             _.each(this.players, function(p) {
                 p.initHandlers();
             });
-            this.dealCards(this.me.id);
+            this.dealCards(this.me);
 
             SHOTGUN.listen(kadi.game.Events.PICK_CARD, function(player, num) {
                 self.giveCard(player,num);
@@ -63,6 +63,7 @@ window.kadi.game = (function(me, $, undefined){
         giveNextPlayerTurn: function(player) {
             var nextPlayer = this.getNextTurn(player);
             SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[],''+nextPlayer.id);
+            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[nextPlayer],'deck');
         },
 
         getNextTurn: function(player) {
@@ -78,7 +79,7 @@ window.kadi.game = (function(me, $, undefined){
             },this);
         },
 
-        dealCards: function(starterId) {
+        dealCards: function(starter) {
             _.each(_.range(3), function(idx) {
                 _.each(this.players, function(p) {
                     var card = this.pickingDeck.deal();
@@ -87,7 +88,8 @@ window.kadi.game = (function(me, $, undefined){
             },this);
 
             SHOTGUN.fire(kadi.game.Events.CARDS_DEALT,[]);
-            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[],''+starterId);
+            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[],''+starter.id);
+            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[starter], 'deck');
 
             var card = this.pickingDeck.deal();
             this.tableDeck.addCard(card, true);
@@ -99,6 +101,10 @@ window.kadi.game = (function(me, $, undefined){
             this.id = id;
             this.name = name;
             this.live = live;
+        },
+
+        toS: function() {
+            return this.id + " - " + this.name;
         }
     });
 
@@ -340,15 +346,22 @@ window.kadi.game = (function(me, $, undefined){
             Y: 200
         },
         construct : function() {
+            var self = this;
             this.parent.construct.apply(this, ['game', 'picking_box_div', 'picking_box']);
             this.deck = kadi.game.Suite.getDeckOfCards();
             this.topLeft = function() { return new kadi.Pos(me.PickingDeck.X, me.PickingDeck.Y) };
+            this.active = false;
             this.bBox = function() { return new kadi.BBox(this.topLeft(), me.PickingDeck.WIDTH, me.PickingDeck.HEIGHT) };
             this.display();
-            var self = this;
             SHOTGUN.listen(kadi.game.Events.PICK_CARD, function(player, quantity) {
                 self.giveCard(player, quantity);
             });
+
+            SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function(player) {
+//                console.log("Received turn ", player.toS());
+//                self.activate()
+                self.active = player.live;
+            }, 'deck');
         },
 
         giveCard : function(player, quantity) {
@@ -366,6 +379,7 @@ window.kadi.game = (function(me, $, undefined){
 
         deal: function() {
             return this.deck.shift();
+//            return this.deck.pop();
         }
     });
 
@@ -483,6 +497,8 @@ window.kadi.game = (function(me, $, undefined){
             });
             this.game = new me.Game(this.me,this.opponents);
         },
+
+
 
         display : function() {
             kadi.ui.disableLoading('game');

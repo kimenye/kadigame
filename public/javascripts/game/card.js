@@ -168,8 +168,6 @@ window.kadi.game = (function(me, $, undefined){
             return (this.suite == other.suite && this.rank == other.rank);
         },
 
-
-
         canEndMove: function() {
             return !this.isQueen() && !this.isEight();
         },
