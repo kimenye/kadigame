@@ -192,7 +192,6 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         pick: function() {
-            console.log("%s Picking a card ", this.name);
             SHOTGUN.fire(kadi.game.Events.PICK_CARD, [this, 1]);
             this.endTurn();
         },
@@ -411,14 +410,33 @@ window.kadi.game = (function(me, $, undefined){
             this.deck = kadi.game.Suite.getDeckOfCards();
             this.topLeft = function() { return new kadi.Pos(me.PickingDeck.X, me.PickingDeck.Y) };
             this.active = false;
+            this.activePlayer = null;
             this.bBox = function() { return new kadi.BBox(this.topLeft(), me.PickingDeck.WIDTH, me.PickingDeck.HEIGHT) };
             this.display();
             SHOTGUN.listen(kadi.game.Events.PICK_CARD, function(player, quantity) {
                 self.giveCard(player, quantity);
             });
 
+            self.node().css('z-index', 6000);
+            this.node().hover(function() {
+                if (self.active) {
+                    self.node().css( 'cursor', 'pointer' );
+                }
+            }, function() {
+                if (self.active && !self.selected) {
+                    self.node().css( 'cursor', 'default' );
+                }
+            });
+
+            this.node().click(function() {
+                if (self.active && kadi.isSomethingMeaningful(self.activePlayer)) {
+                    self.activePlayer.pick();
+                }
+            });
+
             SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function(player) {
                 self.active = player.live;
+                self.activePlayer = player; //TODO: this is still tightly coupled, you need to pass an event to the game
             }, 'deck');
         },
 

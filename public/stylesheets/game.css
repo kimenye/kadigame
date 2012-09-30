@@ -4,6 +4,12 @@
     position: absolute;
     top: 200px;
     left: 500px;
+    /*z-index: 6000;*/
+}
+
+.picking_box:hover {
+    /*cursor: pointer;*/
+    /*border: 1px solid #000000;*/
 }
 
 #game {
@@ -51,7 +57,9 @@
 }
 
 .player img {
-    max-width: 80%
+    max-width: 80%;
+    /*min-height: 64px;*/
+    /*min-width: 64px;*/
 }
 
 .avatar {

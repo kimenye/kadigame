@@ -219,11 +219,13 @@ window.kadi.game = (function(me, $, undefined){
             });
             this.container().hover(function() {
                 if (self.active) {
-                    var top = Math.max(kadi.game.PlayerDeck.Y_A - 20, self.container().position().top - 20)
+                    self.container().css( 'cursor', 'pointer' );
+                    var top = Math.max(kadi.game.PlayerDeck.Y_A - 20, self.container().position().top - 20);
                     self.moveTo(null,top,null);
                 }
             }, function() {
                 if (self.active && !self.selected) {
+                    self.container().css( 'cursor', 'default' );
                     self.reset();
                 }
             });

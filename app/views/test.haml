@@ -28,10 +28,11 @@
     .player.playerA.hidden
       .avatar
         =image_tag '/images/avatars/O03.png'
+        -#=image_tag "https://graph.facebook.com/#{@player.fb_id}/picture"
         %span.name=@player.name
       .btn-group.button_holder
         %btn.btn.btn-move.disabled.btn-success Move
-        %btn.btn.btn-pick.disabled.btn-success Pick
+        -#%btn.btn.btn-pick.disabled.btn-success Pick
         %btn.btn.btn-kadi.disabled.btn-danger KADI
 
 -#.container
