@@ -115,6 +115,9 @@ window.kadi.game = (function(me, $, undefined){
             this.turnToPlay = false;
             this.selections = [];
         },
+        getLocation: function() {
+            return this.deck.type;
+        },
         clearSelections: function() {
             this.selections = [];
         },
@@ -131,6 +134,7 @@ window.kadi.game = (function(me, $, undefined){
                 this.deck.redrawCards();
         },
         initHandlers: function() {
+            $('.player.player' + this.getLocation()).toggleClass('hidden');
             var self = this;
             if (this.live) {
                 SHOTGUN.listen(kadi.game.Events.CARD_SELECTED, function(card) {
@@ -501,7 +505,6 @@ window.kadi.game = (function(me, $, undefined){
 
         display : function() {
             kadi.ui.disableLoading('game');
-            $('.player').toggleClass('hidden');
             this.game.startGame();
         }
     });
