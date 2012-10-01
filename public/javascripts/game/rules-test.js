@@ -1,9 +1,19 @@
 describe("Card rules:", function() {
-    it("A deck has 54 cards per deck", function() {
-//        expect(deck.cards.length).toBe(54);
-        expect(true).toBe(true);
+
+    var rule = new kadi.game.RuleEngine();
+
+    it("Only valid cards can start", function() {
+        var king = new kadi.game.Card(kadi.game.Card.KING,kadi.game.Suite.DIAMONDS);
+        expect(kadi.game.RuleEngine.canStart(king)).toBe(false);
+
+        var queen = new kadi.game.Card(kadi.game.Card.JACK, kadi.game.Suite.HEARTS);
+        expect(kadi.game.RuleEngine.canStart(queen)).toBe(false);
+
+        var five = new kadi.game.Card(kadi.game.Card.FIVE, kadi.game.Suite.HEARTS);
+        expect(kadi.game.RuleEngine.canStart(five)).toBe(true);
     });
 });
+
 
 (function() {
     var jasmineEnv = jasmine.getEnv();

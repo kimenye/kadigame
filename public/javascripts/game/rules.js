@@ -1,7 +1,10 @@
 window.kadi.game = (function(me, $, undefined){
 
     me.RuleEngine = JS.Class({
-        construct: function() {
+        statics: {
+            canStart: function(card) {
+                return !card.isFaceCard() && !card.isSpecialCard() && !card.isAce();
+            }
         },
 
         /**

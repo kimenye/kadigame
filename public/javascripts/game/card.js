@@ -141,6 +141,18 @@ window.kadi.game = (function(me, $, undefined){
                 return this.rank == kadi.game.Card.QUEEN;
             };
 
+            this.isFaceCard = function() {
+                return this.isKing() || this.isQueen() || this.isJack();
+            };
+
+            this.is = function(rank) {
+                return this.rank == rank;
+            }
+
+            this.isSpecialCard = function() {
+                return (this.isJoker() || this.is("2") || this.is("3") || this.isEight());
+            };
+
             this.isEight = function() {
                 return this.rank == "8";
             };

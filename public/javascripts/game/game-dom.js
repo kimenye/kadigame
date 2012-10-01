@@ -124,7 +124,7 @@ window.kadi.game = (function(me, $, undefined){
             SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[],''+starter.id);
             SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[starter], 'deck');
 
-            var card = this.pickingDeck.deal();
+            var card = this.pickingDeck.cut();
             this.tableDeck.addCard(card, true);
         }
     });
@@ -517,6 +517,20 @@ window.kadi.game = (function(me, $, undefined){
                 var pos = positions[idx];
                 card.display(me.GameUI.ID, pos.x, pos.y, pos.rotate);
             });
+        },
+
+        cut: function() {
+            var canStart = false;
+            var card = null;
+            do
+            {
+                var card = this.deck.shift();
+                canStart = kadi.game.RuleEngine.canStart(card);
+                if (!canStart)
+                    this.deck.push(card);
+            }
+            while(!canStart)
+            return card;
         },
 
         deal: function() {
