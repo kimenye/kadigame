@@ -17,6 +17,21 @@ window.kadi.game = (function(me, $, undefined){
 
                 var can_follow = (isSameRank || isSameSuite || other.isAce() || card.isAce());
                 return can_follow;
+            },
+
+            canPlayTogetherWith: function(card, other) {
+                var follow = me.RuleEngine.canFollow(card,other);
+                var sameRank = card.rank == other.rank;
+                var sameSuite = card.suite == other.suite;
+
+                if (card.isQueen() || card.isEight())
+                    return follow && (sameSuite || sameRank);
+                else
+                    return follow && sameRank;
+            },
+
+            canEndMove: function(card) {
+                return !card.isQueen() && !card.isEight();
             }
         },
 
