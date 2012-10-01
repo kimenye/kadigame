@@ -83,7 +83,7 @@ window.kadi.game = (function(me, $, undefined){
                 _.delay(function() {
                     self.order.next();
                     var next = self.order.current();
-                    SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ next.name + " turn to play." ]);
+                    SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ next.name + "'s turn to play." ]);
                     SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[self.tableDeck.topCard()],next.id);
                     SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[next],'deck');
                 }, 1000);
@@ -228,7 +228,7 @@ window.kadi.game = (function(me, $, undefined){
         bot: function(card) {
             var cards = this.deck.cards;
             var canPlay = kadi.game.RuleEngine.canPlay(cards, card);
-            console.log("Can play ", canPlay);
+            console.log("%s can play: %s", this.name, canPlay);
             if (canPlay) {
                 _.each(cards, function(c) {
                     console.log(c.toS());
@@ -567,7 +567,8 @@ window.kadi.game = (function(me, $, undefined){
             WIDTH: 150,
             HEIGHT: 200,
             X: 300,
-            Y: 200
+            Y: 200,
+            Z: 5000
         },
         construct : function() {
             this.parent.construct.apply(this, ['game', 'table_deck_div', 'table_deck']);
@@ -576,6 +577,10 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         addCard: function(card, flip) {
+            var topZ = kadi.game.TableDeck.Z;
+            if (kadi.isSomethingMeaningful(this.topCard())) {
+                this.topCard().container().css('z-index', topZ-1);
+            }
             this.cards.push(card);
             if (flip) {
                 card.flip();
@@ -584,14 +589,7 @@ window.kadi.game = (function(me, $, undefined){
             if (this.cards.length == 1)
                 pos.rotate = 0;
 
-            if (kadi.isSomethingMeaningful(this.topCard())
-                && this.cards.length > 1) {
-                var top = this.topCard();
-                var topZ = top.container().css('z-index');
-
-                top.container().css('z-index', topZ-1);
-                card.container().css('z-index', topZ+2);
-            }
+            card.container().css('z-index', topZ);
             card.moveTo(pos.x, pos.y, pos.rotate);
         },
 
