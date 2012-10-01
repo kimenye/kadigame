@@ -13,6 +13,10 @@ function clubs(rank) {
     return new kadi.game.Card(rank, kadi.game.Suite.CLUBS);
 }
 
+function joker(t) {
+    return new kadi.game.Card("0", kadi.game.Suite.JOKERS);
+}
+
 describe("Card rules:", function() {
 
     var rule = new kadi.game.RuleEngine();
@@ -51,6 +55,14 @@ describe("Card rules:", function() {
         var an_ace = spades("A");
 
         expect(kadi.game.RuleEngine.canFollow(an_ace,any_card));
+    });
+
+    it("Any card can follow a joker", function() {
+        var anyCard = diamonds("Q");
+        var j = joker("0");
+
+        expect(kadi.game.RuleEngine.canFollow(anyCard, j)).toBe(true);
+        expect(kadi.game.RuleEngine.canFollow(j, anyCard)).toBe(true);
     });
 
     it("A card can be be in a move with another if they are the same rank", function() {

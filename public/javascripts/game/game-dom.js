@@ -228,18 +228,19 @@ window.kadi.game = (function(me, $, undefined){
         bot: function(card) {
             var cards = this.deck.cards;
             var canPlay = kadi.game.RuleEngine.canPlay(cards, card);
-            console.log("%s can play: %s", this.name, canPlay);
             if (canPlay) {
                 _.each(cards, function(c) {
                     console.log(c.toS());
                 });
-
                 var groups = kadi.game.RuleEngine.group(cards,card);
                 if (groups.length == 0) {
                     //look for a possible move
                     var moves = kadi.game.RuleEngine.possibleMoves(card, cards);
                     var move = _.first(moves);
                     SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, move.cards]);
+                } else {
+                    var move = _.first(groups);
+                    SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, move]);
                 }
             }
             else

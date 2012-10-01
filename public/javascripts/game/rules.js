@@ -21,7 +21,7 @@ window.kadi.game = (function(me, $, undefined){
                 var isSameSuite = card.suite == other.suite;
                 var isSameRank = card.rank == other.rank;
 
-                var can_follow = (isSameRank || isSameSuite || other.isAce() || card.isAce());
+                var can_follow = (isSameRank || isSameSuite || other.isAce() || card.isAce() || card.isJoker() || other.isJoker());
                 return can_follow;
             },
 
