@@ -1,3 +1,18 @@
+//helper functions
+
+function diamonds(rank) {
+    return new kadi.game.Card(rank, kadi.game.Suite.DIAMONDS);
+}
+function spades(rank) {
+    return new kadi.game.Card(rank, kadi.game.Suite.SPADES);
+}
+function hearts(rank) {
+    return new kadi.game.Card(rank, kadi.game.Suite.HEARTS);
+}
+function clubs(rank) {
+    return new kadi.game.Card(rank, kadi.game.Suite.CLUBS);
+}
+
 describe("Card rules:", function() {
 
     var rule = new kadi.game.RuleEngine();
@@ -68,6 +83,32 @@ describe("Card rules:", function() {
 
         card = new kadi.game.Card("Q", kadi.game.Suite.DIAMONDS);
         expect(kadi.game.RuleEngine.canEndMove(card)).toBe(false);
+    });
+
+    describe("Queen rules", function() {
+
+        it("A queen can play together with another queen", function() {
+            var q_d = new kadi.game.Card("Q", kadi.game.Suite.DIAMONDS);
+            var q_s = new kadi.game.Card("Q", kadi.game.Suite.SPADES);
+
+            expect(kadi.game.RuleEngine.canPlayTogetherWith(q_d, q_s)).toBe(true);
+        });
+
+        it("A queen can play together with another ordinary card of the same suite", function() {
+            var q_d = diamonds("Q");
+            var seven_d = diamonds("7");
+            var seven_c = clubs("7");
+
+            expect(kadi.game.RuleEngine.canPlayTogetherWith(q_d, seven_d)).toBe(true);
+            expect(kadi.game.RuleEngine.canPlayTogetherWith(q_d, seven_c)).toBe(false);
+        });
+
+        it("An eight can act as a queen", function() {
+            var eight_d = diamonds("8");
+            var seven_d = diamonds("7");
+
+            expect(kadi.game.RuleEngine.canPlayTogetherWith(eight_d, seven_d)).toBe(true);
+        });
     });
 });
 
