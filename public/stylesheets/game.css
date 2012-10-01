@@ -196,92 +196,28 @@
     top: 60px;
 }
 
-.rdobutton {
-    display: none;
-}
-
-.rdobuttonlabel {
-    display: block;
-    background-color: #999999;
-    border: 1px solid #222;
-    border-radius: 3px;
-    padding: 6px 12px;
-    cursor: pointer;
-    text-align: center;
-    color: #222;
-    letter-spacing: 0.15em;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: #222;
-    text-shadow: 0px 2px 3px #555;
-    width: 150px;
-    margin: auto;
-}
-
-.rdobuttonlabel:hover {
-    color: #ffffff;
-}
-
-#start-game {
-    position: absolute;
-    top: 350px;
-    left: 325px;
-}
-
-/*buttons*/
-.button.action_button_cell {
-    position: absolute;
+.notification {
+    width: 400px;
+    height: 100px;
     border: 1px solid #000000;
+    background-color: #f5f5f5;
+    left: 200px;
+    top: 375px;
+    position: relative;
 }
 
-
-
-/**,*:before,*:after {*/
-    /*box-sizing:border-box;*/
-/*}*/
-
-.box {
-    position: absolute;
+.notification .lines {
+    border-left: 1px solid #ffaa9f;
+    border-right: 1px solid #ffaa9f;
+    width: 2px;
+    float: left;
+    height: 100px;
+    margin-left: 20px;
 }
 
-.circle {
-    background-color: #b14336;
-    border-radius:50%;
-    display:inline-block;
-    height:125px;
-    width:125px;
-}
-
-.stitch {
-    background-color: #b14336;
-/*//background-image: -webkit-radial-gradient(60% 55%,  circle  closest-corner,  red,  green 20%,  yellow 70%,  black);*/
-    box-shadow: 0 0 10px rgba(0,0,0,0.1), 1px 1px 0 8px #b14336, inset 0 0 18px rgba(0,0,0,.2);
-    position:relative;
-    background-clip: padding,content;
-}
-.stitch:before{
-    content:" ";
-    background-color:transparent;
-    border-radius:inherit;
-    border:2px dashed #CACDAC;
-    display:block;
-    height:inherit;
-    left:0px;
-    position:absolute;
-    top:0px;
-    width:inherit;
-    z-index:4;
-}
-.stitch:after{
-    content:" ";
-    background-color:transparent;
-    border-radius:inherit;
-    border:2px dashed #65261F;
-    display:block;
-    height:inherit;
-    left:1px;
-    position:absolute;
-    top:2px;
-    width:inherit;
-    z-index:3;
-}
+.notification .list li {
+    list-style: none;
+    border-bottom: 1px dotted #ccc;
+    height: auto;
+    padding: 10px;
+}​​

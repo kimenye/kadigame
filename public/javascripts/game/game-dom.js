@@ -10,7 +10,8 @@ window.kadi.game = (function(me, $, undefined){
             RECEIVE_TURN: "receive-turn",
             ACTIVATE_CARD: "activate-card",
             DEACTIVATE_CARD: "deactivate-card",
-            PLAY_CARDS: "play-cards"
+            PLAY_CARDS: "play-cards",
+            MSG_RECEIVED: "msg-received"
         }
     });
 
@@ -58,6 +59,7 @@ window.kadi.game = (function(me, $, undefined){
             this.pickingDeck = new kadi.game.PickingDeck();
             this.tableDeck = new kadi.game.TableDeck();
             this.ruleEngine = new kadi.game.RuleEngine();
+            this.noticeBoard = new kadi.game.NoticeBoard();
         },
 
         startGame: function() {
@@ -69,9 +71,9 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             this.order = new me.PlayingOrder(this.players, 3);
-            window.order = this.order;
             this.dealCards();
 
+            SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ this.order.current().name + " to start. " ]);
             SHOTGUN.listen(kadi.game.Events.PICK_CARD, function(player, num) {
                 self.giveCard(player,num);
             });
@@ -80,6 +82,7 @@ window.kadi.game = (function(me, $, undefined){
                 _.delay(function() {
                     self.order.next();
                     var next = self.order.current();
+                    SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ next.name + " turn to play." ]);
                     SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[],''+next.id);
                     SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[next],'deck');
                 }, 1000);
@@ -94,6 +97,8 @@ window.kadi.game = (function(me, $, undefined){
             var canPlay = this.ruleEngine.canPlay(cards,this.tableDeck.topCard());
             if (canPlay) {
                 _.each(cards, function(card) {
+                    SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ player.name + " played " + card.toS()]);
+
                     card.deSelect();
                     card.active = false;
                     player.removeCard(card, true);
@@ -579,6 +584,59 @@ window.kadi.game = (function(me, $, undefined){
 
         topCard: function() {
             return _.last(this.cards);
+        }
+    });
+
+    me.Message = JS.Class({
+        construct: function(idx, text) {
+            this.idx = idx;
+            this.text = text;
+        }
+    });
+
+    me.NoticeBoard = me.Box.extend({
+        statics: {
+            WIDTH: 125,
+            HEIGHT: 175,
+            X: 140,
+            Y: 290
+        },
+        construct : function() {
+            this.parent.construct.apply(this, ['game', 'notification_div', 'notification']);
+            var self = this;
+            this.display();
+
+            window.node = this.node();
+            this.node().transition({ rotate: '20 deg' }, 500, 'snap');
+            this.messages = [];
+            var linesDiv = document.createElement("DIV");
+            linesDiv.className = "lines";
+            this.div.appendChild(linesDiv);
+
+            var ul = document.createElement("UL");
+            ul.className = "list";
+            this.listDiv = ul;
+            this.ctr = 0;
+
+            this.div.appendChild(ul);
+
+            SHOTGUN.listen(kadi.game.Events.MSG_RECEIVED, function(text) {
+                self.log(text);
+            });
+        },
+
+        log: function(text) {
+            var li = document.createElement("LI");
+            this.ctr += 1;
+            li.id = "msg-" + this.ctr;
+            var txt = kadi.createSpan(text);
+            li.appendChild(txt);
+            if (this.ctr > 2) {
+                var earliest = this.ctr - 2;
+                var old = document.getElementById('msg-' + earliest);
+                $(old).remove();
+            }
+            this.listDiv.appendChild(li);
         }
     });
 
