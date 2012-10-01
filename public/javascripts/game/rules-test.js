@@ -113,6 +113,22 @@ describe("Card rules:", function() {
 });
 
 
+describe("Move rules:", function() {
+
+    var startingCard = diamonds("10");
+    var hand, deck, computer, board;
+
+    it("No moves are possible if no cards can follow", function() {
+        hand = [hearts("2"),spades("3"),hearts("4"),clubs("4")];
+        expect(kadi.game.RuleEngine.possibleMoves(startingCard, hand).length).toBe(0);
+    });
+
+    it("Multiple moves are possible without grouping cards", function() {
+        hand = [diamonds("5"), diamonds("6"), spades("K"), spades("A")];
+        expect(kadi.game.RuleEngine.possibleMoves(diamonds("10"),hand).length).toBe(3);
+    });
+});
+
 (function() {
     var jasmineEnv = jasmine.getEnv();
     jasmineEnv.updateInterval = 250;

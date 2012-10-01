@@ -1,5 +1,17 @@
 window.kadi.game = (function(me, $, undefined){
 
+    me.Move = JS.Class({
+
+        construct: function(cards) {
+            this.cards = cards;
+        },
+
+        first: function() {
+            return _.first(this.cards);
+        }
+    });
+
+
     me.RuleEngine = JS.Class({
         statics: {
             canStart: function(card) {
@@ -32,6 +44,16 @@ window.kadi.game = (function(me, $, undefined){
 
             canEndMove: function(card) {
                 return !card.isQueen() && !card.isEight();
+            },
+
+            possibleMoves: function(topCard, hand) {
+                var moves = [];
+                _.each(hand, function(card) {
+                    if(me.RuleEngine.canFollow(card, topCard)) {
+                        moves.push(new kadi.game.Move([card]));
+                    }
+                });
+                return moves;
             }
         },
 
