@@ -122,76 +122,102 @@ window.kadi = (function(me, $, undefined){
     }
 
     me.getMultiplier = function(idx,num) {
-
+        var mid = kadi.middleIdx(num);
+        return Math.abs(idx - mid);
     }
 
 
-    me.getOffset = function(idx, num, itemWidth, margin) {
+    me.getOffset = function(idx, num, itemWidth, margin, middle, init) {
         if (num >= 2) {
-//            if (idx == 0) {
-//                return kadi.negate((itemWidth + margin) / 2);
-//            }
-//            else if (idx == 1) {
-//                return (itemWidth + margin) / 2;
-//            }
-//            if (kadi.isEven(idx)) {
-//            }
-//            if(kadi.isLeft(idx, num)) {
-//                return kadi.negate((itemWidth + margin) / 2);
-//            }
-//            else if(kadi.isMiddle(idx,num)) {
-//
-//            }
-//            else {
-//                return (itemWidth + margin) / 2;
-//            }
-
-//            console.log(idx,num);
             var isMiddle = kadi.isMiddle(idx,num);
             var isLeft = kadi.isLeft(idx,num);
             var isRight = kadi.isRight(idx, num);
+            var multi = kadi.getMultiplier(idx, num);
+            var even = kadi.isEven(num);
+            var middleIdx = kadi.middleIdx(num);
 
-            console.log("idx: %d, num: %d, middle: %s, left: %s, right: %s", idx, num, isMiddle, isLeft, isRight);
 
-            if (isMiddle)
-                return 0;
-            else if (isLeft)
-                return (itemWidth + margin);
-            else if (isRight)
-                return kadi.negate((itemWidth + margin));
+            if (even) {
+                var offset = 0;
 
-//            if(kadi.isMiddle(idx, num))
-//                return 0;
-//            else if (kadi.isLeft(idx, num)) {
-//                return (itemWidth + margin) / 2;
-//            }
-//            else {
-//                return kadi.negate((itemWidth + margin) / 2);
-//            }
+                if (idx == middleIdx)
+                    offset = kadi.negate(middle - init);
+                else if (idx == middleIdx + 1)
+                    offset = middle - init;
+                else if (idx < middleIdx) {
+                    var pos = middle + (itemWidth * multi) + (margin * multi);
+                    offset = pos - init;
+                }
+                else {
+                    var pos = middle - (itemWidth * multi) - (margin * (multi-1));
+                    offset = pos - init;
+                }
+                return offset;
+
+            } else {
+                if (isMiddle)
+                    return 0;
+                else if (isLeft)
+                    return (itemWidth + margin) * multi;
+                else if (isRight)
+                    return kadi.negate((itemWidth + margin) * multi);
+            }
             return 0;
         }
     }
 
-    me.chineseFan = function(containerWidth,offSet,itemWidth,numItems,margin) {
-//        console.log("Width: %d, offset: %d, itemWidth: %d, numItems: %d, margin: %d", containerWidth, offSet, itemWidth, numItems, margin);
+    me.fan = function(num, itemWidth, margin, middle, init) {
         var coords = [];
-        var middle = kadi.centerLine(containerWidth,offSet);
-//        console.log("Middle line: ", middle);
-        _.each(_.range(numItems), function(idx) {
-//            coords.push(new kadi.Pos(null,margin+itemWidth,null,me.Pos.RESET));
-            var offset = me.getOffset(idx,numItems, itemWidth, margin);
-//            var pos = new kadi.Pos(null,)
-//            console.log("idx: %d, offset: %d", idx, offset);
+        _.each(_.range(num), function(idx) {
+            var offset = me.getOffset(idx,num, itemWidth, margin, middle, init);
 
-            var pos = new kadi.Pos(null, offset, null, null);
+            var isMiddle = kadi.isMiddle(idx,num);
+            var isLeft = kadi.isLeft(idx,num);
+            var isRight = kadi.isRight(idx, num);
+            var multi = kadi.getMultiplier(idx, num);
+            var even = kadi.isEven(num);
+            var middleIdx = kadi.middleIdx(num);
+
+            var rotate = 0;
+            var pos = new kadi.Pos(null, offset, rotate, null);
             coords.push(pos);
         });
         return coords;
     }
 
+    me.chineseFan = function(containerWidth,offSet,itemWidth,numItems,margin) {
+        var coords = [];
+        var middle = kadi.centerLine(containerWidth,offSet);
+        var init = kadi.centerInFrame(containerWidth, itemWidth) + offSet;
+        var fits = false;
+        do
+        {
+            coords = kadi.fan(numItems, itemWidth, margin, middle, init);
+            var fPos = _.first(coords);
+            var lPos = _.last(coords);
+            var largest = Math.max(Math.abs(fPos.y), Math.abs(lPos.y));
+            var diff = containerWidth - (init + largest);
+            diff /= 2;
+            margin -= 5;
+            fits = (diff == 0);
+            if (margin == -70)
+                fits = true;
+        }
+        while(!fits)
+
+        _.each(coords, function(c, idx) {
+            var y = init + c.y;
+            if (y >= middle)
+                c.rotate = -3;
+            else
+                c.rotate = 3;
+        });
+
+        return coords;
+    }
+
     me.buildVerticalFan = function(containerWidth,innerWidth, itemWidth, numItems, margin, reverse) {
         var first = kadi.centerInFrame(containerWidth, innerWidth);
-        console.log("First: ", first);
         var coords = [];
         coords.push(new kadi.Pos(kadi.game.PlayerDeck.X_C, first));
 

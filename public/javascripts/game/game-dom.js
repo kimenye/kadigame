@@ -80,12 +80,10 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         dealCards: function(starter) {
-            _.each(_.range(4), function(idx) {
+            _.each(_.range(2), function(idx) {
                 _.each(this.players, function(p) {
-//                    if (p.getLocation() == kadi.game.PlayerDeck.TYPE_C) {
-                        var card = this.pickingDeck.deal();
-                        p.addCard(card);
-//                    }
+                    var card = this.pickingDeck.deal();
+                    p.addCard(card);
                 },this);
             },this);
 
@@ -347,6 +345,26 @@ window.kadi.game = (function(me, $, undefined){
             });
         },
 
+        isRight: function() {
+            return this.type == kadi.game.PlayerDeck.TYPE_C;
+        },
+
+        isHorizontal : function() {
+            return this.type == kadi.game.PlayerDeck.TYPE_A || this.type == kadi.game.PlayerDeck.TYPE_B;
+        },
+
+        isVertical: function() { return ! this.isHorizontal() },
+
+        removeCard: function(card) {
+            this.cards = _.reject(this.cards, function(c) {
+                return c.id == card.id;
+            })
+        },
+
+        hasCards: function() {
+            return this.cards.length > 0;
+        },
+
         addCard: function(card) {
             this.cards.push(card);
             var self = this;
@@ -369,26 +387,6 @@ window.kadi.game = (function(me, $, undefined){
             card.moveTo(left,top, rotate, origin);
         },
 
-        isRight: function() {
-            return this.type == kadi.game.PlayerDeck.TYPE_C;
-        },
-
-        isHorizontal : function() {
-            return this.type == kadi.game.PlayerDeck.TYPE_A || this.type == kadi.game.PlayerDeck.TYPE_B;
-        },
-
-        isVertical: function() { return ! this.isHorizontal() },
-
-        removeCard: function(card) {
-            this.cards = _.reject(this.cards, function(c) {
-                return c.id == card.id;
-            })
-        },
-
-        hasCards: function() {
-            return this.cards.length > 0;
-        },
-
         redrawCards: function() {
             if (this.hasCards()) {
                 var fan = [];
@@ -396,7 +394,9 @@ window.kadi.game = (function(me, $, undefined){
                     fan = kadi.chineseFan(this.height(),this.top(),kadi.game.CardUI.WIDTH,this.cards.length,5);
                     _.each(fan, function(blade,idx) {
                         var card = this.cards[idx];
-                        card.moveTo(blade.x, card.position().y + blade.y);
+                        var posY = card.position().y + blade.y;
+                        var rotate = card.position().rotate + blade.rotate;
+                        card.moveTo(blade.x, posY, rotate);
                     }, this);
                 }
                 else
@@ -407,38 +407,6 @@ window.kadi.game = (function(me, $, undefined){
                         card.moveTo(this.left() + blade.x,null,blade.rotate);
                     }, this);
                 }
-                /*var fan = [];
-                if (this.isHorizontal())
-                    fan = kadi.flatChineseFan(this.width(),kadi.game.CardUI.WIDTH,kadi.game.CardUI.MARGIN,this.cards.length,this.type == kadi.game.PlayerDeck.TYPE_A);
-                else
-                    fan = kadi.flatVerticalFan(this.height(),kadi.game.CardUI.WIDTH,kadi.game.CardUI.MARGIN,this.cards.length,!this.isRight());
-
-                if (this.isVertical()) {
-                    console.log("Num of blades : ", fan.length);
-                }
-                var self = this;
-                _.each(fan, function(blade, idx) {
-                    var card = self.cards[idx];
-                    if (this.isVertical()) {
-                        console.log("X: ", blade.x);
-                    }
-                    card.moveTo(self.left() + blade.x,null,blade.rotate);
-//                var x = blade.x;
-//                var y = blade.y;
-//
-//                if (this.isRight()) {
-//                    x = null;
-//                }
-//                console.log("X: ", x, "Y: ", y);
-//                if (!this.isVertical()) {
-////                    console.log("X: ", blade.x);
-////                    x += self.left();
-//                    x = null;
-//                    y = null;
-//                }
-//                console.log("x: %d, y: %d", x, y);
-//                card.moveTo(x,y,blade.rotate);
-                },this);*/
             }
         }
     })
