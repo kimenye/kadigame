@@ -12,6 +12,16 @@ describe("Card rules:", function() {
         var five = new kadi.game.Card(kadi.game.Card.FIVE, kadi.game.Suite.HEARTS);
         expect(kadi.game.RuleEngine.canStart(five)).toBe(true);
     });
+
+    it("Cards of the same suite can follow each other", function() {
+        var random_spade_card = new kadi.game.Card(kadi.game.Suite.SPADES, "6");
+        var other_spade_card = new kadi.game.Card(kadi.game.Suite.SPADES, "5");
+        var cant_follow = new kadi.game.Card(kadi.game.Suite.DIAMONDS, "4");
+
+        expect(kadi.game.RuleEngine.canFollow(random_spade_card, other_spade_card)).toBe(true);
+        expect(kadi.game.RuleEngine.canFollow(other_spade_card,random_spade_card)).toBe(true);
+        expect(kadi.game.RuleEngine.canFollow(other_spade_card,cant_follow)).toBe(false);
+    });
 });
 
 
