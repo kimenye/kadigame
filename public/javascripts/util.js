@@ -136,7 +136,6 @@ window.kadi = (function(me, $, undefined){
             var even = kadi.isEven(num);
             var middleIdx = kadi.middleIdx(num);
 
-
             if (even) {
                 var offset = 0;
 
@@ -170,14 +169,6 @@ window.kadi = (function(me, $, undefined){
         var coords = [];
         _.each(_.range(num), function(idx) {
             var offset = me.getOffset(idx,num, itemWidth, margin, middle, init);
-
-            var isMiddle = kadi.isMiddle(idx,num);
-            var isLeft = kadi.isLeft(idx,num);
-            var isRight = kadi.isRight(idx, num);
-            var multi = kadi.getMultiplier(idx, num);
-            var even = kadi.isEven(num);
-            var middleIdx = kadi.middleIdx(num);
-
             var rotate = 0;
             var pos = new kadi.Pos(null, offset, rotate, null);
             coords.push(pos);
@@ -196,22 +187,22 @@ window.kadi = (function(me, $, undefined){
             var fPos = _.first(coords);
             var lPos = _.last(coords);
             var largest = Math.max(Math.abs(fPos.y), Math.abs(lPos.y));
-            var diff = containerWidth - (init + largest);
-            diff /= 2;
-            margin -= 5;
-            fits = (diff == 0);
-            if (margin == -70)
+            var diff = (init + largest) - containerWidth;
+            if (diff <= 0 || numItems <= 2 || margin == -70)
                 fits = true;
+            else
+                margin -= 5;
         }
         while(!fits)
 
-        _.each(coords, function(c, idx) {
-            var y = init + c.y;
-            if (y >= middle)
-                c.rotate = -3;
-            else
-                c.rotate = 3;
-        });
+        if (numItems > 2)
+            _.each(coords, function(c, idx) {
+                var y = init + c.y;
+                if (y >= middle)
+                    c.rotate = -3;
+                else
+                    c.rotate = 3;
+            });
 
         return coords;
     }

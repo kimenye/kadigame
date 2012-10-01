@@ -80,7 +80,7 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         dealCards: function(starter) {
-            _.each(_.range(2), function(idx) {
+            _.each(_.range(3), function(idx) {
                 _.each(this.players, function(p) {
                     var card = this.pickingDeck.deal();
                     p.addCard(card);
