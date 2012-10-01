@@ -42,8 +42,19 @@ window.kadi.game = (function(me, $, undefined){
                 if (n >= this.playerCount)
                     n = 0;
                 this.currentIdx = n;
-                return this.currentIdx;
+            } else {
+                var n = this.currentIdx - 1;
+                if (n < 0)
+                    n = this.playerCount - 1;
+                this.currentIdx = n;
             }
+        },
+        reverse: function() {
+            if (this.isClockwise())
+                this.direction = kadi.game.PlayingOrder.ANTI_CLOCKWISE;
+            else
+                this.direction = kadi.game.PlayingOrder.CLOCKWISE;
+            this.next();
         },
         isClockwise: function() {
             return this.direction == kadi.game.PlayingOrder.CLOCKWISE;
@@ -142,6 +153,10 @@ window.kadi.game = (function(me, $, undefined){
             this.id = id;
             this.name = name;
             this.live = live;
+        },
+
+        eq: function(other) {
+            return this.id == other.id && this.name == other.name;
         },
 
         toS: function() {

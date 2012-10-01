@@ -196,6 +196,41 @@ describe("Move rules:", function() {
     });
 });
 
+
+describe("Game mechanics:", function() {
+    var playerA = new kadi.game.Player('A', 'Player A');
+    var playerB = new kadi.game.Player('B', 'Player B');
+    var playerC = new kadi.game.Player('C', 'Player C');
+    var playerD = new kadi.game.Player('D', 'Player D');
+
+    it("Returns the next player", function() {
+        var order = new kadi.game.PlayingOrder([playerA, playerB, playerC, playerD], 0);
+        expect(order.current().eq(playerA)).toBe(true);
+        expect(order.current().eq(playerB)).toBe(false);
+    });
+
+    it("When clockwise the index moves incrementally", function() {
+        var order = new kadi.game.PlayingOrder([playerA, playerB, playerC, playerD], 0);
+        order.next();
+        expect(order.current().eq(playerB)).toBe(true);
+    });
+
+    it("When anti-clockwise the index moves incrementally", function() {
+        var order = new kadi.game.PlayingOrder([playerA, playerB, playerC, playerD], 0);
+        order.direction = kadi.game.PlayingOrder.ANTI_CLOCKWISE;
+        order.next();
+        expect(order.current().eq(playerD)).toBe(true);
+    });
+
+    it("Turn reversal changes the direction of the game", function() {
+        var order = new kadi.game.PlayingOrder([playerA, playerB, playerC, playerD], 0);
+        order.next();
+        expect(order.current().eq(playerB)).toBe(true);
+        order.reverse();
+        expect(order.current().eq(playerA)).toBe(true);
+    });
+});
+
 (function() {
     var jasmineEnv = jasmine.getEnv();
     jasmineEnv.updateInterval = 250;
