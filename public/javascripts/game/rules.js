@@ -13,6 +13,17 @@ window.kadi.game = (function(me, $, undefined){
 
     me.RuleEngine = JS.Class({
         statics: {
+            ACTION_NONE: "None",
+            ACTION_REVERSE: "Reverse",
+            ACTION_SKIP: "Skip",
+            ACTION_PICK: "Pick",
+            actionRequired: function(hand) {
+                var lastCard = _.last(hand);
+                if (lastCard.isKing())
+                    return me.RuleEngine.ACTION_REVERSE;
+                else if(lastCard.isOrdinary())
+                    return me.RuleEngine.ACTION_NONE;
+            },
             canStart: function(card) {
                 return !card.isFaceCard() && !card.isSpecialCard() && !card.isAce();
             },

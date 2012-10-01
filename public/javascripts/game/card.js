@@ -149,9 +149,17 @@ window.kadi.game = (function(me, $, undefined){
                 return this.rank == rank;
             }
 
+            this.isPickingCard = function() {
+                return this.isJoker() || this.is("2") || this.is("3");
+            };
+
             this.isSpecialCard = function() {
                 return (this.isJoker() || this.is("2") || this.is("3") || this.isEight());
             };
+
+            this.isOrdinary = function() {
+                return !this.isSpecialCard() && !this.isFaceCard() && !this.isAce();
+            }
 
             this.isEight = function() {
                 return this.rank == "8";

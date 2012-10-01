@@ -229,6 +229,21 @@ describe("Game mechanics:", function() {
         order.reverse();
         expect(order.current().eq(playerA)).toBe(true);
     });
+
+    it("A King causes a reverse action", function() {
+        var king = spades("K");
+        var h = [king];
+        var action = kadi.game.RuleEngine.actionRequired(h);
+        expect(action).toBe(kadi.game.RuleEngine.ACTION_REVERSE);
+    });
+
+    it("An ordinary card causes no action", function() {
+        var king = spades("5");
+        expect(king.isOrdinary()).toBe(true);
+        var h = [king];
+        var action = kadi.game.RuleEngine.actionRequired(h);
+        expect(action).toBe(kadi.game.RuleEngine.ACTION_NONE);
+    });
 });
 
 (function() {

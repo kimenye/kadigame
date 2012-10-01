@@ -231,7 +231,6 @@ window.kadi.game = (function(me, $, undefined){
                 }
             }, this.id);
         },
-
         endTurn: function() {
             SHOTGUN.fire(kadi.game.Events.END_TURN, [this]);
             if (this.live)
@@ -239,7 +238,6 @@ window.kadi.game = (function(me, $, undefined){
                 this.activate(false);
             }
         },
-
         bot: function(card) {
             var cards = this.deck.cards;
             var canPlay = kadi.game.RuleEngine.canPlay(cards, card);
@@ -261,16 +259,13 @@ window.kadi.game = (function(me, $, undefined){
             else
                 this.pick();
         },
-
         kadi: function() {
 
         },
-
         pick: function() {
             SHOTGUN.fire(kadi.game.Events.PICK_CARD, [this, 1]);
             this.endTurn();
         },
-
         move: function() {
             if (this.selections.length > 0) {
                 this.activateActions(false);
