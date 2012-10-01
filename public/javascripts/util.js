@@ -33,8 +33,8 @@ window.kadi = (function(me, $, undefined){
     }
 
     me.coinToss = function(players) {
-        var starter = Math.floor( Math.random() * players.length);
-        return players[starter];
+        var idx = Math.floor( Math.random() * players.length);
+        return idx;
     }
 
     me.safeAssign = function(val, prev) {
@@ -176,7 +176,7 @@ window.kadi = (function(me, $, undefined){
         return coords;
     }
 
-    me.chineseFan = function(containerWidth,offSet,itemWidth,numItems,margin) {
+    me.chineseFan = function(containerWidth,offSet,itemWidth,numItems,margin,reverse) {
         var coords = [];
         var middle = kadi.centerLine(containerWidth,offSet);
         var init = kadi.centerInFrame(containerWidth, itemWidth) + offSet;
@@ -202,6 +202,9 @@ window.kadi = (function(me, $, undefined){
                     c.rotate = -3;
                 else
                     c.rotate = 3;
+
+                if (reverse)
+                    c.rotate = kadi.negate(c.rotate);
             });
 
         return coords;

@@ -14,6 +14,41 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
+    me.PlayingOrder = JS.Class({
+        statics: {
+            CLOCKWISE: 1,
+            ANTI_CLOCKWISE: 0
+        },
+        construct: function(players, startIdx) {
+            this.players = players;
+            this.startIdx = startIdx;
+            this.direction = me.PlayingOrder.CLOCKWISE;
+            this.turnCount = 0;
+            this.playerCount = this.players.length;
+            this.begin();
+        },
+        begin: function() {
+            this.currentIdx = this.startIdx;
+        },
+        current: function() {
+            return this.players[this.currentIdx];
+        },
+        next: function() {
+            this.turnCount++;
+            if (this.isClockwise()) {
+                var n = this.currentIdx + 1;
+                if (n >= this.playerCount)
+                    n = 0;
+                this.currentIdx = n;
+                return this.currentIdx;
+            }
+        },
+        isClockwise: function() {
+            return this.direction == kadi.game.PlayingOrder.CLOCKWISE;
+        },
+        isAntiClockwise: function() { return ! this.isClockwise() }
+    });
+
     me.Game = JS.Class({
         construct: function(player, opponents) {
             this.me = player;
@@ -27,18 +62,27 @@ window.kadi.game = (function(me, $, undefined){
 
         startGame: function() {
             var self = this;
-            var starter = kadi.coinToss(this.players);
+            var starterIdx = kadi.coinToss(this.players);
+            var starter = this.players[starterIdx];
             _.each(this.players, function(p) {
                 p.initHandlers();
             });
-            this.dealCards(this.me);
+
+            this.order = new me.PlayingOrder(this.players, starterIdx);
+            window.order = this.order;
+            this.dealCards();
 
             SHOTGUN.listen(kadi.game.Events.PICK_CARD, function(player, num) {
                 self.giveCard(player,num);
             });
 
             SHOTGUN.listen(kadi.game.Events.END_TURN, function(player) {
-                self.giveNextPlayerTurn(player);
+                _.delay(function() {
+                    self.order.next();
+                    var next = self.order.current();
+                    SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[],''+next.id);
+                    SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[next],'deck');
+                }, 1000);
             });
 
             SHOTGUN.listen(kadi.game.Events.PLAY_CARDS, function(player, cards) {
@@ -60,18 +104,6 @@ window.kadi.game = (function(me, $, undefined){
             }
         },
 
-        giveNextPlayerTurn: function(player) {
-            var nextPlayer = this.getNextTurn(player);
-            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[],''+nextPlayer.id);
-            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[nextPlayer],'deck');
-        },
-
-        getNextTurn: function(player) {
-            return _.detect(this.players, function(p) {
-                return p.id != player.id;
-            })
-        },
-
         giveCard: function(to,qty) {
             _.each(_.range(qty),function(){
                 var card = this.pickingDeck.deal();
@@ -79,7 +111,7 @@ window.kadi.game = (function(me, $, undefined){
             },this);
         },
 
-        dealCards: function(starter) {
+        dealCards: function() {
             _.each(_.range(3), function(idx) {
                 _.each(this.players, function(p) {
                     var card = this.pickingDeck.deal();
@@ -88,6 +120,7 @@ window.kadi.game = (function(me, $, undefined){
             },this);
 
             SHOTGUN.fire(kadi.game.Events.CARDS_DEALT,[]);
+            var starter = this.order.current();
             SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[],''+starter.id);
             SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[starter], 'deck');
 
@@ -164,6 +197,7 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function() {
+                console.log("It's my turn ", self.name);
                 if (self.live) {
                     self.activate(true);
                 } else {
@@ -173,6 +207,7 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         endTurn: function() {
+            console.log("%s: Finished my turn", this.name);
             SHOTGUN.fire(kadi.game.Events.END_TURN, [this]);
             if (this.live)
             {
@@ -184,6 +219,7 @@ window.kadi.game = (function(me, $, undefined){
             var self = this;
             _.delay(function() {
                 self.pick();
+//                self.endTurn();
             },1000);
         },
 
@@ -191,9 +227,10 @@ window.kadi.game = (function(me, $, undefined){
 
         },
 
-        pick: function() {
+        pick: function(dontEnd) {
             SHOTGUN.fire(kadi.game.Events.PICK_CARD, [this, 1]);
-            this.endTurn();
+            if (dontEnd)
+                this.endTurn();
         },
 
         move: function() {
@@ -405,7 +442,7 @@ window.kadi.game = (function(me, $, undefined){
             if (this.hasCards()) {
                 var fan = [];
                 if (this.isVertical()) {
-                    fan = kadi.chineseFan(this.height(), this.top(), kadi.game.CardUI.WIDTH, this.cards.length, 5);
+                    fan = kadi.chineseFan(this.height(), this.top(), kadi.game.CardUI.WIDTH, this.cards.length, 5, this.isLeft());
                     _.each(fan, function (blade, idx) {
                         var card = this.cards[idx];
                         var posY = card.position().y + blade.y;

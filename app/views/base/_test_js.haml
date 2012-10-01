@@ -6,8 +6,8 @@
 :javascript
   $(document).ready(function () {
     var me = new kadi.game.Player('#{@player.id}', "#{@player.name}",true);
-    var compB = new kadi.game.Player('B', 'Computer-B',false);
-    var compC = new kadi.game.Player('C', 'Computer-C',false);
-    var compD = new kadi.game.Player('D', 'Computer-D',false);
+    var compB = new kadi.game.Player('B', 'Player-B',false);
+    var compC = new kadi.game.Player('C', 'Player-C',false);
+    var compD = new kadi.game.Player('D', 'Player-D',false);
     kadi.game.initGameUI(me,[compB,compC,compD]);
   });
