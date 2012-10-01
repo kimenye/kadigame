@@ -17,17 +17,32 @@ window.kadi.game = (function(me, $, undefined){
                 return !card.isFaceCard() && !card.isSpecialCard() && !card.isAce();
             },
 
-            /**
-             * Check if a card can follow another card...
-             *
-             * @param card
-             */
             canFollow: function(card, other) {
                 var isSameSuite = card.suite == other.suite;
                 var isSameRank = card.rank == other.rank;
 
                 var can_follow = (isSameRank || isSameSuite || other.isAce() || card.isAce());
                 return can_follow;
+            },
+
+            canPlay : function(hand, topCard) {
+                if (hand.length > 1) {
+                    var validGroup = kadi.game.RuleEngine.evaluateGroup(hand);
+                    if (validGroup) {
+                        var first = _.first(hand);
+                        return kadi.game.RuleEngine.canFollow(first,topCard);
+                    }
+                    else {
+                        //check for single moves
+                        var possibleMoves = kadi.game.RuleEngine.possibleMoves(topCard, hand);
+                        return possibleMoves.length > 0;
+                    }
+                }
+                else if (hand.length == 1) {
+                    var _card = _.first(hand);
+                    return kadi.game.RuleEngine.canFollow(_card,topCard);
+                }
+                return false;
             },
 
             canPlayTogetherWith: function(card, other) {
@@ -118,16 +133,6 @@ window.kadi.game = (function(me, $, undefined){
                 }
                 return _groups;
             }
-        },
-
-        /**
-         * By default return true
-         * @param selections
-         * @param topCard
-         * @return {Boolean}
-         */
-        canPlay: function(selections, topCard) {
-            return true;
         }
     });
 

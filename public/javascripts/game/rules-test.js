@@ -173,6 +173,14 @@ describe("Move rules:", function() {
             var group = kadi.game.RuleEngine.bestGroup(h,spades("6"));
             expect(group.length).toBe(3);
         });
+
+        it("It can play selections", function() {
+            var h = [diamonds("5"), spades("5")];
+            expect(kadi.game.RuleEngine.canPlay(h, diamonds(9))).toBe(true);
+
+            h = [hearts("K"), clubs("10"), spades("A")];
+            expect(kadi.game.RuleEngine.canPlay(h, clubs("A"))).toBe(true);
+        });
     });
 });
 

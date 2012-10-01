@@ -11,7 +11,8 @@ window.kadi.game = (function(me, $, undefined){
             ACTIVATE_CARD: "activate-card",
             DEACTIVATE_CARD: "deactivate-card",
             PLAY_CARDS: "play-cards",
-            MSG_RECEIVED: "msg-received"
+            MSG_RECEIVED: "msg-received",
+            REJECT_MOVES: "reject-moves"
         }
     });
 
@@ -83,7 +84,7 @@ window.kadi.game = (function(me, $, undefined){
                     self.order.next();
                     var next = self.order.current();
                     SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ next.name + " turn to play." ]);
-                    SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[],''+next.id);
+                    SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[self.tableDeck.topCard()],next.id);
                     SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[next],'deck');
                 }, 1000);
             });
@@ -94,7 +95,7 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         attemptPlay : function(player, cards) {
-            var canPlay = this.ruleEngine.canPlay(cards,this.tableDeck.topCard());
+            var canPlay = kadi.game.RuleEngine.canPlay(cards,this.tableDeck.topCard());
             if (canPlay) {
                 _.each(cards, function(card) {
                     SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ player.name + " played " + card.toS()]);
@@ -102,10 +103,12 @@ window.kadi.game = (function(me, $, undefined){
                     card.deSelect();
                     card.active = false;
                     player.removeCard(card, true);
-                    this.tableDeck.addCard(card);
+                    this.tableDeck.addCard(card, !player.live);
                 }, this);
                 player.clearSelections();
                 player.endTurn();
+            } else {
+                SHOTGUN.fire(kadi.game.Events.REJECT_MOVES, [cards], player.id);
             }
         },
 
@@ -124,13 +127,13 @@ window.kadi.game = (function(me, $, undefined){
                 },this);
             },this);
 
-            SHOTGUN.fire(kadi.game.Events.CARDS_DEALT,[]);
-            var starter = this.order.current();
-            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[],''+starter.id);
-            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[starter], 'deck');
-
             var card = this.pickingDeck.cut();
             this.tableDeck.addCard(card, true);
+
+            SHOTGUN.fire(kadi.game.Events.CARDS_DEALT,[]);
+            var starter = this.order.current();
+            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[this.tableDeck.topCard()],starter.id);
+            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[starter], 'deck');
         }
     });
 
@@ -183,6 +186,10 @@ window.kadi.game = (function(me, $, undefined){
                     self.handleCardDeselected(card);
                 });
 
+                SHOTGUN.listen(kadi.game.Events.REJECT_MOVES, function(cards) {
+                    self.activateActions(true);
+                }, this.id);
+
                 this.btnMove = $('.btn-move').click(function(btn) {
                     if (kadi.isEnabled(this))
                         self.move();
@@ -201,18 +208,16 @@ window.kadi.game = (function(me, $, undefined){
                 self.deck.redrawCards();
             });
 
-            SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function() {
-                console.log("It's my turn ", self.name);
+            SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function(card) {
                 if (self.live) {
                     self.activate(true);
                 } else {
-                    self.bot();
+                    self.bot(card);
                 }
-            }, ''+this.id);
+            }, this.id);
         },
 
         endTurn: function() {
-            console.log("%s: Finished my turn", this.name);
             SHOTGUN.fire(kadi.game.Events.END_TURN, [this]);
             if (this.live)
             {
@@ -220,19 +225,32 @@ window.kadi.game = (function(me, $, undefined){
             }
         },
 
-        bot: function() {
-            var self = this;
-            _.delay(function() {
-                self.pick();
-////                self.endTurn();
-            },1000);
+        bot: function(card) {
+            var cards = this.deck.cards;
+            var canPlay = kadi.game.RuleEngine.canPlay(cards, card);
+            console.log("Can play ", canPlay);
+            if (canPlay) {
+                _.each(cards, function(c) {
+                    console.log(c.toS());
+                });
+
+                var groups = kadi.game.RuleEngine.group(cards,card);
+                if (groups.length == 0) {
+                    //look for a possible move
+                    var moves = kadi.game.RuleEngine.possibleMoves(card, cards);
+                    var move = _.first(moves);
+                    SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, move.cards]);
+                }
+            }
+            else
+                this.pick();
         },
 
         kadi: function() {
 
         },
 
-        pick: function(dontEnd) {
+        pick: function() {
             SHOTGUN.fire(kadi.game.Events.PICK_CARD, [this, 1]);
             this.endTurn();
         },
