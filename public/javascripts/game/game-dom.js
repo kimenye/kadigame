@@ -68,7 +68,7 @@ window.kadi.game = (function(me, $, undefined){
                 p.initHandlers();
             });
 
-            this.order = new me.PlayingOrder(this.players, starterIdx);
+            this.order = new me.PlayingOrder(this.players, 3);
             window.order = this.order;
             this.dealCards();
 
@@ -219,7 +219,7 @@ window.kadi.game = (function(me, $, undefined){
             var self = this;
             _.delay(function() {
                 self.pick();
-//                self.endTurn();
+////                self.endTurn();
             },1000);
         },
 
@@ -229,8 +229,7 @@ window.kadi.game = (function(me, $, undefined){
 
         pick: function(dontEnd) {
             SHOTGUN.fire(kadi.game.Events.PICK_CARD, [this, 1]);
-            if (dontEnd)
-                this.endTurn();
+            this.endTurn();
         },
 
         move: function() {
@@ -306,6 +305,7 @@ window.kadi.game = (function(me, $, undefined){
             HEIGHT_H: 100,
             WIDTH_V: 100,
             HEIGHT_V: 400,
+            ROTATE_V: 90,
             Y_A: 500,
             Y_B: -20,
             X_A: 200,
@@ -438,15 +438,16 @@ window.kadi.game = (function(me, $, undefined){
             card.moveTo(left,top, rotate, origin);
         },
 
-        redrawCards: function() {
+        redrawCards: function(init) {
             if (this.hasCards()) {
                 var fan = [];
                 if (this.isVertical()) {
+                    var init = kadi.centerInFrame(this.height(), kadi.game.CardUI.WIDTH) +  this.top();
                     fan = kadi.chineseFan(this.height(), this.top(), kadi.game.CardUI.WIDTH, this.cards.length, 5, this.isLeft());
                     _.each(fan, function (blade, idx) {
                         var card = this.cards[idx];
-                        var posY = card.position().y + blade.y;
-                        var rotate = card.position().rotate + blade.rotate;
+                        var posY = init + blade.y;
+                        var rotate = kadi.game.PlayerDeck.ROTATE_V + blade.rotate;
                         card.moveTo(blade.x, posY, rotate);
                     }, this);
                 }
