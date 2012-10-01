@@ -2,17 +2,14 @@
 =javascript_include_tag "/javascripts/game/card.js"
 =javascript_include_tag "/javascripts/game/game-dom.js"
 =javascript_include_tag "/javascripts/game/rules.js"
--#=javascript_include_tag "/javascripts/game/game-ui.js"
--#:javascript
--#  var game = new GameUI(null, []);
 
 :javascript
   $(document).ready(function () {
     var me = new kadi.game.Player('#{@player.id}', "#{@player.name}",true);
     var compB = new kadi.game.Player('B', 'Computer-B',false);
-    //var compC = new kadi.game.Player('C', 'Computer-C',false);
+    var compC = new kadi.game.Player('C', 'Computer-C',false);
     //var compD = new kadi.game.Player('D', 'Computer-D',false);
     //kadi.game.initGameUI(me,[compB,compC,compD]);
-    //kadi.game.initGameUI(me,[compB,compC]);
-    kadi.game.initGameUI(me,[compB]);
+    kadi.game.initGameUI(me,[compB,compC]);
+    //kadi.game.initGameUI(me,[compB]);
   });

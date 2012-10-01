@@ -54,6 +54,10 @@ window.kadi = (function(me, $, undefined){
         return hash;
     }
 
+    me.centerLine = function(containerSize, offset) {
+        return (containerSize / 2) + offset;
+    }
+
     /**
      * Centers a child element in a parent
      *
@@ -91,6 +95,98 @@ window.kadi = (function(me, $, undefined){
         if (kadi.isSomethingMeaningful(id))
             elem.id = id;
         return elem;
+    }
+
+    me.isEven = function(num) {
+        return num === 0 || num % 2 == 0
+    }
+
+    me.isLeft = function(idx, num) {
+        return idx < (num - 1) / 2;
+    }
+
+    me.isRight = function(idx, num) {
+        return idx > (num - 1) / 2;
+    }
+
+    me.isMiddle = function(idx, num) {
+        return idx == Math.floor((num-1) / 2);
+    }
+
+    me.middleIdx = function(num) {
+        return Math.floor((num - 1) / 2);
+    }
+
+    me.negate = function(num) {
+        return 0-num;
+    }
+
+    me.getMultiplier = function(idx,num) {
+
+    }
+
+
+    me.getOffset = function(idx, num, itemWidth, margin) {
+        if (num >= 2) {
+//            if (idx == 0) {
+//                return kadi.negate((itemWidth + margin) / 2);
+//            }
+//            else if (idx == 1) {
+//                return (itemWidth + margin) / 2;
+//            }
+//            if (kadi.isEven(idx)) {
+//            }
+//            if(kadi.isLeft(idx, num)) {
+//                return kadi.negate((itemWidth + margin) / 2);
+//            }
+//            else if(kadi.isMiddle(idx,num)) {
+//
+//            }
+//            else {
+//                return (itemWidth + margin) / 2;
+//            }
+
+//            console.log(idx,num);
+            var isMiddle = kadi.isMiddle(idx,num);
+            var isLeft = kadi.isLeft(idx,num);
+            var isRight = kadi.isRight(idx, num);
+
+            console.log("idx: %d, num: %d, middle: %s, left: %s, right: %s", idx, num, isMiddle, isLeft, isRight);
+
+            if (isMiddle)
+                return 0;
+            else if (isLeft)
+                return (itemWidth + margin);
+            else if (isRight)
+                return kadi.negate((itemWidth + margin));
+
+//            if(kadi.isMiddle(idx, num))
+//                return 0;
+//            else if (kadi.isLeft(idx, num)) {
+//                return (itemWidth + margin) / 2;
+//            }
+//            else {
+//                return kadi.negate((itemWidth + margin) / 2);
+//            }
+            return 0;
+        }
+    }
+
+    me.chineseFan = function(containerWidth,offSet,itemWidth,numItems,margin) {
+//        console.log("Width: %d, offset: %d, itemWidth: %d, numItems: %d, margin: %d", containerWidth, offSet, itemWidth, numItems, margin);
+        var coords = [];
+        var middle = kadi.centerLine(containerWidth,offSet);
+//        console.log("Middle line: ", middle);
+        _.each(_.range(numItems), function(idx) {
+//            coords.push(new kadi.Pos(null,margin+itemWidth,null,me.Pos.RESET));
+            var offset = me.getOffset(idx,numItems, itemWidth, margin);
+//            var pos = new kadi.Pos(null,)
+//            console.log("idx: %d, offset: %d", idx, offset);
+
+            var pos = new kadi.Pos(null, offset, null, null);
+            coords.push(pos);
+        });
+        return coords;
     }
 
     me.buildVerticalFan = function(containerWidth,innerWidth, itemWidth, numItems, margin, reverse) {
@@ -168,10 +264,10 @@ window.kadi = (function(me, $, undefined){
     }
 
     me.flatVerticalFan = function(containerWidth, itemWidth, optionalMargin, numItems, reverse) {
-        console.log("CW: %d, IW: %d, OM: %d, Num: %d, R: %s", containerWidth, itemWidth, optionalMargin, numItems, reverse);
+//        console.log("CW: %d, IW: %d, OM: %d, Num: %d, R: %s", containerWidth, itemWidth, optionalMargin, numItems, reverse);
         var coords = [];
         var widthWithoutOverlap = kadi.calculateFanWidthWithoutOverlap(itemWidth,optionalMargin,numItems);
-        console.log("Width without OL: ", widthWithoutOverlap, containerWidth);
+        console.log("Width without OL: %s, C: %s", widthWithoutOverlap, containerWidth);
 
         if (widthWithoutOverlap <= containerWidth) {
             coords = kadi.buildVerticalFan(containerWidth,widthWithoutOverlap,itemWidth,numItems,optionalMargin,reverse);
@@ -211,10 +307,17 @@ window.kadi = (function(me, $, undefined){
     }
 
     me.Pos = JS.Class({
-        construct : function(x,y,rotate) {
+        statics: {
+            RESET: '0px 0px'
+        },
+        construct : function(x,y,rotate,origin) {
             this.x = x;
             this.y = y;
             this.rotate = rotate;
+            this.origin = origin;
+        },
+        toS: function() {
+            return "x: " + this.x + ", y: " + this.y + ", rotate: " + this.rotate + ", origin: " + this.origin;
         }
     });
 
@@ -260,27 +363,13 @@ window.kadi = (function(me, $, undefined){
         },
 
         callBack : function(params) {
-            var _mthd = _.bind(this.func,this.scope,params);
-            _mthd();
+            var mthd = _.bind(this.func,this.scope,params);
+            mthd();
         }
     });
 
-
     return me;
 })(window.kadi || {}, jQuery);
-
-var Handler = JS.Class({
-    construct : function(func,scope) {
-        this.func = func;
-        this.scope = scope;
-    },
-
-    callBack : function(params) {
-        var _mthd = _.bind(this.func,this.scope,params);
-        _mthd();
-    }
-});
-
 
 ko.bindingHandlers.fadeVisible = {
     init: function(element, valueAccessor) {

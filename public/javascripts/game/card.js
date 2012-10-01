@@ -194,6 +194,7 @@ window.kadi.game = (function(me, $, undefined){
     me.CardUI = me.Card.extend({
         statics: {
             WIDTH: 100,
+            LENGTH: 132,
             MARGIN: 1
         },
         construct : function(rank,suite,revealed) {
@@ -205,6 +206,7 @@ window.kadi.game = (function(me, $, undefined){
             this.selected = false;
             this.x = -1;
             this.y = -1;
+            this.rotate = null;
         },
 
         buildNode: function() {
@@ -330,19 +332,27 @@ window.kadi.game = (function(me, $, undefined){
             this.elem().toggleClass('flip');
         },
 
-        moveTo: function(x,y,rotation) {
-            var options = {};
-            kadi.safeAssign(x, this.x);
-            kadi.safeAssign(y, this.y);
+        position: function() {
+            return new kadi.Pos(this.x, this.y, this.rotate, this.transformOrigin);
+        },
 
+        moveTo: function(x,y,rotation, transformOrigin) {
+            var options = {};
             if (kadi.isSomethingMeaningful(x)) {
+                this.x = x;
                 _.extend(options, {x: x + "px" });
             }
             if (kadi.isSomethingMeaningful(y)) {
+                this.y = y;
                 _.extend(options, {y: y + "px" });
             }
             if (kadi.isSomethingMeaningful(rotation)) {
+                this.rotate = rotation;
                 _.extend(options, { rotate: rotation + 'deg' });
+            }
+            if (kadi.isSomethingMeaningful(transformOrigin)) {
+                this.transformOrigin = transformOrigin;
+                _.extend(options, { transformOrigin: transformOrigin });
             }
             this.container().transition(options, 500, 'snap');
         },
