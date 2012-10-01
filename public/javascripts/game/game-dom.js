@@ -303,21 +303,25 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         left: function() {
-            if (this.type == kadi.game.PlayerDeck.TYPE_A || this.type == kadi.game.PlayerDeck.TYPE_B)
+            if (this.isHorizontal())
                 return kadi.game.PlayerDeck.X_A;
-            else if (this.type == kadi.game.PlayerDeck.TYPE_C)
+            else if (this.isRight())
                 return kadi.game.PlayerDeck.X_C;
-            else if (this.type == kadi.game.PlayerDeck.TYPE_D)
+            else if (this.isLeft())
                 return kadi.game.PlayerDeck.X_D;
+
         },
 
         top : function() {
-            if (this.type == kadi.game.PlayerDeck.TYPE_A)
+            if (this.isBottom())
                 return kadi.game.PlayerDeck.Y_A;
-            else if (this.type == kadi.game.PlayerDeck.TYPE_B)
+            else if (this.isTop())
                 return kadi.game.PlayerDeck.Y_B;
             else if (this.isRight())
                 return kadi.game.PlayerDeck.Y_C;
+            else if (this.isLeft()) {
+                return kadi.game.PlayerDeck.Y_D;
+            }
         },
 
         width: function() {
@@ -343,6 +347,18 @@ window.kadi.game = (function(me, $, undefined){
                     c.reset();
                 }
             });
+        },
+
+        isTop: function() {
+            return this.type == kadi.game.PlayerDeck.TYPE_B;
+        },
+
+        isBottom: function() {
+            return this.type == kadi.game.PlayerDeck.TYPE_A;
+        },
+
+        isLeft: function() {
+            return this.type == kadi.game.PlayerDeck.TYPE_D;
         },
 
         isRight: function() {
@@ -376,13 +392,11 @@ window.kadi.game = (function(me, $, undefined){
                 left = this.left() + kadi.centerInFrame(this.width(),kadi.game.CardUI.WIDTH); //center the card along the deck
                 top = this.top();
             }
-            else if (this.isRight()) {
+            else {
                 top = this.top() + kadi.centerInFrame(this.height(), kadi.game.CardUI.WIDTH);
-                origin = '0px 0px';
+                origin = kadi.Pos.ORIGIN_RESET;
                 rotate = 90;
-
-                left = this.left() + kadi.game.CardUI.LENGTH;
-                window.card = card;
+                left = this.left() + (this.isRight() ? kadi.game.CardUI.LENGTH : kadi.game.CardUI.WIDTH);
             }
             card.moveTo(left,top, rotate, origin);
         },
@@ -390,16 +404,16 @@ window.kadi.game = (function(me, $, undefined){
         redrawCards: function() {
             if (this.hasCards()) {
                 var fan = [];
-                if (this.isRight()) {
-                    fan = kadi.chineseFan(this.height(),this.top(),kadi.game.CardUI.WIDTH,this.cards.length,5);
-                    _.each(fan, function(blade,idx) {
+                if (this.isVertical()) {
+                    fan = kadi.chineseFan(this.height(), this.top(), kadi.game.CardUI.WIDTH, this.cards.length, 5);
+                    _.each(fan, function (blade, idx) {
                         var card = this.cards[idx];
                         var posY = card.position().y + blade.y;
                         var rotate = card.position().rotate + blade.rotate;
                         card.moveTo(blade.x, posY, rotate);
                     }, this);
                 }
-                else
+                else if (this.isHorizontal())
                 {
                     fan = kadi.flatChineseFan(this.width(),kadi.game.CardUI.WIDTH,kadi.game.CardUI.MARGIN,this.cards.length,this.type == kadi.game.PlayerDeck.TYPE_A);
                     _.each(fan, function(blade, idx) {

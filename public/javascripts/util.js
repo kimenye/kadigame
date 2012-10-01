@@ -325,7 +325,7 @@ window.kadi = (function(me, $, undefined){
 
     me.Pos = JS.Class({
         statics: {
-            RESET: '0px 0px'
+            ORIGIN_RESET: '0px 0px'
         },
         construct : function(x,y,rotate,origin) {
             this.x = x;
