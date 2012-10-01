@@ -105,6 +105,10 @@ class Kadi < Padrino::Application
     render "test"
   end
 
+  get :jasmine do
+    render "jasmine", :layout => :jasminetest
+  end
+
   get '/auth/facebook' do
     session[:access_token] = nil
     redirect authenticator.url_for_oauth_code(:permissions => 'email')
