@@ -149,6 +149,10 @@ window.kadi.game = (function(me, $, undefined){
                 return this.rank == rank;
             }
 
+            this.isQuestion = function() {
+                return this.isEight() || this.isQueen();
+            }
+
             this.isPickingCard = function() {
                 return this.isJoker() || this.is("2") || this.is("3");
             };

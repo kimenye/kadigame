@@ -242,7 +242,50 @@ describe("Game mechanics:", function() {
         expect(king.isOrdinary()).toBe(true);
         var h = [king];
         var action = kadi.game.RuleEngine.actionRequired(h);
-        expect(action).toBe(kadi.game.RuleEngine.ACTION_NONE);
+        expect(action == kadi.game.RuleEngine.ACTION_NONE).toBe(true);
+    });
+
+    it("A picking card causes a picking action", function() {
+        var card = spades("2");
+        expect(card.isPickingCard()).toBe(true);
+        var h = [card];
+        var action = kadi.game.RuleEngine.actionRequired(h);
+        expect(action == kadi.game.RuleEngine.ACTION_PICK).toBe(true);
+    });
+
+    it("Two causes two cards to be picked", function() {
+        var card = spades("2");
+        var h = [card];
+
+        expect(kadi.game.RuleEngine.calculatePicking(h)).toBe(2);
+    });
+
+    it("Three causes two cards to be picked", function() {
+        var card = spades("3");
+        var h = [card];
+
+        expect(kadi.game.RuleEngine.calculatePicking(h)).toBe(3);
+    });
+
+    it("Joker causes 5 cards to be picked", function() {
+        var card = joker("0");
+        var h = [card];
+
+        expect(kadi.game.RuleEngine.calculatePicking(h)).toBe(5);
+    });
+
+    it("A Question card causes an incomplete action", function() {
+        var card = spades("Q");
+        var h = [card];
+        var action = kadi.game.RuleEngine.actionRequired(h);
+        expect(action == kadi.game.RuleEngine.ACTION_INCOMPLETE).toBe(true);
+    });
+
+    it("A Jack card causes a skip action", function() {
+        var card = spades("J");
+        var h = [card];
+        var action = kadi.game.RuleEngine.actionRequired(h);
+        expect(action == kadi.game.RuleEngine.ACTION_SKIP).toBe(true);
     });
 });
 

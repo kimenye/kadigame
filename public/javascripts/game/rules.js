@@ -17,12 +17,34 @@ window.kadi.game = (function(me, $, undefined){
             ACTION_REVERSE: "Reverse",
             ACTION_SKIP: "Skip",
             ACTION_PICK: "Pick",
+            ACTION_INCOMPLETE : "Incomplete",
             actionRequired: function(hand) {
                 var lastCard = _.last(hand);
                 if (lastCard.isKing())
                     return me.RuleEngine.ACTION_REVERSE;
                 else if(lastCard.isOrdinary())
                     return me.RuleEngine.ACTION_NONE;
+                else if(lastCard.isPickingCard())
+                    return me.RuleEngine.ACTION_PICK;
+                else if (lastCard.isQuestion())
+                    return me.RuleEngine.ACTION_INCOMPLETE;
+                else if (lastCard.isJack())
+                    return me.RuleEngine.ACTION_SKIP;
+            },
+            calculatePicking: function(hand) {
+                var total = 0;
+                _.each(hand, function(c) {
+                    if (c.is("2")) {
+                        total += 2;
+                    }
+                    else if(c.is("3")) {
+                        total += 3;
+                    }
+                    else if(c.isJoker()) {
+                        total += 5;
+                    }
+                });
+                return total;
             },
             canStart: function(card) {
                 return !card.isFaceCard() && !card.isSpecialCard() && !card.isAce();
