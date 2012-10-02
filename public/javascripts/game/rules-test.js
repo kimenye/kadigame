@@ -238,9 +238,9 @@ describe("Game mechanics:", function() {
     });
 
     it("An ordinary card causes no action", function() {
-        var king = spades("5");
-        expect(king.isOrdinary()).toBe(true);
-        var h = [king];
+        var five = spades("5");
+        expect(five.isOrdinary()).toBe(true);
+        var h = [five];
         var action = kadi.game.RuleEngine.actionRequired(h);
         expect(action == kadi.game.RuleEngine.ACTION_NONE).toBe(true);
     });

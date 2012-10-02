@@ -625,15 +625,16 @@ window.kadi.game = (function(me, $, undefined){
                 this.topCard().container().css('z-index', topZ-1);
             }
             this.cards.push(card);
-            if (flip) {
-                card.flip();
-            }
+
             var pos = kadi.getRandomLocation(this.bBox(), 15, 10, 15);
             if (this.cards.length == 1)
                 pos.rotate = 0;
 
             card.container().css('z-index', topZ);
             card.moveTo(pos.x, pos.y, pos.rotate);
+            if (flip) {
+                card.flip();
+            }
         },
 
         bBox : function() {
