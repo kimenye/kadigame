@@ -648,6 +648,7 @@ window.kadi.game = (function(me, $, undefined){
 
         returnCard: function(card) {
             var pos = kadi.getRandomLocation(this.bBox(), 10, 5, 10);
+            card.container().css('z-index', kadi.game.TableDeck.Z);
             card.moveTo(pos.x, pos.y, pos.rotate);
             this.deck.push([card]); //TODO: to change when we do shift / pop
         },
@@ -701,21 +702,19 @@ window.kadi.game = (function(me, $, undefined){
         construct : function() {
             this.parent.construct.apply(this, ['game', 'table_deck_div', 'table_deck']);
             this.cards = [];
+            this.highestCard = kadi.game.TableDeck.Z;
             this.display();
         },
 
         addCard: function(card, flip) {
-            var topZ = kadi.game.TableDeck.Z;
-            if (kadi.isSomethingMeaningful(this.topCard())) {
-                this.topCard().container().css('z-index', topZ-1);
-            }
             this.cards.push(card);
+            this.highestCard += 1;
+            card.container().css('z-index', this.highestCard);
 
             var pos = kadi.getRandomLocation(this.bBox(), 15, 10, 15);
             if (this.cards.length == 1)
                 pos.rotate = 0;
 
-            card.container().css('z-index', topZ);
             card.moveTo(pos.x, pos.y, pos.rotate);
             if (flip) {
                 card.flip();
@@ -723,7 +722,6 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         replenishCards: function() {
-            console.log("Call to replenish cards: ", this.numCards());
             if (this.numCards() >= kadi.game.TableDeck.MIN_CARDS) {
                 var availCards = this.numCards();
                 var cardsToPick = availCards - kadi.game.TableDeck.MIN_CARDS;
@@ -800,6 +798,10 @@ window.kadi.game = (function(me, $, undefined){
             }
             this.listDiv.appendChild(li);
         }
+    });
+
+    me.PlayerNotification = me.Box.extend({
+
     });
 
     me.GameUI = JS.Class({
