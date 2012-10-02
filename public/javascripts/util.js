@@ -352,6 +352,9 @@ window.kadi = (function(me, $, undefined){
             this.top = function() {
                 return this.topLeft.y;
             }
+            this.toS = function() {
+                return "Top: " + this.topLeft.toS() + " W: " + this.width + " L: " + this.height;
+            }
         }
     });
 

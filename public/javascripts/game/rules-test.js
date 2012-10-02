@@ -196,7 +196,6 @@ describe("Move rules:", function() {
     });
 });
 
-
 describe("Game mechanics:", function() {
     var playerA = new kadi.game.Player('A', 'Player A');
     var playerB = new kadi.game.Player('B', 'Player B');
@@ -213,6 +212,15 @@ describe("Game mechanics:", function() {
         var order = new kadi.game.PlayingOrder([playerA, playerB, playerC, playerD], 0);
         order.next();
         expect(order.current().eq(playerB)).toBe(true);
+    });
+
+
+    it("Peek tells you who the next turn will be without affecting the run of play", function() {
+        var order = new kadi.game.PlayingOrder([playerA, playerB, playerC, playerD], 0);
+        order.next();
+        expect(order.current().eq(playerB)).toBe(true);
+        var next = order.peek();
+        expect(next.eq(playerC)).toBe(true);
     });
 
     it("When anti-clockwise the index moves incrementally", function() {
@@ -286,6 +294,34 @@ describe("Game mechanics:", function() {
         var h = [card];
         var action = kadi.game.RuleEngine.actionRequired(h);
         expect(action == kadi.game.RuleEngine.ACTION_SKIP).toBe(true);
+    });
+});
+
+describe("Utilities:", function() {
+    it("Executes a handler when it is called", function() {
+        var toUpdate = false;
+        var handler = new kadi.Handler(function() {
+            toUpdate = true;
+        });
+        handler.callBack();
+        expect(toUpdate).toBe(true);
+    });
+
+    it("Picks the oldest cards", function() {
+        var spade = spades("2");
+        var last = clubs("J");
+        var deck = [spade, spades("5"), hearts("A"), hearts("5"), clubs("5"), last , diamonds("J"), diamonds("K"), diamonds("A"), clubs("Q")];
+
+        expect(deck.length).toBe(10);
+        var oldest = _.initial(deck, 5);
+
+        var rest = _.rest(deck,5);
+
+        expect(oldest.length).toBe(5);
+        expect(rest.length).toBe(5);
+
+        expect(_.first(oldest).eq(spade)).toBe(true);
+        expect(_.first(rest).eq(last)).toBe(true);
     });
 });
 
