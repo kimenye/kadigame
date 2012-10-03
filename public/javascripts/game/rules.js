@@ -10,6 +10,26 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
+    me.Strategy = JS.Class({
+        statics: {
+            askFor: function(hand) {
+                if (hand.length > 0) {
+                    var groups = _.groupBy(hand, function(c) { return c.suite });
+                    var sorted = _.sortBy(groups, function(s) { return s.length });
+                    var mostFrequent = _.last(sorted);
+                    var aCard = _.first(mostFrequent);
+                    var suite = aCard.suite;
+                    if (aCard.isJoker())
+                        suite = kadi.game.Suite.ANY;
+                    return suite;
+                } else {
+                    return "";
+                }
+
+            }
+        }
+    });
+
 
     me.RuleEngine = JS.Class({
         statics: {
@@ -19,6 +39,7 @@ window.kadi.game = (function(me, $, undefined){
             ACTION_PICK: "Pick",
             ACTION_PICK_OR_BLOCK: "Pick-Or-Block",
             ACTION_INCOMPLETE : "Incomplete",
+            ACTION_PICK_SUITE: "Pick-Suite",
             actionRequired: function(hand) {
                 var lastCard = _.last(hand);
                 if (lastCard.isKing())
@@ -31,6 +52,8 @@ window.kadi.game = (function(me, $, undefined){
                     return me.RuleEngine.ACTION_INCOMPLETE;
                 else if (lastCard.isJack())
                     return me.RuleEngine.ACTION_SKIP;
+                else if(lastCard.isAce())
+                    return me.RuleEngine.ACTION_PICK_SUITE;
             },
             calculatePicking: function(hand) {
                 var total = 0;
@@ -71,6 +94,14 @@ window.kadi.game = (function(me, $, undefined){
 
                 var can_follow = (isSameRank || isSameSuite || other.isAce() || card.isAce() || card.isJoker() || other.isJoker());
                 return can_follow;
+            },
+
+            canFollowRequestedSuite: function(hand, suite) {
+                var firstCard = _.first(hand);
+                if (firstCard.isAce() || firstCard.isJoker() || suite == kadi.game.Suite.ANY || firstCard.suite == suite)
+                    return true;
+                else
+                    return false;
             },
 
             canPlay : function(hand, topCard) {

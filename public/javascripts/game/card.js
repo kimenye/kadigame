@@ -6,6 +6,7 @@ window.kadi.game = (function(me, $, undefined){
             DIAMONDS: "D",
             SPADES: "S",
             JOKERS: "-",
+            ANY: "%",
             DECK_SIZE: 52,
             getColorClass: function(suite, rank) {
                 var color = "black";
@@ -53,6 +54,9 @@ window.kadi.game = (function(me, $, undefined){
                         break;
                     case kadi.game.Suite.SPADES:
                         name =  "Spades";
+                        break;
+                    case kadi.game.Suite.ANY:
+                        name = "Anything";
                         break;
                 }
                 return name;
@@ -223,7 +227,7 @@ window.kadi.game = (function(me, $, undefined){
     me.CardUI = me.Card.extend({
         statics: {
             WIDTH: 100,
-            LENGTH: 132,
+            LENGTH: 136,
             MARGIN: 1
         },
         construct : function(rank,suite,revealed) {

@@ -196,11 +196,25 @@
     left: 10px;
 }
 
-.large {
+.large, .larger {
     font-size: 100px;
     left: 20px;
     position: absolute;
     top: 60px;
+}
+
+.larger {
+    font-size: 120px;
+    left: 12px;
+    top: 50px;
+}
+
+.D.larger, .S.larger {
+    font-size: 140px;
+}
+
+.C.larger {
+    left: 10px;
 }
 
 .notification {
@@ -240,18 +254,6 @@
     z-index: 8001;
 }
 
-.player_notification .suite_picker {
-    width: 60px;
-    height: 60px;
-    /*border: 1px solid #000000;*/
-    float: left;
-}
-
-.player_notification .suite_picker:hover {
-    cursor: pointer;
-    /*border: 1px solid gray;*/
-}
-
 .overlay {
     position: absolute;
     top: 0%;
@@ -265,5 +267,33 @@
 
 .pick_or_block {
     width: 160px;
+}
+
+.pick_or_block, .suite_picker {
     margin: auto;
+}
+
+.suite_picker {
+    width: 210px;
+    top: 14px;
+}
+
+.btn-large.any {
+    height: 40px;
+    font-weight: bold;
+}
+
+.btn-large.clubs, .btn-large.hearts, .btn-large.diamonds, .btn-large.spades {
+    padding: 0px 10px;
+    font-size: 32px;
+}
+
+.requested_suite {
+    background: url(../images/card_back_small.png) no-repeat;
+    width: 100px;
+    height: 136px;
+    position: absolute;
+    left: 160px;
+    top: 200px;
+    opacity: 0;
 }

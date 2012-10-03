@@ -155,6 +155,31 @@ describe("Card rules:", function() {
 
         });
     });
+
+    describe("Ace rules", function() {
+
+        it("The first card of a move is what determines whether play can proceed", function() {
+            var requested = kadi.game.Suite.SPADES;
+            var move = [clubs("Q"),diamonds("A")];
+            expect(kadi.game.RuleEngine.canFollowRequestedSuite(move,requested)).toBe(false);
+            move = [spades("Q"),diamonds("A")];
+            expect(kadi.game.RuleEngine.canFollowRequestedSuite(move,requested)).toBe(true);
+        });
+
+        it("An ace can follow any requested suite", function() {
+            var requested = kadi.game.Suite.SPADES;
+            var move = [diamonds("A")];
+            expect(kadi.game.RuleEngine.canFollowRequestedSuite(move,requested)).toBe(true);
+
+        });
+
+        it("Anything can follow an empty requested suite", function() {
+            var requested = kadi.game.Suite.ANY;
+            var move = [diamonds("J")];
+            expect(kadi.game.RuleEngine.canFollowRequestedSuite(move,requested)).toBe(true);
+
+        });
+    });
 });
 
 describe("Move rules:", function() {
@@ -292,6 +317,32 @@ describe("Game mechanics:", function() {
         var h = [card];
         var action = kadi.game.RuleEngine.actionRequired(h);
         expect(action == kadi.game.RuleEngine.ACTION_PICK_OR_BLOCK).toBe(true);
+    });
+
+    it("An ace that isnt blocking a card causes a choose suite action", function() {
+        var hand = [spades("Q"), spades("A")];
+        var action = kadi.game.RuleEngine.actionRequired(hand);
+        expect(action).toBe(kadi.game.RuleEngine.ACTION_PICK_SUITE);
+    });
+
+    it("The best suite to ask for is the one most common in my hand", function() {
+        var hand = [spades("Q"), spades("4"), diamonds("3")];
+        var suite = kadi.game.Strategy.askFor(hand);
+
+        expect(suite).toBe(kadi.game.Suite.SPADES);
+
+        hand = hand.concat([diamonds("Q"), diamonds("K")]);
+
+        expect(kadi.game.Strategy.askFor(hand)).toBe(kadi.game.Suite.DIAMONDS);
+
+        hand = hand.concat([spades("2")]);
+        expect(kadi.game.Strategy.askFor(hand)).toBe(kadi.game.Suite.DIAMONDS);
+
+        hand = [hearts("5")];
+        expect(kadi.game.Strategy.askFor(hand)).toBe(kadi.game.Suite.HEARTS);
+
+        hand = [joker("0")];
+        expect(kadi.game.Strategy.askFor(hand)).toBe(kadi.game.Suite.ANY);
     });
 
     it("Two causes two cards to be picked", function() {

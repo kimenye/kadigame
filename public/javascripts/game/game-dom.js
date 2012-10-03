@@ -17,7 +17,10 @@ window.kadi.game = (function(me, $, undefined){
             REPLENISH_PICKING_CARDS: "replenish-picking-cards",
             REPLENISHED_CARDS: "replenished-cards",
             PLAYER_NOTIFICATION_UI: "player-notification-ui",
-            ACCEPT_PICKING: "accept-picking"
+            ACCEPT_PICKING: "accept-picking",
+            SUITE_REQUESTED: "suite-requested",
+            HIDE_REQUESTED_SUITE: "hide-requested-suite",
+            DISPLAY_REQUESTED_SUITE: "display-requested-suite"
         }
     });
 
@@ -103,11 +106,13 @@ window.kadi.game = (function(me, $, undefined){
             this.opponents = opponents;
             this.players = this.opponents;
             this.players.push(this.me);
+            this.requestedSuite = null;
             this.pickingDeck = new kadi.game.PickingDeck();
             this.tableDeck = new kadi.game.TableDeck();
             window.picker = this.pickingDeck;
             this.ruleEngine = new kadi.game.RuleEngine();
             this.noticeBoard = new kadi.game.NoticeBoard();
+            this.requestedSuiteDeck = new kadi.game.RequestedSuiteNotification();
         },
 
         startGame: function() {
@@ -189,6 +194,10 @@ window.kadi.game = (function(me, $, undefined){
                     SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[next],'deck');
                 },1000);
             });
+            SHOTGUN.listen(kadi.game.Events.SUITE_REQUESTED, function(player, suite) {
+                self.requestedSuite = suite;
+                self.progressPlay(player,kadi.game.RuleEngine.ACTION_NONE,[]);
+            });
         },
 
         progressPlay: function(player, action, playedCards) {
@@ -218,7 +227,6 @@ window.kadi.game = (function(me, $, undefined){
                     var nextPlayer = self.order.current();
                     var canBlock = nextPlayer.canBlock();
 
-                    console.log("%s can block %s", nextPlayer.name, canBlock);
                     if (!canBlock) {
                         self.order.next();
                         var next = self.order.current();
@@ -240,7 +248,20 @@ window.kadi.game = (function(me, $, undefined){
                             SHOTGUN.fire(kadi.game.Events.PLAYER_NOTIFICATION_UI, [nextPlayer, action, playedCards]);
                         }
                     }
-                } else {
+                } else if (action == kadi.game.RuleEngine.ACTION_PICK_SUITE) {
+                    if (player.isBot()) {
+                        var suite = kadi.game.Strategy.askFor(player.cards());
+                        var suiteName = kadi.game.Suite.getSuiteName(suite);
+
+                        self.requestedSuite = suite;
+                        SHOTGUN.fire(kadi.game.Events.DISPLAY_REQUESTED_SUITE, [suite]);
+                        SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ player.name + " has requested for " + suiteName ]);
+                        self.progressPlay(player,kadi.game.RuleEngine.ACTION_NONE,[]);
+                    } else {
+                        SHOTGUN.fire(kadi.game.Events.PLAYER_NOTIFICATION_UI, [player, action]);
+                    }
+                }
+                else {
                     SHOTGUN.fire(kadi.game.Events.PICK_CARD, [player,1]);
                     self.order.next();
                     var next = self.order.current();
@@ -254,13 +275,11 @@ window.kadi.game = (function(me, $, undefined){
         attemptBlock: function(player,blockCards,pickingCards) {
             _.each(blockCards, function(card) {
                 SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ player.name + " played " + card.toS()]);
-
                 card.deSelect();
                 card.active = false;
                 player.removeCard(card, true);
                 this.tableDeck.addCard(card, !player.live);
                 player.clearSelections();
-
                 //We already know the action
                 var newPickingCards = pickingCards.concat(blockCards);
                 player.endTurn(kadi.game.RuleEngine.ACTION_PICK_OR_BLOCK, newPickingCards);
@@ -268,11 +287,23 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         attemptPlay : function(player, cards, isBlock) {
+
+            var meetsRequestedSuite = true;
+            var clearRequested = false;
+            if (kadi.isSomethingMeaningful(this.requestedSuite)) {
+                clearRequested = true;
+                meetsRequestedSuite = kadi.game.RuleEngine.canFollowRequestedSuite(cards,this.requestedSuite);
+            }
+
             var canPlay = kadi.game.RuleEngine.canPlay(cards,this.tableDeck.topCard());
-            if (canPlay) {
+            if (canPlay && meetsRequestedSuite) {
+                if (clearRequested) {
+                    console.log("Going to clear...")
+                    this.requestedSuite = null;
+                    SHOTGUN.fire(kadi.game.Events.HIDE_REQUESTED_SUITE, []);
+                }
                 _.each(cards, function(card) {
                     SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ player.name + " played " + card.toS()]);
-
                     card.deSelect();
                     card.active = false;
                     player.removeCard(card, true);
@@ -356,6 +387,9 @@ window.kadi.game = (function(me, $, undefined){
         },
         clearSelections: function() {
             this.selections = [];
+        },
+        cards: function() {
+            return this.deck.cards;
         },
         addCard: function(card,redraw) {
             if (this.live)
@@ -822,6 +856,56 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
+    me.RequestedSuiteNotification = me.Box.extend({
+        statics: {
+            WIDTH: 100,
+            HEIGHT: 136
+        },
+        construct: function() {
+            this.parent.construct.apply(this, ['game', 'requested_suite_div', 'requested_suite hidden']);
+            this.display();
+            var self = this;
+            SHOTGUN.listen(kadi.game.Events.DISPLAY_REQUESTED_SUITE, function(suite) {
+                self.show(suite);
+            });
+
+            SHOTGUN.listen(kadi.game.Events.HIDE_REQUESTED_SUITE, function() {
+                self.hide();
+            });
+        },
+
+        hide: function() {
+            $(this.suiteHolder).remove();
+            this.suiteHolder = null;
+            $(this.div).transition({
+                opacity: 0,
+                scale: 1
+            }, 500, 'snap');
+        },
+
+        show: function(suite) {
+            console.log("Going to display notification for ", suite);
+            $('.requested_suite').removeClass('hidden');
+
+            if (kadi.isSomethingMeaningful(this.suiteHolder)) {
+                $(this.suiteHolder).remove();
+                this.suiteHolder = null;
+            }
+
+            this.suiteHolder = kadi.createDiv('suite_holder', 'suite_holder_div');
+            var symbol = kadi.game.Suite.getSuiteSymbol(suite);
+            var label = kadi.createSpan(symbol, "suite " + suite + " " + kadi.game.Suite.getColorClass(suite,"") + " larger", null);
+
+            this.suiteHolder.appendChild(label);
+            this.div.appendChild(this.suiteHolder);
+
+            $(this.div).transition({
+                opacity: 0.5,
+                scale: 0.6
+            }, 1000, 'snap');
+        }
+    });
+
     me.TableDeck = me.Box.extend({
         statics: {
             WIDTH: 150,
@@ -951,6 +1035,8 @@ window.kadi.game = (function(me, $, undefined){
             SHOTGUN.listen(kadi.game.Events.PLAYER_NOTIFICATION_UI, function(player, action, playedCards) {
                 if (action == kadi.game.RuleEngine.ACTION_PICK_OR_BLOCK) {
                     self.showBlock(player, playedCards);
+                } else if (action == kadi.game.RuleEngine.ACTION_PICK_SUITE) {
+                    self.showSuitePicker(player);
                 }
             });
         },
@@ -962,6 +1048,80 @@ window.kadi.game = (function(me, $, undefined){
             $(this.overlay).addClass('hidden');
         },
 
+        showSuitePicker: function(player) {
+            var self = this;
+            this.showOverlay();
+
+            this.suitePicker = kadi.createDiv("suite_picker btn-group button_holder", "suitePickerDialog");
+
+            var heartsButton = document.createElement("button");
+            heartsButton.className = "red btn btn-large hearts";
+            heartsButton.innerHTML = kadi.game.Suite.getSuiteSymbol(kadi.game.Suite.HEARTS);
+            $(heartsButton).click(function() {
+                self.select(kadi.game.Suite.HEARTS, player);
+            });
+
+            var spadesButton = document.createElement("button");
+            spadesButton.className = "black btn btn-large spades";
+            spadesButton.innerHTML = kadi.game.Suite.getSuiteSymbol(kadi.game.Suite.SPADES);
+            $(spadesButton).click(function() {
+                self.select(kadi.game.Suite.SPADES, player);
+            });
+
+            var diamondsButton = document.createElement("button");
+            diamondsButton.className = "red btn btn-large diamonds";
+            diamondsButton.innerHTML = kadi.game.Suite.getSuiteSymbol(kadi.game.Suite.DIAMONDS);
+            $(diamondsButton).click(function() {
+                self.select(kadi.game.Suite.DIAMONDS, player);
+            });
+
+            var clubsButton = document.createElement("button");
+            clubsButton.className = "black btn btn-large clubs";
+            clubsButton.innerHTML = kadi.game.Suite.getSuiteSymbol(kadi.game.Suite.CLUBS);
+            $(clubsButton).click(function() {
+                self.select(kadi.game.Suite.CLUBS, player);
+            });
+
+            var anyButton = document.createElement("button");
+            anyButton.className = "btn btn-large any";
+            anyButton.innerHTML = "Any";
+            $(anyButton).click(function() {
+                self.select(kadi.game.Suite.ANY, player);
+            });
+
+
+            this.suitePicker.appendChild(heartsButton);
+            this.suitePicker.appendChild(spadesButton);
+            this.suitePicker.appendChild(diamondsButton);
+            this.suitePicker.appendChild(clubsButton);
+            this.suitePicker.appendChild(anyButton);
+
+            this.div.appendChild(this.suitePicker);
+
+            $(this.div).removeClass('hidden');
+
+            var top = 600 - me.PlayerNotification.HEIGHT;
+            $(this.div).transition({
+                top: top + "px"
+            }, 500, 'snap');
+        },
+
+        select: function(suite, player) {
+            var self = this;
+            this.hideOverlay();
+            var top = 600;
+            $(this.div).transition({
+                top: top + "px"
+            }, 500, 'snap', function() {
+                $(self.div).addClass('hidden');
+                $(self.suitePicker).remove();
+                self.suitePicker = null;
+
+                SHOTGUN.fire(kadi.game.Events.DISPLAY_REQUESTED_SUITE, [suite]);
+                SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ player.name + " has requested for " + kadi.game.Suite.getSuiteName(suite) ]);
+                SHOTGUN.fire(kadi.game.Events.SUITE_REQUESTED, [player, suite]);
+            });
+        },
 
         showBlock: function(player, playedCards) {
             var self = this;
@@ -1017,6 +1177,8 @@ window.kadi.game = (function(me, $, undefined){
                 top: top + "px"
             }, 500, 'snap', function() {
                 $(self.div).addClass('hidden');
+                $(self.blockDialog).remove();
+                self.blockDialog = null;
 
                 if (accept) {
                     SHOTGUN.fire(kadi.game.Events.ACCEPT_PICKING, [player, pickingCards]);
