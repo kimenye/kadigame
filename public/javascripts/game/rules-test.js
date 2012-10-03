@@ -122,6 +122,29 @@ describe("Card rules:", function() {
             expect(kadi.game.RuleEngine.canPlayTogetherWith(eight_d, seven_d)).toBe(true);
         });
     });
+
+    describe("Picking card rules", function() {
+
+        it("An ace can block any picking card", function() {
+
+            var h = [diamonds("A"), diamonds("5")];
+
+            expect(kadi.game.RuleEngine.canBlock(h)).toBe(true);
+        });
+
+        it("An ordinary card cannot block a picking card", function() {
+
+            var h = [diamonds("5")];
+            expect(kadi.game.RuleEngine.canBlock(h)).toBe(false);
+        });
+
+        it("Any picking card block another picking card", function() {
+
+            var h = [diamonds("3"), spades("5"), clubs("J")];
+
+            expect(kadi.game.RuleEngine.canBlock(h)).toBe(true);
+        });
+    });
 });
 
 describe("Move rules:", function() {
@@ -253,12 +276,12 @@ describe("Game mechanics:", function() {
         expect(action == kadi.game.RuleEngine.ACTION_NONE).toBe(true);
     });
 
-    it("A picking card causes a picking action", function() {
+    it("A picking card causes a picking or block action", function() {
         var card = spades("2");
         expect(card.isPickingCard()).toBe(true);
         var h = [card];
         var action = kadi.game.RuleEngine.actionRequired(h);
-        expect(action == kadi.game.RuleEngine.ACTION_PICK).toBe(true);
+        expect(action == kadi.game.RuleEngine.ACTION_PICK_OR_BLOCK).toBe(true);
     });
 
     it("Two causes two cards to be picked", function() {
@@ -277,9 +300,9 @@ describe("Game mechanics:", function() {
 
     it("Joker causes 5 cards to be picked", function() {
         var card = joker("0");
-        var h = [card];
+        var h = [card,spades("3")];
 
-        expect(kadi.game.RuleEngine.calculatePicking(h)).toBe(5);
+        expect(kadi.game.RuleEngine.calculatePicking(h)).toBe(8);
     });
 
     it("A Question card causes an incomplete action", function() {
@@ -322,6 +345,24 @@ describe("Utilities:", function() {
 
         expect(_.first(oldest).eq(spade)).toBe(true);
         expect(_.first(rest).eq(last)).toBe(true);
+    });
+
+    it("Can check if a hand has any rank", function() {
+        var hand = [spades("2"), spades("3")];
+
+        expect(kadi.containsCardOfRank(hand, "2")).toBe(true);
+        expect(kadi.containsCardOfRank(hand, "J")).toBe(false);
+    });
+
+    it("Returns the highest picking card", function() {
+        var hand = [spades("5"), spades("2")];
+        expect(kadi.highestPickingCard(hand).eq(spades("2"))).toBe(true);
+
+        hand.push(diamonds("3"));
+        expect(kadi.highestPickingCard(hand).eq(diamonds("3"))).toBe(true);
+
+        hand.push(joker("0"));
+        expect(kadi.highestPickingCard(hand).eq(joker("0"))).toBe(true);
     });
 });
 

@@ -57,6 +57,17 @@ window.kadi.game = (function(me, $, undefined){
                 }
                 return name;
             },
+            getSuiteDiv: function(suite) {
+                var div = document.createElement("div");
+                div.className = "suite_picker";
+
+                var symbol = kadi.game.Suite.getSuiteSymbol(suite);
+                var classes = "medium " + kadi.game.Suite.getColorClass(suite, kadi.game.Card.ACE);
+
+                var symbolDiv = kadi.createSpan(symbol, classes, null);
+                div.appendChild(symbolDiv);
+                return div;
+            },
             getDeckOfCards: function() {
                 var suites = [kadi.game.Suite.CLUBS,kadi.game.Suite.HEARTS,
                     kadi.game.Suite.DIAMONDS,kadi.game.Suite.SPADES];
@@ -151,6 +162,22 @@ window.kadi.game = (function(me, $, undefined){
 
             this.isQuestion = function() {
                 return this.isEight() || this.isQueen();
+            }
+
+            //TODO: Testing required
+            this.pickingValue = function() {
+                if (this.isPickingCard()) {
+                    if (this.is("2")) {
+                        return 2;
+                    }
+                    else if(this.is("3")) {
+                        return 3;
+                    }
+                    else if(this.isJoker()) {
+                        return 5;
+                    }
+                }
+                return 0;
             }
 
             this.isPickingCard = function() {

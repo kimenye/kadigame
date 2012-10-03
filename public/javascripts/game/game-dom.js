@@ -11,6 +11,7 @@ window.kadi.game = (function(me, $, undefined){
             ACTIVATE_CARD: "activate-card",
             DEACTIVATE_CARD: "deactivate-card",
             PLAY_CARDS: "play-cards",
+            BLOCK: "block-picking",
             MSG_RECEIVED: "msg-received",
             REJECT_MOVES: "reject-moves",
             REPLENISH_PICKING_CARDS: "replenish-picking-cards",
@@ -146,6 +147,13 @@ window.kadi.game = (function(me, $, undefined){
                 self.attemptPlay(player,cards);
             });
 
+            SHOTGUN.listen(kadi.game.Events.BLOCK, function(player, blockCards, pickingCards, add) {
+                if (add)
+                    self.attemptBlock(player,blockCards,pickingCards);
+                else
+                    self.attemptPlay(player, blockCards);
+            });
+
             SHOTGUN.listen(kadi.game.Events.REPLENISH_PICKING_CARDS, function() {
 
                 var pauseHandler = new kadi.Handler(function() {
@@ -177,15 +185,6 @@ window.kadi.game = (function(me, $, undefined){
                     SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ next.name + "'s turn to play." ]);
                     SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[self.tableDeck.topCard()],next.id);
                     SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[next],'deck');
-                } else if (action == kadi.game.RuleEngine.ACTION_PICK) {
-                    self.order.next();
-                    var next = self.order.current();
-                    var num = kadi.game.RuleEngine.calculatePicking(playedCards)
-                    SHOTGUN.fire(kadi.game.Events.PICK_CARD, [next,num]);
-                    SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ next.name + " to pick " + num ]);
-                    SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ next.name + "'s turn to play." ]);
-                    SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[self.tableDeck.topCard()],next.id);
-                    SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[next],'deck');
                 } else if (action == kadi.game.RuleEngine.ACTION_REVERSE) {
                     self.order.reverse();
                     var next = self.order.current();
@@ -199,6 +198,27 @@ window.kadi.game = (function(me, $, undefined){
                     SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ next.name + "'s turn to play." ]);
                     SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[self.tableDeck.topCard()],next.id);
                     SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[next],'deck');
+                } else if (action == kadi.game.RuleEngine.ACTION_PICK_OR_BLOCK) {
+                    self.order.next();
+                    var nextPlayer = self.order.current();
+                    var canBlock = nextPlayer.canBlock();
+
+                    console.log("%s can block %s", nextPlayer.name, canBlock);
+                    if (!canBlock) {
+                        self.order.next();
+                        var next = self.order.current();
+                        var num = kadi.game.RuleEngine.calculatePicking(playedCards)
+                        SHOTGUN.fire(kadi.game.Events.PICK_CARD, [nextPlayer,num]);
+                        SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ nextPlayer.name + " to pick " + num ]);
+                        SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ next.name + "'s turn to play." ]);
+                        SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[self.tableDeck.topCard()],next.id);
+                        SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[next],'deck');
+                    }
+                    else {
+                        if (nextPlayer.isBot()) {
+                            nextPlayer.block(playedCards);
+                        }
+                    }
                 } else {
                     SHOTGUN.fire(kadi.game.Events.PICK_CARD, [player,1]);
                     self.order.next();
@@ -208,6 +228,22 @@ window.kadi.game = (function(me, $, undefined){
                     SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[next],'deck');
                 }
             }, 1000);
+        },
+
+        attemptBlock: function(player,blockCards,pickingCards) {
+            _.each(blockCards, function(card) {
+                SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ player.name + " played " + card.toS()]);
+
+                card.deSelect();
+                card.active = false;
+                player.removeCard(card, true);
+                this.tableDeck.addCard(card, !player.live);
+                player.clearSelections();
+
+                //We already know the action
+                var newPickingCards = pickingCards.concat(blockCards);
+                player.endTurn(kadi.game.RuleEngine.ACTION_PICK_OR_BLOCK, newPickingCards);
+            }, this);
         },
 
         attemptPlay : function(player, cards) {
@@ -267,6 +303,10 @@ window.kadi.game = (function(me, $, undefined){
 
         toS: function() {
             return this.id + " - " + this.name;
+        },
+
+        isBot: function() {
+            return !this.live;
         }
     });
 
@@ -300,6 +340,9 @@ window.kadi.game = (function(me, $, undefined){
             this.deck.removeCard(card);
             if (redraw)
                 this.deck.redrawCards();
+        },
+        canBlock: function() {
+            return kadi.game.RuleEngine.canBlock(this.deck.cards);
         },
         initHandlers: function() {
             $('.player.player' + this.getLocation()).toggleClass('hidden');
@@ -370,6 +413,20 @@ window.kadi.game = (function(me, $, undefined){
             }
             else
                 this.pick();
+        },
+        block: function(pickingCards) {
+            //the blocking strategy is to add a single picking card of the highest value
+            //
+            var hasPickingCard = kadi.containsPickingCard(this.deck.cards);
+
+            //TODO: Never block if you have a picking card and the next player is on KADI
+            if (hasPickingCard) {
+                var highestCard = kadi.highestPickingCard(this.deck.cards);
+                SHOTGUN.fire(kadi.game.Events.BLOCK, [this, [highestCard], pickingCards, true]);
+            } else {
+                var ace = _.detect(this.deck.cards, function(c) { return c.rank == kadi.game.Cards.ACE });
+                SHOTGUN.fire(kadi.game.Events.BLOCK, [this, [ace], pickingCards, false]);
+            }
         },
         kadi: function() {
 
@@ -807,14 +864,14 @@ window.kadi.game = (function(me, $, undefined){
 
     me.PlayerNotification = me.Box.extend({
         statics: {
-            WIDTH: 200,
+            WIDTH: 250,
             HEIGHT: 60
         },
         construct : function() {
             this.parent.construct.apply(this, ['game', 'player_notification_div', 'player_notification hidden']);
             this.display();
             $(this.div).css('left', kadi.centerInFrame(800, me.PlayerNotification.WIDTH));
-            $(this.div).css('top', 600 - me.PlayerNotification.HEIGHT);
+            $(this.div).css('top', 600);
             $(this.div).css('z-index',8001);
 
             this.overlay = kadi.createDiv('overlay hidden', 'notification_overlay');
@@ -823,9 +880,35 @@ window.kadi.game = (function(me, $, undefined){
             SHOTGUN.listen(kadi.game.Events.PLAYER_NOTIFICATION_UI, function(action) {
                 self.showOverlay();
             });
+//            this.showOverlay();
+//            this.showBlock("What card do you want?");
         },
         showOverlay: function() {
+            $(this.overlay).removeClass('hidden');
+        },
 
+
+        showBlock: function() {
+
+        },
+        showSuiteSelector: function(title) {
+
+            var spades = kadi.game.Suite.getSuiteDiv(kadi.game.Suite.SPADES);
+            var diamonds = kadi.game.Suite.getSuiteDiv(kadi.game.Suite.DIAMONDS);
+            var hearts = kadi.game.Suite.getSuiteDiv(kadi.game.Suite.HEARTS);
+            var clubs = kadi.game.Suite.getSuiteDiv(kadi.game.Suite.CLUBS);
+
+            this.div.appendChild(spades);
+            this.div.appendChild(hearts);
+            this.div.appendChild(clubs);
+            this.div.appendChild(diamonds);
+
+            $(this.div).removeClass('hidden');
+
+            var top = 600 - me.PlayerNotification.HEIGHT;
+            $(this.div).transition({
+                top: top + "px"
+            }, 500, 'snap');
         }
     });
 

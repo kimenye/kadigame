@@ -189,6 +189,13 @@
     line-height: 2px;
 }
 
+.medium {
+    font-size: 80px;
+    top: 13px;
+    position: relative;
+    left: 10px;
+}
+
 .large {
     font-size: 100px;
     left: 20px;
@@ -223,14 +230,26 @@
 }
 
 .player_notification {
-    width: 200px;
-    height: 60px;
+    width: 250px;
+    height: 100px;
     position: absolute;
     background: rgb(245,245,245);
     box-shadow: rgb(255, 255, 255) 0px 1px 0px 0px inset;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     z-index: 8001;
+}
+
+.player_notification .suite_picker {
+    width: 60px;
+    height: 60px;
+    /*border: 1px solid #000000;*/
+    float: left;
+}
+
+.player_notification .suite_picker:hover {
+    cursor: pointer;
+    /*border: 1px solid gray;*/
 }
 
 .overlay {

@@ -17,6 +17,7 @@ window.kadi.game = (function(me, $, undefined){
             ACTION_REVERSE: "Reverse",
             ACTION_SKIP: "Skip",
             ACTION_PICK: "Pick",
+            ACTION_PICK_OR_BLOCK: "Pick-Or-Block",
             ACTION_INCOMPLETE : "Incomplete",
             actionRequired: function(hand) {
                 var lastCard = _.last(hand);
@@ -25,7 +26,7 @@ window.kadi.game = (function(me, $, undefined){
                 else if(lastCard.isOrdinary())
                     return me.RuleEngine.ACTION_NONE;
                 else if(lastCard.isPickingCard())
-                    return me.RuleEngine.ACTION_PICK;
+                    return me.RuleEngine.ACTION_PICK_OR_BLOCK;
                 else if (lastCard.isQuestion())
                     return me.RuleEngine.ACTION_INCOMPLETE;
                 else if (lastCard.isJack())
@@ -48,6 +49,13 @@ window.kadi.game = (function(me, $, undefined){
             },
             canStart: function(card) {
                 return !card.isFaceCard() && !card.isSpecialCard() && !card.isAce();
+            },
+
+            canBlock: function(hand) {
+                var handHasAce = kadi.containsCardOfRank(hand, kadi.game.Card.ACE);
+                var handHasPickingCard = kadi.containsPickingCard(hand);
+
+                return handHasAce || handHasPickingCard;
             },
 
             canFollow: function(card, other) {

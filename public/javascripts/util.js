@@ -377,7 +377,21 @@ window.kadi = (function(me, $, undefined){
             span.id = id;
         }
         return span;
-    }
+    };
+
+    me.containsCardOfRank = function(hand, rank) {
+        return kadi.isSomethingMeaningful(_.detect(hand, function(c) { return c.rank == rank }));
+    };
+
+    me.highestPickingCard = function(hand) {
+        var pickingCards = _.reject(hand, function(c) { return !c.isPickingCard() });
+        var sorted = _.sortBy(pickingCards, function(c) {  return c.pickingValue() });
+        return _.last(sorted);
+    };
+
+    me.containsPickingCard = function(hand) {
+        return kadi.isSomethingMeaningful(_.detect(hand, function(c) { return c.isPickingCard() }));
+    };
 
     me.Handler = JS.Class({
         construct : function(func,scope) {
