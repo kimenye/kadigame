@@ -14,7 +14,8 @@ window.kadi.game = (function(me, $, undefined){
             MSG_RECEIVED: "msg-received",
             REJECT_MOVES: "reject-moves",
             REPLENISH_PICKING_CARDS: "replenish-picking-cards",
-            REPLENISHED_CARDS: "replenished-cards"
+            REPLENISHED_CARDS: "replenished-cards",
+            PLAYER_NOTIFICATION_UI: "player-notification-ui"
         }
     });
 
@@ -136,6 +137,7 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.game.Events.REPLENISHED_CARDS, function(player, action, playedCards) {
+                self.pickingDeck.replenished = false;
                 self.order.unPause();
                 SHOTGUN.fire(kadi.game.Events.END_TURN, [player, action, playedCards]);
             });
@@ -270,13 +272,16 @@ window.kadi.game = (function(me, $, undefined){
 
     me.GamePlayerUI = me.Player.extend({
         statics: {
-            BOT_DELAY: 500
+            BOT_DELAY: 1000
         },
         construct : function(player, deck) {
             this.parent.construct.apply(this, [player.id,player.name,player.live]);
             this.deck = deck;
             this.turnToPlay = false;
             this.selections = [];
+            if (player.live) {
+                this.notification = new kadi.game.PlayerNotification();
+            }
         },
         getLocation: function() {
             return this.deck.type;
@@ -610,7 +615,7 @@ window.kadi.game = (function(me, $, undefined){
             HEIGHT: 200,
             X: 500,
             Y: 200,
-            REPLENISH_THRESHOLD: 30
+            REPLENISH_THRESHOLD: 10
         },
         construct : function() {
             var self = this;
@@ -801,7 +806,27 @@ window.kadi.game = (function(me, $, undefined){
     });
 
     me.PlayerNotification = me.Box.extend({
+        statics: {
+            WIDTH: 200,
+            HEIGHT: 60
+        },
+        construct : function() {
+            this.parent.construct.apply(this, ['game', 'player_notification_div', 'player_notification hidden']);
+            this.display();
+            $(this.div).css('left', kadi.centerInFrame(800, me.PlayerNotification.WIDTH));
+            $(this.div).css('top', 600 - me.PlayerNotification.HEIGHT);
+            $(this.div).css('z-index',8001);
 
+            this.overlay = kadi.createDiv('overlay hidden', 'notification_overlay');
+            this.parent.appendChild(this.overlay);
+
+            SHOTGUN.listen(kadi.game.Events.PLAYER_NOTIFICATION_UI, function(action) {
+                self.showOverlay();
+            });
+        },
+        showOverlay: function() {
+
+        }
     });
 
     me.GameUI = JS.Class({
