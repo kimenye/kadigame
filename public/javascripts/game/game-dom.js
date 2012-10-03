@@ -145,14 +145,14 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.game.Events.PLAY_CARDS, function(player, cards) {
-                self.attemptPlay(player,cards);
+                self.attemptPlay(player,cards, false);
             });
 
             SHOTGUN.listen(kadi.game.Events.BLOCK, function(player, blockCards, pickingCards, add) {
                 if (add)
                     self.attemptBlock(player,blockCards,pickingCards);
                 else
-                    self.attemptPlay(player, blockCards);
+                    self.attemptPlay(player, blockCards, true);
             });
 
             SHOTGUN.listen(kadi.game.Events.REPLENISH_PICKING_CARDS, function() {
@@ -267,7 +267,7 @@ window.kadi.game = (function(me, $, undefined){
             }, this);
         },
 
-        attemptPlay : function(player, cards) {
+        attemptPlay : function(player, cards, isBlock) {
             var canPlay = kadi.game.RuleEngine.canPlay(cards,this.tableDeck.topCard());
             if (canPlay) {
                 _.each(cards, function(card) {
@@ -280,6 +280,11 @@ window.kadi.game = (function(me, $, undefined){
                 }, this);
                 player.clearSelections();
                 var action = kadi.game.RuleEngine.actionRequired(cards);
+                var ignoreA = kadi.getVal(isBlock);
+                if (ignoreA)
+                {
+                    action = kadi.game.RuleEngine.ACTION_NONE;
+                }
                 player.endTurn(action,cards);
             } else {
                 SHOTGUN.fire(kadi.game.Events.REJECT_MOVES, [cards], player.id);
