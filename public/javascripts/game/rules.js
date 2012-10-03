@@ -58,6 +58,13 @@ window.kadi.game = (function(me, $, undefined){
                 return handHasAce || handHasPickingCard;
             },
 
+            isValidBlockingMove : function(move) {
+                var handHasAce = kadi.containsCardOfRank(move, kadi.game.Card.ACE);
+                var handHasPickingCard = kadi.containsPickingCard(move);
+
+                return (!handHasAce && handHasPickingCard) || (handHasAce && !handHasPickingCard);
+            },
+
             canFollow: function(card, other) {
                 var isSameSuite = card.suite == other.suite;
                 var isSameRank = card.rank == other.rank;

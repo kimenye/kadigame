@@ -393,6 +393,25 @@ window.kadi = (function(me, $, undefined){
         return kadi.isSomethingMeaningful(_.detect(hand, function(c) { return c.isPickingCard() }));
     };
 
+    me.diamonds = function(rank) {
+        return new kadi.game.Card(rank, kadi.game.Suite.DIAMONDS);
+    };
+
+    me.spades = function(rank) {
+        return new kadi.game.Card(rank, kadi.game.Suite.SPADES);
+    }
+
+    me.hearts = function(rank) {
+        return new kadi.game.Card(rank, kadi.game.Suite.HEARTS);
+    }
+    me.clubs = function (rank) {
+        return new kadi.game.Card(rank, kadi.game.Suite.CLUBS);
+    }
+
+    me.joker = function(t) {
+        return new kadi.game.Card("0", kadi.game.Suite.JOKERS);
+    }
+
     me.Handler = JS.Class({
         construct : function(func,scope) {
             this.func = func;

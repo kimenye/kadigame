@@ -262,3 +262,8 @@
     z-index: 8000;
     opacity: .60;
 }
+
+.pick_or_block {
+    width: 160px;
+    margin: auto;
+}

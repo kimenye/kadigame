@@ -144,6 +144,16 @@ describe("Card rules:", function() {
 
             expect(kadi.game.RuleEngine.canBlock(h)).toBe(true);
         });
+
+        it("A picking move cannot mix a picking card and an ace", function() {
+            var h = [diamonds("3"), spades("A")];
+
+            expect(kadi.game.RuleEngine.canBlock(h)).toBe(true);
+            expect(kadi.game.RuleEngine.isValidBlockingMove(h)).toBe(false);
+            expect(kadi.game.RuleEngine.isValidBlockingMove([spades("A")])).toBe(true);
+            expect(kadi.game.RuleEngine.isValidBlockingMove([spades("3"), clubs("2")])).toBe(true);
+
+        });
     });
 });
 
