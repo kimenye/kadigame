@@ -207,7 +207,7 @@ window.kadi.game = (function(me, $, undefined){
                     self.order.next();
                     var next = self.order.current();
                     SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ next.name + "'s turn to play." ]);
-                    SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[self.tableDeck.topCard()],next.id);
+                    SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[self.tableDeck.topCard(), self.requestedSuite],next.id);
                     SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[next],'deck');
                 } else if (action == kadi.game.RuleEngine.ACTION_REVERSE) {
                     self.order.reverse();
@@ -440,12 +440,12 @@ window.kadi.game = (function(me, $, undefined){
                 self.deck.redrawCards();
             });
 
-            SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function(card) {
+            SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function(card, requestedSuite) {
                 if (self.live) {
                     self.activate(true);
                 } else {
                     _.delay(function() {
-                        self.bot(card);
+                        self.bot(card, requestedSuite);
                     },kadi.game.GamePlayerUI.BOT_DELAY);
                 }
             }, this.id);
@@ -457,24 +457,40 @@ window.kadi.game = (function(me, $, undefined){
                 this.activate(false);
             }
         },
-        bot: function(card) {
+        bot: function(card, requestedSuite) {
             //TODO: give the players some thinking time...
             var cards = this.deck.cards;
-            var canPlay = kadi.game.RuleEngine.canPlay(cards, card);
-            if (canPlay) {
-                var groups = kadi.game.RuleEngine.group(cards,card);
-                if (groups.length == 0) {
-                    //look for a possible move
-                    var moves = kadi.game.RuleEngine.possibleMoves(card, cards);
-                    var move = _.first(moves);
-                    SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, move.cards]);
-                } else {
-                    var move = _.first(groups);
+            if (kadi.isSomethingMeaningful(requestedSuite)) {
+                var canPlayWithRequestedSuite = kadi.game.RuleEngine.canMeetMatchingSuite(cards, requestedSuite);
+                _.each(cards, function(c) { console.log(c.toS()); });
+                console.log("Match suite: ", requestedSuite, canPlayWithRequestedSuite);
+                if (!canPlayWithRequestedSuite) {
+                    console.log("Picking coz the bot can't match the suite ", requestedSuite);
+                    this.pick();
+                }
+                else
+                {
+                    var move = kadi.game.Strategy.bestMoveForRequestedSuite(cards,requestedSuite);
                     SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, move]);
                 }
+
+            } else {
+                var canPlay = kadi.game.RuleEngine.canPlay(cards, card);
+                if (canPlay) {
+                    var groups = kadi.game.RuleEngine.group(cards,card);
+                    if (groups.length == 0) {
+                        //look for a possible move
+                        var moves = kadi.game.RuleEngine.possibleMoves(card, cards);
+                        var move = _.first(moves);
+                        SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, move.cards]);
+                    } else {
+                        var move = _.first(groups);
+                        SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, move]);
+                    }
+                }
+                else
+                    this.pick();
             }
-            else
-                this.pick();
         },
         block: function(pickingCards) {
             //the blocking strategy is to add a single picking card of the highest value
@@ -817,6 +833,16 @@ window.kadi.game = (function(me, $, undefined){
             card.container().css('z-index', kadi.game.TableDeck.Z);
             card.moveTo(pos.x, pos.y, pos.rotate);
             this.deck.push([card]); //TODO: to change when we do shift / pop
+        },
+
+        giveCardTo: function(card, player) {
+            var card = _.find(this.deck, function(c) {
+                return c.eq(card);
+            });
+
+            if (kadi.isSomethingMeaningful(card)) {
+                player.addCard(card,true);
+            }
         },
 
         display: function() {

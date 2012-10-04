@@ -26,6 +26,29 @@ window.kadi.game = (function(me, $, undefined){
                     return "";
                 }
 
+            },
+            bestMoveForRequestedSuite: function(hand, suite) {
+                var cardsInHandThatCanMatchTheSuite = me.RuleEngine.cardsInHandMatchingSuite(hand,suite);
+                var groups = [];
+                _.each(cardsInHandThatCanMatchTheSuite, function(c) {
+                    var gp = [c];
+                    _.each(hand, function(card) {
+                        if (!c.eq(card)) {
+                            var canJoin = me.RuleEngine.canJoinGroup(gp, card);
+                            console.log("Evaluating : ", card.toS(), canJoin);
+                            if (canJoin)
+                                gp.push(card);
+                        }
+                    });
+                    groups.push(gp);
+                });
+
+                groups = _.sortBy(groups, function(gp) {
+                    return gp.length;
+                });
+
+                var lst = _.last(groups);
+                return lst;
             }
         }
     });
@@ -96,7 +119,19 @@ window.kadi.game = (function(me, $, undefined){
                 return can_follow;
             },
 
+            cardsInHandMatchingSuite: function(hand, suite) {
+                return _.reject(hand, function(c) {
+                    return !kadi.game.RuleEngine.canFollowRequestedSuite([c], suite);
+                });
+            },
+
+            canMeetMatchingSuite: function(hand, suite) {
+                return me.RuleEngine.cardsInHandMatchingSuite(hand, suite).length > 0;
+            },
+
             canFollowRequestedSuite: function(hand, suite) {
+                if (hand.length == 0)
+                    return false;
                 var firstCard = _.first(hand);
                 if (firstCard.isAce() || firstCard.isJoker() || suite == kadi.game.Suite.ANY || firstCard.suite == suite)
                     return true;
