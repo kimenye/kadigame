@@ -2,7 +2,7 @@
   .secondary-navigation
     %ul.wat-cf
       %li.first.active=link_to pat(:list), url(:players, :index)
-      -#%li=link_to pat(:new), url(:players, :new)
+      %li=link_to pat(:new), url(:players, :new)
   #players.content
     %h2.title
       =pat(:all)
