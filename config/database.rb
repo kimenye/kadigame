@@ -23,14 +23,15 @@ ActiveRecord::Base.configurations[:development] = {
 
 }
 
-ActiveRecord::Base.configurations[:production] = {
-  :adapter   => 'postgresql',
-  :database  => 'kadi_production',
-  :username  => 'root',
-  :password  => '',
-  :host      => 'localhost',
-  :port      => 5432
+postgres = URI.parse(ENV['DATABASE_URL'] || '')
 
+ActiveRecord::Base.configurations[:production] = {
+    :adapter  => 'postgresql',
+    :encoding => 'utf8',
+    :database => postgres.path[1..-1],
+    :username => postgres.user,
+    :password => postgres.password,
+    :host     => postgres.host
 }
 
 ActiveRecord::Base.configurations[:test] = {
