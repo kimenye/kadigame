@@ -424,6 +424,10 @@ window.kadi = (function(me, $, undefined){
         }
     });
 
+    window.onerror = function(msg, url, line) {
+        console.log("An un caught error occurred %s on line %s", msg, line);
+    }
+
     return me;
 })(window.kadi || {}, jQuery);
 

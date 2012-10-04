@@ -246,6 +246,17 @@ window.kadi.game = (function(me, $, undefined){
                     }
                 }
                 return _groups;
+            },
+
+            canDeclareKADI: function(hand) {
+                var handHasPickingCard = kadi.containsPickingCard(hand);
+                var hasK = kadi.containsCardOfRank(hand,kadi.game.Card.KING);
+                var hasJ = kadi.containsCardOfRank(hand,kadi.game.Card.JACK);
+                var singleMove = me.RuleEngine.evaluateGroup(hand);
+                var singleCard = hand.length < 2;
+                var hasAce = kadi.containsCardOfRank(hand,kadi.game.Card.ACE);
+
+                return !handHasPickingCard && !hasK && !hasJ && !hasAce && (singleMove || singleCard);
             }
         }
     });

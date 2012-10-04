@@ -128,7 +128,6 @@ describe("Card rules:", function() {
 
         it("A picking move cannot mix a picking card and an ace", function() {
             var h = [kadi.diamonds("3"), kadi.spades("A")];
-
             expect(kadi.game.RuleEngine.canBlock(h)).toBe(true);
             expect(kadi.game.RuleEngine.isValidBlockingMove(h)).toBe(false);
             expect(kadi.game.RuleEngine.isValidBlockingMove([kadi.spades("A")])).toBe(true);
@@ -186,6 +185,39 @@ describe("Card rules:", function() {
 
             var hand = [kadi.clubs("2"), kadi.diamonds("J"), kadi.clubs("A"), kadi.spades("3"), kadi.clubs("J")];
             expect(kadi.game.Strategy.bestMoveForRequestedSuite(hand,requested).length).toBe(2);
+        });
+    });
+
+    describe("KADI rules", function() {
+
+        it("A player cannot be on kadi if they have any picking cards", function() {
+            var hand = [kadi.spades("4"), kadi.spades("2"), kadi.joker("0")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(false);
+        });
+
+        it("A player cannot be on kadi if they have either a K or J", function() {
+            var hand = [kadi.spades("4"), kadi.spades("K"), kadi.hearts("J")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(false);
+        });
+
+        it("A player cannot be on kadi if their remaining cards cannot form a single move", function() {
+            var hand = [kadi.spades("6"), kadi.clubs("4")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(false);
+        });
+
+        it("A player cannot be on kadi if they have a single ace", function() {
+            var hand = [kadi.spades("A")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(false);
+        });
+
+        it("A player can be on kadi if they have a single ordinary card", function() {
+            var hand = [kadi.spades("4")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
+        });
+
+        it("A player can be on kadi if they have questions that can be answered", function() {
+            var hand = [kadi.spades("8"), kadi.diamonds("8"), kadi.diamonds("Q"), kadi.diamonds("4")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
         });
     });
 });

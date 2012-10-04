@@ -298,7 +298,6 @@ window.kadi.game = (function(me, $, undefined){
             var canPlay = kadi.game.RuleEngine.canPlay(cards,this.tableDeck.topCard());
             if (canPlay && meetsRequestedSuite) {
                 if (clearRequested) {
-                    console.log("Going to clear...")
                     this.requestedSuite = null;
                     SHOTGUN.fire(kadi.game.Events.HIDE_REQUESTED_SUITE, []);
                 }
@@ -462,10 +461,7 @@ window.kadi.game = (function(me, $, undefined){
             var cards = this.deck.cards;
             if (kadi.isSomethingMeaningful(requestedSuite)) {
                 var canPlayWithRequestedSuite = kadi.game.RuleEngine.canMeetMatchingSuite(cards, requestedSuite);
-                _.each(cards, function(c) { console.log(c.toS()); });
-                console.log("Match suite: ", requestedSuite, canPlayWithRequestedSuite);
                 if (!canPlayWithRequestedSuite) {
-                    console.log("Picking coz the bot can't match the suite ", requestedSuite);
                     this.pick();
                 }
                 else
@@ -524,8 +520,6 @@ window.kadi.game = (function(me, $, undefined){
                     this.blockMode = false;
                     this.cardsToPick = [];
                 }
-                else
-                    console.log("Mixed picking cards and Ace");
             }
             else
             {
@@ -910,7 +904,6 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         show: function(suite) {
-            console.log("Going to display notification for ", suite);
             $('.requested_suite').removeClass('hidden');
 
             if (kadi.isSomethingMeaningful(this.suiteHolder)) {
