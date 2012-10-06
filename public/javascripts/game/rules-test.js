@@ -2,6 +2,14 @@ describe("Card rules:", function() {
 
     var rule = new kadi.game.RuleEngine();
 
+    it("The two jokers are named differently", function() {
+        var jokerA = kadi.joker("0");
+        var jokerB = kadi.joker("1");
+
+        expect(jokerA.eq(jokerB)).toBe(false);
+        expect(jokerA.toS()).toBe("Joker");
+    });
+
     it("Only valid cards can start", function() {
         var king = kadi.diamonds("K");
         expect(kadi.game.RuleEngine.canStart(king)).toBe(false);
@@ -217,7 +225,7 @@ describe("Card rules:", function() {
 
         it("A player can be on kadi if they have questions that can be answered", function() {
             var hand = [kadi.spades("8"), kadi.diamonds("8"), kadi.diamonds("Q"), kadi.diamonds("4")];
-            expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(false);
         });
     });
 });

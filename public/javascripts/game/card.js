@@ -114,6 +114,7 @@ window.kadi.game = (function(me, $, undefined){
             FOUR: "4",
             THREE: "3",
             TWO: "2",
+            ANY: "",
             getRankName: function(rank) {
                 var name = "" + rank;
                 switch (rank) {
@@ -215,7 +216,10 @@ window.kadi.game = (function(me, $, undefined){
             this.toS = function(id) {
                 var suiteName = kadi.game.Suite.getSuiteName(this.suite);
                 var rankName = kadi.game.Card.getRankName(this.rank);
-                return rankName + " of " + suiteName;
+                if (this.rank == kadi.game.Card.JOKER_A || this.rank == kadi.game.Card.JOKER_B)
+                    return "Joker";
+                else
+                    return rankName + " of " + suiteName;
             }
         },
 

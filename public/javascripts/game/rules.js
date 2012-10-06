@@ -35,7 +35,6 @@ window.kadi.game = (function(me, $, undefined){
                     _.each(hand, function(card) {
                         if (!c.eq(card)) {
                             var canJoin = me.RuleEngine.canJoinGroup(gp, card);
-                            console.log("Evaluating : ", card.toS(), canJoin);
                             if (canJoin)
                                 gp.push(card);
                         }
@@ -252,11 +251,35 @@ window.kadi.game = (function(me, $, undefined){
                 var handHasPickingCard = kadi.containsPickingCard(hand);
                 var hasK = kadi.containsCardOfRank(hand,kadi.game.Card.KING);
                 var hasJ = kadi.containsCardOfRank(hand,kadi.game.Card.JACK);
-                var singleMove = me.RuleEngine.evaluateGroup(hand);
                 var singleCard = hand.length < 2;
                 var hasAce = kadi.containsCardOfRank(hand,kadi.game.Card.ACE);
 
-                return !handHasPickingCard && !hasK && !hasJ && !hasAce && (singleMove || singleCard);
+                if(!handHasPickingCard && !hasK && !hasJ && !hasAce) {
+                    if (singleCard)
+                        return true;
+                    else {
+                        var moves = kadi.game.RuleEngine.possibleMoves(kadi.joker("0"), hand);
+                        var groups = [];
+                        _.each(moves, function(move) {
+                            _.each(move.cards, function(card) {
+                                var group = [card];
+                                _.each(hand, function(c) {
+                                    if (!c.eq(card)) {
+                                        if (me.RuleEngine.canJoinGroup(group, c)) {
+                                            group.push(c);
+                                        } else {
+                                        }
+                                    }
+                                });
+                                if (me.RuleEngine.evaluateGroup(group) && group.length != hand.length)
+                                    groups.push(group);
+                            });
+                        });
+                        return false;
+                    }
+                }
+                else
+                    return false;
             }
         }
     });

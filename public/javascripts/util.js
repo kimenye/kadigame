@@ -409,7 +409,7 @@ window.kadi = (function(me, $, undefined){
     }
 
     me.joker = function(t) {
-        return new kadi.game.Card("0", kadi.game.Suite.JOKERS);
+        return new kadi.game.Card(t, kadi.game.Suite.JOKERS);
     }
 
     me.Handler = JS.Class({
@@ -423,6 +423,14 @@ window.kadi = (function(me, $, undefined){
             mthd();
         }
     });
+
+    me.handToS = function(hand) {
+        var str = "";
+        _.each(hand, function(c) {
+            str += c.toS() + ",";
+        });
+        return str;
+    }
 
     window.onerror = function(msg, url, line) {
         console.log("An un caught error occurred %s on line %s", msg, line);
