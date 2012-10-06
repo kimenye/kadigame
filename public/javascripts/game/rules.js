@@ -258,24 +258,11 @@ window.kadi.game = (function(me, $, undefined){
                     if (singleCard)
                         return true;
                     else {
-                        var moves = kadi.game.RuleEngine.possibleMoves(kadi.joker("0"), hand);
-                        var groups = [];
-                        _.each(moves, function(move) {
-                            _.each(move.cards, function(card) {
-                                var group = [card];
-                                _.each(hand, function(c) {
-                                    if (!c.eq(card)) {
-                                        if (me.RuleEngine.canJoinGroup(group, c)) {
-                                            group.push(c);
-                                        } else {
-                                        }
-                                    }
-                                });
-                                if (me.RuleEngine.evaluateGroup(group) && group.length != hand.length)
-                                    groups.push(group);
-                            });
+                        var moves = kadi.permute(hand);
+                        var validMove = _.detect(moves, function(move) {
+                            return me.RuleEngine.evaluateGroup(move);
                         });
-                        return false;
+                        return kadi.isSomethingMeaningful(validMove);
                     }
                 }
                 else
