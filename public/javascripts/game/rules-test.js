@@ -439,6 +439,12 @@ describe("Utilities:", function() {
         expect(toUpdate).toBe(true);
     });
 
+    it("It can correctly calculate permutations", function() {
+        expect(kadi.permute([1,2]).length).toBe(2);
+        var hand = [kadi.spades("2"), kadi.spades("3"), kadi.spades("4"), kadi.spades("5")];
+        expect(kadi.permute(hand).length).toBe(24)
+    });
+
     it("Picks the oldest cards", function() {
         var spade = kadi.spades("2");
         var last = kadi.clubs("J");
