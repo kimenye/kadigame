@@ -97,6 +97,15 @@ window.kadi = (function(me, $, undefined){
         return elem;
     }
 
+    me.createButton = function(className, label, id) {
+        var elem = document.createElement("button");
+        elem.className = className;
+        elem.innerHTML = label;
+        if (kadi.isSomethingMeaningful(id))
+            elem.id = id;
+        return elem;
+    }
+
     me.isEven = function(num) {
         return num === 0 || num % 2 == 0
     }

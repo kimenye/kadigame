@@ -1,33 +1,4 @@
 window.kadi.game = (function(me, $, undefined){
-
-    me.Events = JS.Class({
-        statics : {
-            CARD_SELECTED : "card-selected",
-            CARD_DESELECTED: "card-deselected",
-            PICK_CARD: "pick-card",
-            CARDS_DEALT: "cards-dealt",
-            END_TURN: "end-turn",
-            RECEIVE_TURN: "receive-turn",
-            ACTIVATE_CARD: "activate-card",
-            DEACTIVATE_CARD: "deactivate-card",
-            PLAY_CARDS: "play-cards",
-            BLOCK: "block-picking",
-            MSG_RECEIVED: "msg-received",
-            REJECT_MOVES: "reject-moves",
-            REPLENISH_PICKING_CARDS: "replenish-picking-cards",
-            REPLENISHED_CARDS: "replenished-cards",
-            PLAYER_NOTIFICATION_UI: "player-notification-ui",
-            ACCEPT_PICKING: "accept-picking",
-            SUITE_REQUESTED: "suite-requested",
-            HIDE_REQUESTED_SUITE: "hide-requested-suite",
-            DISPLAY_REQUESTED_SUITE: "display-requested-suite",
-            DECLARE_KADI: "declare-kadi",
-            UNDECLARE_KADI: "undeclare-kadi",
-            FINISH: "finish",
-            UNHANDLED_ERROR: "unhandled-error"
-        }
-    });
-
     me.PlayingOrder = JS.Class({
         statics: {
             CLOCKWISE: 1,
@@ -129,7 +100,7 @@ window.kadi.game = (function(me, $, undefined){
                 p.initHandlers();
             });
 
-            this.order = new me.PlayingOrder(this.players, 3);
+            this.order = new me.PlayingOrder(this.players, starterIdx);
             this.dealCards();
 
             SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ this.order.current().name + " to start. " ]);
@@ -138,7 +109,6 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.game.Events.END_TURN, function(player, action, playedCards) {
-
                 var paused = self.order.isPaused;
                 if (!paused) {
                     self.progressPlay(player, action, playedCards);
@@ -407,7 +377,38 @@ window.kadi.game = (function(me, $, undefined){
             }
         },
         display: function() {
+            this.div = kadi.createDiv('player ' + this.getLocation() + "", "p" + this.id);
+            if (this.live)
+                this.parent = document.getElementById(kadi.game.GameUI.CONTAINER_ID);
+            else
+                this.parent = document.getElementById(kadi.game.GameUI.ID);
 
+            var url = "http://graph.facebook.com/" + this.id + "/picture";
+            this.avatar = document.createElement("IMG");
+            this.avatar.className = "img-polaroid avatar";
+
+//            var preload = new PreloadJS();
+//            preload.onFileLoad = handleFileComplete;
+//            preload.loadFile('http://createjs.com/images/404/gBot-confused.jpg');
+//            function handleFileComplete(event) {
+//                document.body.appendChild(event.result);
+//            }
+
+            this.avatar.src = "/images/avatars/plain.gif";
+            this.div.appendChild(this.avatar);
+
+            if (this.live) {
+                this.buttonDiv = kadi.createDiv('btn-group button_holder');
+                this.btnMove = kadi.createButton('btn btn-move disabled btn-success', "Move");
+                this.btnKadi = kadi.createButton('btn btn-kadi disabled btn-danger', "KADI");
+
+                this.buttonDiv.appendChild(this.btnMove);
+                this.buttonDiv.appendChild(this.btnKadi);
+
+                this.div.appendChild(this.buttonDiv);
+            }
+
+            this.parent.appendChild(this.div);
         },
         getLocation: function() {
             return this.deck.type;
@@ -434,7 +435,7 @@ window.kadi.game = (function(me, $, undefined){
             return kadi.game.RuleEngine.canBlock(this.deck.cards);
         },
         initHandlers: function() {
-            $('.player.player' + this.getLocation()).toggleClass('hidden');
+            this.display();
             var self = this;
             if (this.live) {
                 SHOTGUN.listen(kadi.game.Events.CARD_SELECTED, function(card) {
@@ -605,11 +606,6 @@ window.kadi.game = (function(me, $, undefined){
                     $('.btn-move').removeClass('disabled');
             }
         },
-        display: function() {
-             if (this.turnToPlay == false) {
-                 $('.btn').attr("disabled", true);
-             }
-        },
         giveTurn : function() {
             this.turnToPlay = true;
         }
@@ -669,7 +665,8 @@ window.kadi.game = (function(me, $, undefined){
                 //B - TOP
                 //C - Right
                 //D - Left
-                var types = [kadi.game.PlayerDeck.TYPE_B,kadi.game.PlayerDeck.TYPE_C,kadi.game.PlayerDeck.TYPE_D];
+//                var types = [kadi.game.PlayerDeck.TYPE_B,kadi.game.PlayerDeck.TYPE_C,kadi.game.PlayerDeck.TYPE_D];
+                var types = [kadi.game.PlayerDeck.TYPE_D,kadi.game.PlayerDeck.TYPE_B,kadi.game.PlayerDeck.TYPE_C];
                 return types[index];
             },
             fromIndex : function(index) {
@@ -1126,41 +1123,30 @@ window.kadi.game = (function(me, $, undefined){
 
             this.suitePicker = kadi.createDiv("suite_picker btn-group button_holder", "suitePickerDialog");
 
-            var heartsButton = document.createElement("button");
-            heartsButton.className = "red btn btn-large hearts";
-            heartsButton.innerHTML = kadi.game.Suite.getSuiteSymbol(kadi.game.Suite.HEARTS);
+            var heartsButton= kadi.createButton("red btn btn-large hearts",kadi.game.Suite.getSuiteSymbol(kadi.game.Suite.HEARTS));
             $(heartsButton).click(function() {
                 self.select(kadi.game.Suite.HEARTS, player);
             });
 
-            var spadesButton = document.createElement("button");
-            spadesButton.className = "black btn btn-large spades";
-            spadesButton.innerHTML = kadi.game.Suite.getSuiteSymbol(kadi.game.Suite.SPADES);
+            var spadesButton = kadi.createButton("black btn btn-large spades",kadi.game.Suite.getSuiteSymbol(kadi.game.Suite.SPADES));
             $(spadesButton).click(function() {
                 self.select(kadi.game.Suite.SPADES, player);
             });
 
-            var diamondsButton = document.createElement("button");
-            diamondsButton.className = "red btn btn-large diamonds";
-            diamondsButton.innerHTML = kadi.game.Suite.getSuiteSymbol(kadi.game.Suite.DIAMONDS);
+            var diamondsButton = kadi.createButton("red btn btn-large diamonds",kadi.game.Suite.getSuiteSymbol(kadi.game.Suite.DIAMONDS));
             $(diamondsButton).click(function() {
                 self.select(kadi.game.Suite.DIAMONDS, player);
             });
 
-            var clubsButton = document.createElement("button");
-            clubsButton.className = "black btn btn-large clubs";
-            clubsButton.innerHTML = kadi.game.Suite.getSuiteSymbol(kadi.game.Suite.CLUBS);
+            var clubsButton = kadi.createButton("black btn btn-large clubs",kadi.game.Suite.getSuiteSymbol(kadi.game.Suite.CLUBS));
             $(clubsButton).click(function() {
                 self.select(kadi.game.Suite.CLUBS, player);
             });
 
-            var anyButton = document.createElement("button");
-            anyButton.className = "btn btn-large any";
-            anyButton.innerHTML = "Any";
+            var anyButton = kadi.createButton('btn btn-large any', "Any");
             $(anyButton).click(function() {
                 self.select(kadi.game.Suite.ANY, player);
             });
-
 
             this.suitePicker.appendChild(heartsButton);
             this.suitePicker.appendChild(spadesButton);
@@ -1286,7 +1272,8 @@ window.kadi.game = (function(me, $, undefined){
         statics: {
             width: 800,
             height: 600,
-            ID: 'game'
+            ID: 'game',
+            CONTAINER_ID: 'game-container'
         },
         construct: function(player, vs) {
             this.id = me.GameUI.ID;
