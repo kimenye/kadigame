@@ -218,6 +218,11 @@ describe("Card rules:", function() {
             expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
         });
 
+        it("A player cant be on kadi if they have a single Q", function() {
+            var hand = [kadi.clubs("Q")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(false);
+        });
+
         it("A player cannot be on kadi if their remaining cards cannot form a single move", function() {
             var hand = [kadi.spades("6"), kadi.clubs("4")];
             expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(false);
@@ -231,6 +236,11 @@ describe("Card rules:", function() {
         it("A player can be on kadi if they have questions that can be answered", function() {
             var hand = [kadi.spades("8"), kadi.diamonds("8"), kadi.diamonds("Q"), kadi.diamonds("4")];
             expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
+        });
+
+        it("A player can finish with a single card", function() {
+            var hand = [kadi.spades("4")];
+            expect(kadi.game.RuleEngine.canFinish(hand, null, kadi.game.Suite.SPADES)).toBe(true);
         });
 
         it("A player can finish if the can form a move that matches the current top card", function() {
@@ -271,6 +281,10 @@ describe("Card rules:", function() {
             expect(kadi.game.RuleEngine.movesThatCanFollowTopCardOrSuite(hand, null, requestedSuite).length).toBe(0);
 
             requestedSuite = kadi.game.Suite.SPADES;
+            var moves = kadi.game.RuleEngine.movesThatCanFollowTopCardOrSuite(hand, null, requestedSuite);
+            expect(moves.length).toBe(1);
+
+            hand = [kadi.spades("4")];
             var moves = kadi.game.RuleEngine.movesThatCanFollowTopCardOrSuite(hand, null, requestedSuite);
             expect(moves.length).toBe(1);
         });

@@ -252,8 +252,15 @@ window.kadi.game = (function(me, $, undefined){
             },
 
             canFinish: function(hand,topCard, suite) {
-                var validMoves = me.RuleEngine.movesThatCanFollowTopCardOrSuite(hand, topCard, suite);
-                return validMoves.length > 0;
+                if (hand.length > 1) {
+                    var validMoves = me.RuleEngine.movesThatCanFollowTopCardOrSuite(hand, topCard, suite);
+                    return validMoves.length > 0;
+                } else {
+                    if (kadi.isSomethingMeaningful(topCard))
+                        return me.RuleEngine.canFollow(_.first(hand), topCard);
+                    else
+                        return me.RuleEngine.cardCanFollowRequestedSuite(_.first(hand), suite);
+                }
             },
 
             movesThatCanFollowTopCardOrSuite: function(hand, topCard, suite) {
@@ -265,9 +272,12 @@ window.kadi.game = (function(me, $, undefined){
                     else if (kadi.isSomethingMeaningful(suite))
                         return !me.RuleEngine.cardCanFollowRequestedSuite(moveFirstCard, suite);
                 });
-                return _.reject(matchingMoves, function(m) {
-                    return !me.RuleEngine.evaluateGroup(m);
-                });
+                if (hand.length == 1)
+                    return matchingMoves;
+                else
+                    return _.reject(matchingMoves, function(m) {
+                        return !me.RuleEngine.evaluateGroup(m);
+                    });
             },
 
             canDeclareKADI: function(hand) {
@@ -279,7 +289,7 @@ window.kadi.game = (function(me, $, undefined){
 
                 if(!handHasPickingCard && !hasK && !hasJ && !hasAce) {
                     if (singleCard)
-                        return true;
+                        return me.RuleEngine.canEndMove(_.first(hand));
                     else {
                         var moves = kadi.permute(hand);
                         var validMove = _.detect(moves, function(move) {
