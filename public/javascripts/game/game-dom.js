@@ -348,7 +348,9 @@ window.kadi.game = (function(me, $, undefined){
                     player.endTurn(action,cards);
                 else {
                     console.log("%s has finished the game", player.name);
-                    SHOTGUN.fire(kadi.game.Events.FINISH, [player]);
+                    _.delay(function() {
+                        SHOTGUN.fire(kadi.game.Events.FINISH, [player]);
+                    }, 1000);
                 }
             } else {
                 SHOTGUN.fire(kadi.game.Events.REJECT_MOVES, [cards], player.id);
