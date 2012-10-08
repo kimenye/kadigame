@@ -345,6 +345,8 @@ window.kadi.game = (function(me, $, undefined){
             this.id = id;
             this.name = name;
             this.live = live;
+            if (this.live)
+                this.name = "You";
             this.onKADI = false;
         },
 
@@ -385,20 +387,29 @@ window.kadi.game = (function(me, $, undefined){
 
             var url = "http://graph.facebook.com/" + this.id + "/picture";
             this.avatar = document.createElement("IMG");
-            this.avatar.className = "img-polaroid avatar";
+            this.avatar.className = "img-polaroid img-rounded avatar";
 
-//            var preload = new PreloadJS();
+//            var preload = new createjs.PreloadJS();
+//            preload.onFileLoad = this.handleProfileImageLoaded;
 //            preload.onFileLoad = handleFileComplete;
 //            preload.loadFile('http://createjs.com/images/404/gBot-confused.jpg');
 //            function handleFileComplete(event) {
 //                document.body.appendChild(event.result);
 //            }
 
+//            preload.loadFile(url);
+//            this.handleProfileImageLoaded = function(event) {
+//                console.log("Result ", event);
+//            }
+
+//            var label = kadi.createSpan(this.name, "name");
             this.avatar.src = "/images/avatars/plain.gif";
+//            this.avatar.src = url;
             this.div.appendChild(this.avatar);
+//            this.div.appendChild(label);
 
             if (this.live) {
-                this.buttonDiv = kadi.createDiv('btn-group button_holder');
+                this.buttonDiv = kadi.createDiv('btn-group button_holder action_buttons');
                 this.btnMove = kadi.createButton('btn btn-move disabled btn-success', "Move");
                 this.btnKadi = kadi.createButton('btn btn-kadi disabled btn-danger', "KADI");
 
@@ -476,11 +487,15 @@ window.kadi.game = (function(me, $, undefined){
                         self.bot(card, requestedSuite);
                     },kadi.game.GamePlayerUI.BOT_DELAY);
                 }
+
+                $(self.avatar).addClass('active');
+                $(self.avatar).wiggle('start', { limit: 5 });
             }, this.id);
         },
         endTurn: function(action,playedCards) {
             SHOTGUN.fire(kadi.game.Events.END_TURN, [this, action, playedCards]);
             //check if the user can declare KADI...
+            $(this.avatar).removeClass('active');
             var canDeclare = kadi.game.RuleEngine.canDeclareKADI(this.cards());
             if (this.live)
             {

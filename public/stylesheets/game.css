@@ -28,6 +28,11 @@
     left: 10px;
     position: relative;
     float: left;
+    opacity: 0.6;
+}
+
+.kadi {
+    border-color: red;
 }
 
 .player.B {
@@ -54,13 +59,24 @@
 
 .name {
     display: block;
-    position: absolute;
+    /*position: absolute;*/
+    /*text-shadow: 2px 2px 2px #fff;*/
+    font-family: MuseoSans-500;
+    position: relative;
+    text-align: center;
+    color: #ffffff;
+    /*color: black;*/
+    font-weight: bold;
+    top: 10px;
 }
 
 .button_holder{
     display: block;
     position: relative;
     top: 25px;
+}
+
+.action_buttons {
     left: 20px;
 }
 
