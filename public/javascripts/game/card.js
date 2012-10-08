@@ -369,6 +369,12 @@ window.kadi.game = (function(me, $, undefined){
             this.elem().toggleClass('flip');
         },
 
+        hide: function() {
+            if (this.revealed) {
+                this.flip();
+            }
+        },
+
         position: function() {
             return new kadi.Pos(this.x, this.y, this.rotate, this.transformOrigin);
         },

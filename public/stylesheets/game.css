@@ -22,11 +22,22 @@
 .win_screen {
     margin: auto;
     width: 300px;
-    height: 200;
+    height: 100px;
     left: 250px;
-    top: 200px;
+    /*top: 200px;*/
     border: 1px solid grey;
     border-radius: 5px;
+    background-color: white;
+}
+
+.win_screen h2 {
+    text-align: center;
+}
+
+.win_screen button{
+    left: 95px;
+    position: relative;
+    top: -5px;
 }
 
 .active {

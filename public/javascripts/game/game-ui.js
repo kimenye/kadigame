@@ -24,7 +24,9 @@ window.kadi.game = (function(me, $, undefined){
             DECLARE_KADI: "declare-kadi",
             UNDECLARE_KADI: "undeclare-kadi",
             FINISH: "finish",
-            UNHANDLED_ERROR: "unhandled-error"
+            UNHANDLED_ERROR: "unhandled-error",
+            RESTART_GAME: "restart-game",
+            RETURNED_CARDS: "returned-cards"
         }
     });
 

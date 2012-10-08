@@ -102,6 +102,21 @@ window.kadi.game = (function(me, $, undefined){
             if (redraw)
                 this.deck.redrawCards();
         },
+
+        reset: function() {
+            this.kadi(false);
+            this.returnCards();
+            $(this.avatar).removeClass('active');
+
+        },
+
+        returnCards: function() {
+            SHOTGUN.fire(kadi.game.Events.RETURNED_CARDS, [this.cards()]);
+            _.each(this.cards(), function(c) {
+                this.removeCard(c,false);
+            },this);
+        },
+
         canBlock: function() {
             return kadi.game.RuleEngine.canBlock(this.deck.cards);
         },
