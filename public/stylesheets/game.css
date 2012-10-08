@@ -13,19 +13,23 @@
 }
 
 #game {
+    margin-top: 50px;
 }
 
 .player {
     margin: auto;
-    width: 80px;
-    height: 70px;
+    width: 100px;
+    height: 100px;
     display: block;
+    z-index: 7000;
+    border: 1px solid #000000;
 }
 
 .name {
     display: block;
     position: absolute;
 }
+
 .button_holder{
     display: block;
     position: relative;
@@ -42,18 +46,18 @@
 }
 
 .playerC {
-    left: 1120px;
+    left: 720px;
 }
 
 .playerC, .playerD {
     position: absolute;
     width: 100px;
-    height: 400px;
+    /*height: 400px;*/
     top: 175px;
 }
 
 .playerD {
-    left: 240px;
+    left: 0px;
 }
 
 .player img {

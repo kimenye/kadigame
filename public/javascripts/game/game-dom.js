@@ -406,6 +406,9 @@ window.kadi.game = (function(me, $, undefined){
                 this.notification = new kadi.game.PlayerNotification();
             }
         },
+        display: function() {
+
+        },
         getLocation: function() {
             return this.deck.type;
         },

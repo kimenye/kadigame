@@ -6,8 +6,8 @@
 :javascript
   $(document).ready(function () {
     var me = new kadi.game.Player('#{@player.id}', "#{@player.name}",true);
-    var compB = new kadi.game.Player('B', 'Player-B',false);
-    var compC = new kadi.game.Player('C', 'Player-C',false);
-    var compD = new kadi.game.Player('D', 'Player-D',false);
+    var compB = new kadi.game.Player('100004430102934', 'Karucy',false);
+    var compC = new kadi.game.Player('100004303570767', 'Makmende',false);
+    var compD = new kadi.game.Player('100004432652693', 'Prezzo',false);
     kadi.game.initGameUI(me,[compC,compB,compD]);
   });

@@ -128,14 +128,18 @@ window.kadi.game = (function(me, $, undefined){
                 return me.RuleEngine.cardsInHandMatchingSuite(hand, suite).length > 0;
             },
 
+            cardCanFollowRequestedSuite: function(card, suite) {
+                if (card.isAce() || card.isJoker() || suite == kadi.game.Suite.ANY || card.suite == suite)
+                    return true;
+                else
+                    return false;
+            },
+
             canFollowRequestedSuite: function(hand, suite) {
                 if (hand.length == 0)
                     return false;
                 var firstCard = _.first(hand);
-                if (firstCard.isAce() || firstCard.isJoker() || suite == kadi.game.Suite.ANY || firstCard.suite == suite)
-                    return true;
-                else
-                    return false;
+                return kadi.game.RuleEngine.cardCanFollowRequestedSuite(firstCard,suite);
             },
 
             canPlay : function(hand, topCard) {
@@ -245,6 +249,25 @@ window.kadi.game = (function(me, $, undefined){
                     }
                 }
                 return _groups;
+            },
+
+            canFinish: function(hand,topCard, suite) {
+                var validMoves = me.RuleEngine.movesThatCanFollowTopCardOrSuite(hand, topCard, suite);
+                return validMoves.length > 0;
+            },
+
+            movesThatCanFollowTopCardOrSuite: function(hand, topCard, suite) {
+                var moves = kadi.permute(hand);
+                var matchingMoves = _.reject(moves, function(move) {
+                    var moveFirstCard = _.first(move);
+                    if (kadi.isSomethingMeaningful(topCard))
+                        return !me.RuleEngine.canFollow(moveFirstCard, topCard);
+                    else if (kadi.isSomethingMeaningful(suite))
+                        return !me.RuleEngine.cardCanFollowRequestedSuite(moveFirstCard, suite);
+                });
+                return _.reject(matchingMoves, function(m) {
+                    return !me.RuleEngine.evaluateGroup(m);
+                });
             },
 
             canDeclareKADI: function(hand) {

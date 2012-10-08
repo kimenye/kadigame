@@ -232,6 +232,48 @@ describe("Card rules:", function() {
             var hand = [kadi.spades("8"), kadi.diamonds("8"), kadi.diamonds("Q"), kadi.diamonds("4")];
             expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
         });
+
+        it("A player can finish if the can form a move that matches the current top card", function() {
+            var hand = [kadi.spades("8"), kadi.diamonds("8"), kadi.diamonds("Q"), kadi.diamonds("4")];
+            var topCard = kadi.spades("3");
+
+            expect(kadi.game.RuleEngine.canFinish(hand, topCard)).toBe(true);
+        });
+
+        it("A player cannot finish if the cant form a move that matches the current top card", function() {
+            var hand = [kadi.spades("8"), kadi.diamonds("8"), kadi.diamonds("Q"), kadi.diamonds("4")];
+            var topCard = kadi.hearts("3");
+
+            expect(kadi.game.RuleEngine.canFinish(hand, topCard)).toBe(false);
+        });
+
+        it("A player an finish if they can form a move that matches the request suite", function() {
+            var hand = [kadi.spades("8"), kadi.diamonds("8"), kadi.diamonds("Q"), kadi.diamonds("4")];
+            var requestedSuite = kadi.game.Suite.ANY;
+            expect(kadi.game.RuleEngine.canFinish(hand, null, requestedSuite)).toBe(true);
+
+            requestedSuite = kadi.game.Suite.HEARTS;
+            expect(kadi.game.RuleEngine.canFinish(hand, null, requestedSuite)).toBe(false);
+        });
+
+        it("The number of entire moves possible is the number of moves that can follow the top card", function() {
+            var hand = [kadi.spades("8"), kadi.diamonds("8")];
+            var topCard = kadi.spades("7");
+
+            expect(kadi.game.RuleEngine.movesThatCanFollowTopCardOrSuite(hand, topCard).length).toBe(1);
+        });
+
+        it("The number of entire moves possible is the number of moves that can follow the requested suite", function() {
+
+            var hand = [kadi.spades("8"), kadi.diamonds("8"), kadi.diamonds("4")];
+            var requestedSuite = kadi.game.Suite.HEARTS;
+
+            expect(kadi.game.RuleEngine.movesThatCanFollowTopCardOrSuite(hand, null, requestedSuite).length).toBe(0);
+
+            requestedSuite = kadi.game.Suite.SPADES;
+            var moves = kadi.game.RuleEngine.movesThatCanFollowTopCardOrSuite(hand, null, requestedSuite);
+            expect(moves.length).toBe(1);
+        });
     });
 });
 
