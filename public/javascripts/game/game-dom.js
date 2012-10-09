@@ -118,6 +118,12 @@ window.kadi.game = (function(me, $, undefined){
             SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ this.order.current().name + " to start. " ]);
             SHOTGUN.listen(kadi.game.Events.PICK_CARD, function(player, num) {
                 self.giveCard(player,num);
+                if (player.onKADI) {
+                    //need to check if we are still on kadi...
+                    if (!player.canDeclareKADI()) {
+                        player.kadi(false);
+                    }
+                }
             });
 
             SHOTGUN.listen(kadi.game.Events.END_TURN, function(player, action, playedCards) {
@@ -187,21 +193,21 @@ window.kadi.game = (function(me, $, undefined){
                 self.progressPlay(player,kadi.game.RuleEngine.ACTION_NONE,[]);
             });
 
-            SHOTGUN.listen(kadi.game.Events.DECLARE_KADI, function(player) {
-                SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [player.name + " is on KADI!"]);
-                self.playersOnKadi.push(player);
-            });
+//            SHOTGUN.listen(kadi.game.Events.DECLARE_KADI, function(player) {
+//                SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [player.name + " is on KADI!"]);
+//                self.playersOnKadi.push(player);
+//            });
 
-            SHOTGUN.listen(kadi.game.Events.UNDECLARE_KADI, function(player) {
-                self.playersOnKadi = _.reject(self.playersOnKadi, function(p) { return p.eq(player); });
-            });
+//            SHOTGUN.listen(kadi.game.Events.UNDECLARE_KADI, function(player) {
+//                self.playersOnKadi = _.reject(self.playersOnKadi, function(p) { return p.eq(player); });
+//            });
 
             SHOTGUN.listen(kadi.game.Events.FINISH, function(player) {
                 self.order.end();
             });
 
             SHOTGUN.listen(kadi.game.Events.RESTART_GAME, function(winner) {
-                console.log("Restarting the game");
+//                console.log("Restarting the game");
                 _.each(self.players, function(p) {
                     p.reset();
                 });
@@ -266,7 +272,7 @@ window.kadi.game = (function(me, $, undefined){
                     if (!canBlock) {
                         self.order.next();
                         var next = self.order.current();
-                        var num = kadi.game.RuleEngine.calculatePicking(playedCards)
+                        var num = kadi.game.RuleEngine.calculatePicking(playedCards);
 
                         SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ nextPlayer.name + " to pick " + num ]);
                         SHOTGUN.fire(kadi.game.Events.PICK_CARD, [nextPlayer,num]);
@@ -864,7 +870,7 @@ window.kadi.game = (function(me, $, undefined){
     me.PlayerNotification = me.Box.extend({
         statics: {
             WIDTH: 250,
-            HEIGHT: 60
+            HEIGHT: 70
         },
         construct : function() {
             var self = this;

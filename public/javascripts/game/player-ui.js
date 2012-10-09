@@ -22,7 +22,6 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
-
     me.GamePlayerUI = me.Player.extend({
         statics: {
             BOT_DELAY: 2000
@@ -63,11 +62,10 @@ window.kadi.game = (function(me, $, undefined){
 //                console.log("Result ", event);
 //            }
 
-//            var label = kadi.createSpan(this.name, "name");
+
 //            this.avatar.src = "/images/avatars/plain.gif";
             this.avatar.src = url;
             this.div.appendChild(this.avatar);
-//            this.div.appendChild(label);
 
             if (this.live) {
                 this.buttonDiv = kadi.createDiv('btn-group button_holder action_buttons');
@@ -134,6 +132,9 @@ window.kadi.game = (function(me, $, undefined){
                 });
 
                 SHOTGUN.listen(kadi.game.Events.REJECT_MOVES, function(cards) {
+//                    _.each(cards, function(c) {
+//                        c.container().wiggle('start', { limit: 3 });
+//                    });
                     self.activateActions(true);
                 }, this.id);
 
@@ -153,6 +154,12 @@ window.kadi.game = (function(me, $, undefined){
 
             SHOTGUN.listen(kadi.game.Events.CARDS_DEALT, function() {
                 self.deck.redrawCards();
+            });
+
+            SHOTGUN.listen(kadi.game.Events.LATE_KADI, function() {
+                if (this.live) {
+                    //disable the kadi button
+                }
             });
 
             SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function(card, requestedSuite) {
@@ -309,15 +316,16 @@ window.kadi.game = (function(me, $, undefined){
             },this);
         },
         activateActions : function(status) {
-            $('.btn').attr("disabled", !status);
+            $('.btn-move').attr("disabled", !status);
             if (status)
-                $('.btn').removeClass('disabled');
+                $('.btn-move').removeClass('disabled');
         },
         activateForBlocking: function(pickingCards) {
             if (this.live) {
                 $('.btn-kadi').attr('disabled', true);
 
                 $('.btn-move').attr('disabled', false);
+                $('.btn-move').removeClass('disabled');
                 $('.btn-move').html('Block :-)');
 
                 this.deck.activatePickingCards();
@@ -329,7 +337,6 @@ window.kadi.game = (function(me, $, undefined){
         activate: function(status) {
             if (this.live) {
                 this.deck.activateCards(status);
-                this.turnToPlay = status;
                 $('.btn-move').attr("disabled", !status);
                 if (status)
                     $('.btn-move').removeClass('disabled');
