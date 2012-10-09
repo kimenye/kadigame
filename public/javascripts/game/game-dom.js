@@ -883,7 +883,7 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.game.Events.UNHANDLED_ERROR, function(err) {
-                self.showOverlay();
+                self.showError();
             });
         },
         showOverlay: function() {
@@ -894,18 +894,51 @@ window.kadi.game = (function(me, $, undefined){
             $(this.overlay).addClass('hidden');
         },
 
+        resetDialog: function(dialog) {
+            if (kadi.isSomethingMeaningful(dialog)) {
+                $(dialog).remove();
+                dialog = null;
+            }
+        },
+
+        showError: function() {
+            var self = this;
+            this.showOverlay();
+
+            this.resetDialog(this.errorDialog);
+            this.errorDialog = kadi.createDiv('win_screen', 'errorDialog');
+
+            var title = document.createElement("h2");
+            title.innerHTML = "Ooops! An error occured :-(";
+            this.errorDialog.appendChild(title);
+
+            var playAgainButton = kadi.createButton("btn btn-large btn-success","Play Again!");
+            $(playAgainButton).click(function() {
+                SHOTGUN.fire(kadi.game.Events.RESTART_GAME, []);
+                $(self.div).addClass('hidden');
+                self.resetDialog(self.errorDialog);
+                self.hideOverlay();
+            });
+
+            this.errorDialog.appendChild(playAgainButton);
+
+            this.div.appendChild(this.errorDialog);
+
+            $(this.div).removeClass('hidden');
+
+            $(this.div).transition({
+                top: 200 + "px"
+            }, 500, 'snap');
+        },
+
         showPlayAgain: function(player) {
             var self = this;
             this.showOverlay();
 
-            if (kadi.isSomethingMeaningful(this.gameOverDialog)) {
-                $(this.gameOverDialog).remove();
-                this.gameOverDialog = null;
-            }
-
+            this.resetDialog(this.gameOverDialog);
             this.gameOverDialog = kadi.createDiv('win_screen', 'gameOverDialog');
 
-            var title = document.createElement("h2");
+            var title = document.createElement("h3");
             title.innerHTML = player.name + " won!";
             this.gameOverDialog.appendChild(title);
 
@@ -996,10 +1029,7 @@ window.kadi.game = (function(me, $, undefined){
         showBlock: function(player, playedCards) {
             var self = this;
             this.showOverlay();
-            if (kadi.isSomethingMeaningful(this.blockDialog)) {
-                $(this.blockDialog).remove();
-                this.blockDialog = null;
-            }
+            this.resetDialog(this.blockDialog);
             var numToPick = kadi.game.RuleEngine.calculatePicking(playedCards);
 
             this.blockDialog = kadi.createDiv("pick_or_block btn-group button_holder", "pickOrBlockDialog");
