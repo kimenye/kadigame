@@ -252,10 +252,12 @@ window.kadi.game = (function(me, $, undefined){
             },
 
             canFinish: function(hand,topCard, suite) {
-                if (hand.length > 1) {
+                if (hand.length > 1 && hand.length <= 5) {
                     var validMoves = me.RuleEngine.movesThatCanFollowTopCardOrSuite(hand, topCard, suite);
                     return validMoves.length > 0;
-                } else {
+                } else if (hand.length > 5)
+                    return false;
+                else {
                     if (kadi.isSomethingMeaningful(topCard))
                         return me.RuleEngine.canFollow(_.first(hand), topCard);
                     else

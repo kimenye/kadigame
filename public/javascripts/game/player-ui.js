@@ -106,7 +106,6 @@ window.kadi.game = (function(me, $, undefined){
             this.kadi(false);
             this.returnCards();
             $(this.avatar).removeClass('active');
-
         },
 
         returnCards: function() {
@@ -156,19 +155,16 @@ window.kadi.game = (function(me, $, undefined){
                 self.deck.redrawCards();
             });
 
-            SHOTGUN.listen(kadi.game.Events.LATE_KADI, function() {
-                if (this.live) {
-                    //disable the kadi button
-                }
-            });
-
-            SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function(card, requestedSuite) {
+            SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function(card, requestedSuite, prev) {
                 if (self.live) {
                     self.activate(true);
                     self.requestedSuite = requestedSuite;
                     self.topCard = card;
                 } else {
                     _.delay(function() {
+                        if (kadi.isSomethingMeaningful(prev) && prev.live) {
+                            prev.disableKADI();
+                        }
                         self.bot(card, requestedSuite);
                     },kadi.game.GamePlayerUI.BOT_DELAY);
                 }
@@ -210,10 +206,13 @@ window.kadi.game = (function(me, $, undefined){
                 $(this.avatar).addClass('kadi');
 
                 if (this.live) {
-                    $('.btn-kadi').attr('disabled', true);
-                    $('.btn-kadi').addClass('disabled');
+                    this.disableKADI();
                 }
             }
+        },
+        disableKADI: function() {
+            $('.btn-kadi').attr('disabled', true);
+            $('.btn-kadi').addClass('disabled');
         },
         bot: function(card, requestedSuite) {
             //TODO: give the players some thinking time...
@@ -238,7 +237,6 @@ window.kadi.game = (function(me, $, undefined){
 
             } else {
                 var canFinish = this.onKADI && kadi.game.RuleEngine.canFinish(cards,card,null);
-                console.log("%s can finish %s", this.name, canFinish);
                 if (canFinish) {
                     var moves = kadi.game.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,card,null);
                     var move = _.first(moves);
@@ -262,7 +260,6 @@ window.kadi.game = (function(me, $, undefined){
                         this.pick();
                 }
             }
-
         },
         block: function(pickingCards) {
             //the blocking strategy is to add a single picking card of the highest value
@@ -302,7 +299,6 @@ window.kadi.game = (function(me, $, undefined){
                 if (this.selections.length > 0) {
                     this.activateActions(false);
                     var canFinish = this.onKADI & kadi.game.RuleEngine.canFinish(this.cards(), this.topCard, this.requestedSuite);
-
                     SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, this.selections, canFinish]);
                 }
             }
