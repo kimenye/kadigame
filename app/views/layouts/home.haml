@@ -1,0 +1,13 @@
+!!! 5
+%html
+  %head
+    %title KADI! Kenyan Style Poker
+    =stylesheet_link_tag 'bootstrap.min'
+    %link{:href=> '/images/favicon.ico', :rel=>'shortcut icon', :type => 'text/css' }
+    =javascript_include_tag "/javascripts/jquery.1.7.2.js"
+    -#=javascript_include_tag "/javascripts/prefixfree.min.js"
+    = yield_content :include
+  %body
+    = yield
+    = yield_content :lib_js
+    = yield_content :app_js
