@@ -23,7 +23,7 @@ window.kadi.game = (function(me, $, undefined){
                         suite = kadi.game.Suite.ANY;
                     return suite;
                 } else {
-                    return "";
+                    return kadi.game.Suite.ANY;
                 }
 
             },
@@ -76,6 +76,10 @@ window.kadi.game = (function(me, $, undefined){
                     return me.RuleEngine.ACTION_SKIP;
                 else if(lastCard.isAce())
                     return me.RuleEngine.ACTION_PICK_SUITE;
+            },
+            calculateTurnsSkipped: function(hand) {
+//                var num = kadi.game.RuleEngine.calculatePicking(playedCards);
+                return _.reject(hand, function(c) { return !c.isJack() }).length;
             },
             calculatePicking: function(hand) {
                 var total = 0;
@@ -252,10 +256,12 @@ window.kadi.game = (function(me, $, undefined){
             },
 
             canFinish: function(hand,topCard, suite) {
-                if (hand.length > 1) {
+                if (hand.length > 1 && hand.length <= 5) {
                     var validMoves = me.RuleEngine.movesThatCanFollowTopCardOrSuite(hand, topCard, suite);
                     return validMoves.length > 0;
-                } else {
+                } else if (hand.length > 5)
+                    return false;
+                else {
                     if (kadi.isSomethingMeaningful(topCard))
                         return me.RuleEngine.canFollow(_.first(hand), topCard);
                     else
