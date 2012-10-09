@@ -30,7 +30,7 @@
     background-color: white;
 }
 
-.win_screen {
+.win_screen h3, h4, p {
     text-align: center;
 }
 
@@ -49,20 +49,21 @@
     left: 10px;
     position: relative;
     float: left;
-    opacity: 0.6;
+    opacity: 0.7;
 }
 
 .kadi {
-    border-color: red;
+    /*border-color: red;*/
+    box-shadow: 0px 0px 15px 5px rgba(255, 0, 0, .75);
 }
 
 .player.B {
-   top: 0px;
+   top: 70px;
    left: 360px;
 }
 
 .player.C {
-    left: 720px;
+    left: 650px;
 }
 
 .player.C, .player.D {
@@ -75,7 +76,7 @@
 }
 
 .player.D {
-
+   left: 70px;
 }
 
 .name {
@@ -324,7 +325,7 @@
     width: 100px;
     height: 136px;
     position: absolute;
-    left: 160px;
+    left: 180px;
     top: 200px;
     opacity: 0;
 }
