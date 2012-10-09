@@ -189,7 +189,10 @@ window.kadi.game = (function(me, $, undefined){
                     SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[self.tableDeck.topCard(),null, player],next.id);
                     SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[next],'deck');
                 } else if (action == kadi.game.RuleEngine.ACTION_SKIP) {
-                    self.order.next();
+                    var turnsToSkip = kadi.game.RuleEngine.calculateTurnsSkipped(playedCards);
+                    _.each(_.range(turnsToSkip), function(idx) {
+                        self.order.next();
+                    });
                     self.order.next();
                     var next = self.order.current();
                     SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ self.order.turn() ]);
