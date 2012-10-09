@@ -7,9 +7,9 @@
 
 :javascript
   $(document).ready(function () {
-    var me = new kadi.game.Player('#{@player.fb_id}', "#{@player.name}",true);
-    var compB = new kadi.game.Player('100004430102934', 'Karucy',false);
-    var compC = new kadi.game.Player('100004303570767', 'Makmende',false);
-    var compD = new kadi.game.Player('100004432652693', 'Prezzo',false);
+    var me = new kadi.game.Player('100004430102934', "#{@player.name}",true);
+    var compB = new kadi.game.Player('100002298632995', 'Karucy',false);
+    var compC = new kadi.game.Player('625987307', 'Makmende',false);
+    var compD = new kadi.game.Player('100000180255133', 'Juelz',false);
     kadi.game.initGameUI(me,[compD, compB, compC]);
   });

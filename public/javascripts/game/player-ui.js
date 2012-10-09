@@ -64,8 +64,8 @@ window.kadi.game = (function(me, $, undefined){
 //            }
 
 //            var label = kadi.createSpan(this.name, "name");
-            this.avatar.src = "/images/avatars/plain.gif";
-//            this.avatar.src = url;
+//            this.avatar.src = "/images/avatars/plain.gif";
+            this.avatar.src = url;
             this.div.appendChild(this.avatar);
 //            this.div.appendChild(label);
 

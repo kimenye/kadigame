@@ -364,10 +364,21 @@ describe("Move rules:", function() {
 });
 
 describe("Game mechanics:", function() {
-    var playerA = new kadi.game.Player('A', 'Player A');
-    var playerB = new kadi.game.Player('B', 'Player B');
+    var playerA = new kadi.game.Player('A', 'Chaos');
+    var playerB = new kadi.game.Player('B', 'Player B', true);
     var playerC = new kadi.game.Player('C', 'Player C');
     var playerD = new kadi.game.Player('D', 'Player D');
+
+    it("correctly formats the next player message", function() {
+        var order = new kadi.game.PlayingOrder([playerA, playerB, playerC, playerD], 0);
+        expect(order.turn()).toBe("Chaos' turn to play");
+
+        order.next();
+        expect(order.turn()).toBe("Your turn to play");
+
+        order.next();
+        expect(order.turn()).toBe("Player C's turn to play");
+    });
 
     it("Returns the next player", function() {
         var order = new kadi.game.PlayingOrder([playerA, playerB, playerC, playerD], 0);

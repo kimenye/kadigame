@@ -49,7 +49,14 @@ window.kadi.game = (function(me, $, undefined){
         },
         turn: function() {
             var n = this.current();
-            return n.live? "Your turn to play" : n.name + "'s turn to play";
+            return n.live? "Your turn to play" : this.formatTurn(n.name);
+        },
+        formatTurn: function(name) {
+            if (name.charAt(name.length - 1) == "s") {
+                return name + "' turn to play";
+            }
+            else
+                return name + "'s turn to play";
         },
         next: function() {
             if (!this.isPaused) {
@@ -908,19 +915,14 @@ window.kadi.game = (function(me, $, undefined){
             this.resetDialog(this.errorDialog);
             this.errorDialog = kadi.createDiv('win_screen', 'errorDialog');
 
-            var title = document.createElement("h2");
+            var title = document.createElement("h4");
             title.innerHTML = "Ooops! An error occured :-(";
             this.errorDialog.appendChild(title);
 
-            var playAgainButton = kadi.createButton("btn btn-large btn-success","Play Again!");
-            $(playAgainButton).click(function() {
-                SHOTGUN.fire(kadi.game.Events.RESTART_GAME, []);
-                $(self.div).addClass('hidden');
-                self.resetDialog(self.errorDialog);
-                self.hideOverlay();
-            });
+            var refresh = document.createElement("p");
+            refresh.innerHTML = "Please refresh to start again";
 
-            this.errorDialog.appendChild(playAgainButton);
+            this.errorDialog.appendChild(refresh);
 
             this.div.appendChild(this.errorDialog);
 
