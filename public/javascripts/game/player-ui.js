@@ -110,9 +110,10 @@ window.kadi.game = (function(me, $, undefined){
 
         returnCards: function() {
             SHOTGUN.fire(kadi.game.Events.RETURNED_CARDS, [this.cards()]);
-            _.each(this.cards(), function(c) {
-                this.removeCard(c,false);
-            },this);
+//            _.each(this.cards(), function(c) {
+//                this.removeCard(c,false);
+//            },this);
+            this.deck.cards = [];
         },
 
         canBlock: function() {

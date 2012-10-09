@@ -339,7 +339,8 @@ window.kadi.game = (function(me, $, undefined){
             var pos = kadi.getRandomLocation(this.bBox(), 10, 5, 10);
             card.container().css('z-index', kadi.game.TableDeck.Z);
             card.moveTo(pos.x, pos.y, pos.rotate);
-            this.deck.push([card]); //TODO: to change when we do shift / pop
+//            this.deck.push([card]); //TODO: to change when we do shift / pop
+            this.deck.push(card);
         },
 
         giveCardTo: function(card, player) {
