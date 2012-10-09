@@ -2,12 +2,12 @@
 %html
   %head
     %title KADI! Kenyan Style Poker
-    %link{:href=> '/stylesheets/bootstrap.min.css', :rel=>'stylesheet', :type => 'text/css' }
-    %link{:href=> '/stylesheets/bootstrap-responsive.min.css', :rel=>'stylesheet', :type => 'text/css' }
-    %link{:href=> '/stylesheets/font.css', :rel=>'stylesheet', :type => 'text/css' }
-    %link{:href=> '/stylesheets/kadi.css', :rel=>'stylesheet', :type => 'text/css' }
-    %link{:href=> '/stylesheets/loading.css', :rel=>'stylesheet', :type => 'text/css' }
-    %link{:href=> '/stylesheets/game.css', :rel=>'stylesheet', :type => 'text/css' }
+    =stylesheet_link_tag 'bootstrap.min'
+    =stylesheet_link_tag 'bootstrap-responsive.min'
+    =stylesheet_link_tag 'font'
+    =stylesheet_link_tag 'kadi'
+    =stylesheet_link_tag 'loading'
+    =stylesheet_link_tag 'game'
     %link{:href=> '/images/favicon.ico', :rel=>'shortcut icon', :type => 'text/css' }
     =javascript_include_tag "/javascripts/jquery.1.7.2.js"
     =javascript_include_tag "/javascripts/prefixfree.min.js"
