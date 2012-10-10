@@ -518,6 +518,12 @@ describe("Utilities:", function() {
         expect(toUpdate).toBe(true);
     });
 
+    it("It correctly gets the fb profile image", function() {
+        expect(kadi.fbProfileImage(1)).toBe("http://graph.facebook.com/1/picture");
+
+        expect(kadi.fbProfileImage(1,"large")).toBe("http://graph.facebook.com/1/picture?type=large");
+    });
+
     it("It can correctly calculate permutations", function() {
         expect(kadi.permute([1,2]).length).toBe(2);
         var hand = [kadi.spades("2"), kadi.spades("3"), kadi.spades("4"), kadi.spades("5")];

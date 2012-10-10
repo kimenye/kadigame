@@ -441,6 +441,10 @@ window.kadi = (function(me, $, undefined){
         return str;
     }
 
+    me.fbProfileImage = function(id, type) {
+       return "http://graph.facebook.com/" + id + "/picture" + (kadi.isSomethingMeaningful(type) ? "?type=" + type : "");
+    }
+
     //+ Jonas Raoni Soares Silva
     //@ http://jsfromhell.com/array/permute [rev. #1]
     me.permute = function(v, m){

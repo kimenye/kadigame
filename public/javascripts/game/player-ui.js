@@ -45,7 +45,7 @@ window.kadi.game = (function(me, $, undefined){
             else
                 this.parent = document.getElementById(kadi.game.GameUI.ID);
 
-            var url = "http://graph.facebook.com/" + this.id + "/picture";
+            var url = kadi.fbProfileImage(this.id);
             this.avatar = document.createElement("IMG");
             this.avatar.className = "img-polaroid img-rounded avatar";
 

@@ -12,33 +12,13 @@
 - else
   .container
     .row
-
-.container
-  .row
-    %hr
-  .row
-    .span4.bordered
-      %h4 About Us
-      %p
-        KADI&reg; is a product of
-        = link_to('Sprout Consulting', 'http://sprout.co.ke?from=kadi')
-      %p
-        Copyright &copy;
-        = Time.now.year
-    .span4
-      %h4 Privacy Policy
-      %p
-        Fancy Copyright and Privacy Policy stuff
-    .span4
-      %h4 Contact Us
-      %p
-        Email: kadi@sprout.co.ke
-      %p
-        %a{:href=>'https://twitter.com/kadigame', :class=>'twitter-follow-button'}
-      %p.fb-like{'data-href'=>'http://www.facebook.com/kadigame','data-width'=>"400", 'data-show-faces'=>"false", 'data-stream'=>"false", 'data-header'=>"false" }
+      %h3{'data-bind' => 'text: welcomeMsg'}
+    .row
+      .span1.img-polaroid.img-rounded
+        %img{'data-bind' => "attr: {src: profileImage}"}
 
 
-
+-content_for :footer, partial('base/footer')
 -content_for :fb, partial('base/facebook')
 -content_for :lib_js, partial("base/lib_js")
 -content_for :app_js, partial("base/app_js")
