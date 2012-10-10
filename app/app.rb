@@ -60,19 +60,6 @@ class Kadi < Padrino::Application
           @player = Player.new({:fb_id => fb_id, :name => name})
           @player.save
         end
-
-        all_friends = @graph.get_connections('me', 'friends')
-        friends_using_app = @graph.fql_query("SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1")
-
-        @friends = all_friends.collect { |f|
-          using_app = friends_using_app.detect { |friend_using| friend_using['id'] == f['id'] }
-          {
-            :id => f['id'],
-            :name => f['name'],
-            :using_app => !using_app.nil?
-          }
-        }
-
       rescue Koala::Facebook::APIError
         puts ">>> The Facebook Session has expired. Redirecting to FB"
         session[:access_token] = nil
