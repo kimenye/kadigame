@@ -8,9 +8,9 @@
 
 :javascript
   $(document).ready(function () {
-    var me = new kadi.game.Player('100004430102934', "#{@player.name}",true,true);
-    var compB = new kadi.game.Player('100002298632995', 'Karucy',false);
-    var compC = new kadi.game.Player('625987307', 'Makmende',false);
-    var compD = new kadi.game.Player('100000180255133', 'Juelz',false);
+    var me = { id: '100004430102934', name: 'You', live: true, debug: true};
+    var compB = {id: '100002298632995', name: 'Karucy', live: false};
+    var compC = {id: '625987307', name: 'Makmende', live: false};
+    var compD = {id: '100000180255133', name: 'Juelz', live: false};
     kadi.game.initGameUI(me,[compD, compB, compC]);
   });

@@ -6,9 +6,7 @@ window.kadi.app = (function(me, $, undefined){
                 console.log("New number of members:", num);
             });
 
-            this.me = new kadi.game.Player(fbId, playerName, true);
-
-
+            this.me = new kadi.game.GamePlayerUI({id: fbId, name: playerName, live: true});
         }
     });
 

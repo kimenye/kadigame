@@ -33,7 +33,12 @@ window.kadi.game = (function(me, $, undefined){
     });
 
     me.Game = JS.Class({
-        construct: function(player, opponents) {
+        statics: {
+            TYPE_SINGLE_PLAYER: "single-player",
+            TYPE_MULTI_PLAYER: "multi-player"
+        },
+        construct: function(player, opponents, type) {
+            this.type = kadi.isSomethingMeaningful(type) ? type : me.Game.TYPE_SINGLE_PLAYER;
             this.me = player;
             this.opponents = opponents;
             this.players = this.opponents;
@@ -42,8 +47,6 @@ window.kadi.game = (function(me, $, undefined){
             this.requestedSuite = null;
             this.pickingDeck = new kadi.game.PickingDeck();
             this.tableDeck = new kadi.game.TableDeck();
-            this.noticeBoard = new kadi.game.NoticeBoard();
-            this.requestedSuiteDeck = new kadi.game.RequestedSuiteNotification();
         },
 
         startGame: function() {
@@ -346,6 +349,12 @@ window.kadi.game = (function(me, $, undefined){
                 this.opponents.push(new me.GamePlayerUI(opponent,new kadi.game.PlayerDeck.fromIndex(idx)));
             },this);
             this.parent.construct.apply(this, [this.me, this.opponents]);
+            this.initUIElements();
+        },
+
+        initUIElements: function() {
+            this.noticeBoard = new kadi.game.NoticeBoard();
+            this.requestedSuiteDeck = new kadi.game.RequestedSuiteNotification();
         },
 
         display : function() {
