@@ -817,30 +817,7 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
-    me.GameUI = JS.Class({
-        statics: {
-            width: 800,
-            height: 600,
-            ID: 'game',
-            CONTAINER_ID: 'game-container'
-        },
-        construct: function(player, vs) {
-            this.id = me.GameUI.ID;
-            if (kadi.isSomethingMeaningful(player))
-                this.me = new kadi.game.GamePlayerUI(player, new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A));
 
-            this.opponents = [];
-            _.each(vs, function(opponent, idx) {
-                this.opponents.push(new me.GamePlayerUI(opponent,new kadi.game.PlayerDeck.fromIndex(idx)));
-            },this);
-            this.game = new me.Game(this.me,this.opponents);
-        },
-
-        display : function() {
-            kadi.ui.disableLoading('game');
-            this.game.startGame();
-        }
-    });
 
     /**
      * Initialize the game environment

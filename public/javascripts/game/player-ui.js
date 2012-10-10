@@ -7,6 +7,7 @@ window.kadi.game = (function(me, $, undefined){
             this.id = id;
             this.name = name;
             this.live = live;
+            this.debug = debug;
             if (kadi.getVal(this.live))
             {
                 if (!kadi.getVal(debug))
@@ -17,7 +18,6 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         initRealtime: function() {
-//            console.log("Preparing realtime communications");
             var self = this;
             Pusher.log = function(message) {
                 if (window.console && window.console.log) window.console.log(message);
@@ -26,7 +26,6 @@ window.kadi.game = (function(me, $, undefined){
             this.pusher = new Pusher(me.Player.PUSHER_KEY, { encrypted: true, auth: { params: { userid: this.id, name: this.name } } });
             this.pusher.connection.bind('connected', function() {
                 self.socketId = self.pusher.connection.socket_id;
-                console.log("Connected to the realtime server");
             });
 
             this.presence = this.pusher.subscribe("presence-gameroom");
@@ -66,7 +65,7 @@ window.kadi.game = (function(me, $, undefined){
             BOT_DELAY: 2000
         },
         construct : function(player, deck) {
-            this.parent.construct.apply(this, [player.id,player.name,player.live]);
+            this.parent.construct.apply(this, [player.id,player.name,player.live,player.debug]);
             this.deck = deck;
             this.topCard = null;
             this.requestedSuite = null;
