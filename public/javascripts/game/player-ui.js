@@ -133,7 +133,7 @@ window.kadi.game = (function(me, $, undefined){
 
                 SHOTGUN.listen(kadi.game.Events.REJECT_MOVES, function(cards) {
                     _.each(cards, function(c) {
-                        c.container().wiggle('start', {limit: 2});
+                        c.container().wiggle('start', {limit: 2, previous: c.rotate });
                     });
                     self.activateActions(true);
                 }, this.id);
