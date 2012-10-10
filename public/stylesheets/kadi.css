@@ -5,11 +5,7 @@
 }
 
 body {
-    /*font-family: MuseoSans-500;*/
-}
-
-.hero-unit {
-    background-image: url(../images/game_bg.png);
+    font-family: MuseoSans-500;
 }
 
 .logo {
@@ -19,29 +15,4 @@ body {
 .page-header h1 small, .login h3 small {
     font-size: 14px;
     display: block;
-}
-
-.fb_logo {
-    max-width: 200px;
-    cursor: pointer;
-}
-
-.row {
-    margin-left: 0px;
-}
-
-.hidden {
-    display: none;
-}
-
-#game {
-    /*background: url(../images/woodback.jpg);*/
-    background:radial-gradient(rgba(80,0,0,0.1) 0%, rgba(80,0,0,0.2) 30%, rgba(21,11,1,0.9) 100% ), url(../images/woodback.jpg);
-    border-radius: 10px;
-    width: 800px;
-    height: 600px;
-    display:block;
-    margin:auto;
-    position: relative;
-    overflow: hidden;
 }

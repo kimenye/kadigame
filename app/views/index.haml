@@ -5,70 +5,13 @@
         %a
           =image_tag "/images/logo_fb.png", :class => 'logo'
         %small Kenyan Style Poker
-.container
-  .row
--#.container
-  - if !@player
-    =partial 'base/login'
-  - else
-    -#.row
-      .container
-        %a.span1.offset11{:href=>'/logout'} Logout
-    -#.row#dashboard
-      .container
-        .row
-          .span1
-            .container
-              .row
-                =image_tag "https://graph.facebook.com/#{@player.fb_id}/picture"
-              .row
-                %p= @player.name
-          .span9.offset1
-            .container
-              .row
-                %table.table.table-bordered.span8
-                  %thead
-                    %th.span2
-                      %h5 Credits
-                    %th.span2
-                      %h5 XP
-                    %th.span2
-                      %h5 Level
-                    %th.span2
-                      %h5 Players online
-                  %tbody
-                    %tr
-                      %td
-                        %p{'data-bind' => 'text: credits'}
-                      %td
-                        %p{'data-bind' => 'text: xp'}
-                      %td
-                        %p{'data-bind' => 'text: level'}
-                      %td
-                        %p{'data-bind' => 'text: numPlayersOnline'}
-        .row
-          %br
-      .container
-        .row{'data-bind' => 'if: numPlayersOnline() < 2'}
-          %p.lead Oops! Lonely? Other players are coming soon...
-        .row{'data-bind' => 'if: numPlayersOnline() > 1'}
-          %table.table.table-bordered.span4
-            %thead
-              %th Players
-            %tbody{'data-bind' => 'foreach: playersOnline'}
-              %tr
-                %td
-                  .container.span4
-                    .row
-                      %img{'data-bind' => "attr: { src: photo }"}
-                      %p{'data-bind' => 'text: name'}
-                    .row{'data-bind' => 'fadeVisible: canAcceptInvite'}
-                      %button.btn.btn-warning{'data-toggle' => 'button', 'data-bind' => "click: $root.acceptInvite, attr: { id: 'btn-accept-' + id(), 'data-loading-text' : 'Preparing game...' }" } Accept!
-                    .row{'data-bind' => 'fadeVisible: disableInvite'}
-                      %button.btn.btn-success{'data-toggle' => 'button', 'data-bind' => "click: $root.inviteToPlay, disable: canAcceptInvite, attr: { id: 'btn-' + id(), 'data-loading-text': 'Contacting ' + name() + ' ...', 'data-progress-text' : 'Sent! Waiting for response...', 'data-complete-text' : 'Accepted! Preparing game...'} "} Play!
-    -#.row#board
-      #game.container.span9
+- if !@player
+  .container
+    .row
+      = link_to('Login with FB', '/auth/facebook')
+- else
+  .container
+    .row
 
-
-    -#-content_for :app_js, partial("base/app_js")
--#-content_for :lib_js, partial("base/lib_js")
+-content_for :lib_js, partial("base/lib_js")
+-content_for :app_js, partial("base/app_js")

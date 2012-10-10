@@ -6,8 +6,21 @@
     left: 500px;
 }
 
+.hidden {
+    display: none;
+}
+
 #game {
+    background: url(../images/woodback.jpg);
+    background:radial-gradient(rgba(80,0,0,0.1) 0%, rgba(80,0,0,0.2) 30%, rgba(21,11,1,0.9) 100% ), url(../images/woodback.jpg);
+    border-radius: 10px;
+    width: 800px;
+    height: 600px;
+    display:block;
+    margin:auto;
     margin-top: 20px;
+    position: relative;
+    overflow: hidden;
 }
 
 .player {
