@@ -6,7 +6,8 @@
           =image_tag "/images/logo_fb.png", :class => 'logo'
         %small Kenyan Style Poker
 .container
-  .row
+  .row-fluid#game-container.game-container
+    .span10#game{:style => "display:none;"}
 -content_for :footer, partial('base/footer')
 -content_for :fb, partial('base/facebook')
 -content_for :lib_js, partial("base/lib_js")

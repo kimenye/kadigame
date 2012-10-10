@@ -43,7 +43,7 @@
     background-color: white;
 }
 
-.win_screen h3, h4, p {
+.win_screen h3, .win_screen h4, .win_screen p {
     text-align: center;
 }
 

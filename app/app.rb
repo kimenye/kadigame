@@ -47,7 +47,7 @@ class Kadi < Padrino::Application
 
     def get_logged_in_user(redirect_to='/')
       @graph  = Koala::Facebook::API.new(session[:access_token])
-
+      @token = session[:access_token]
       begin
         @user = @graph.get_object("me")
         fb_id = @user['id']
@@ -67,7 +67,13 @@ class Kadi < Padrino::Application
   end
 
   get :game do
-    get_logged_in_user '/game'
+    if is_logged_in?
+      @player = session[:player]
+      @token = session[:access_token]
+    else
+      get_logged_in_user '/game'
+    end
+
     render :game, :layout => :multiplayer
   end
 

@@ -4,19 +4,21 @@
   .row
     .span4.bordered
       %h5 About Us
-      %p.muted
+      %small.muted
         KADI&reg; is a product of
         = link_to('Sprout Consulting', 'http://sprout.co.ke?from=kadi')
+        %br
         Copyright &copy;
         = Time.now.year
     .span4
       %h5 Privacy Policy
-      %p.muted
+      %small.muted
         Fancy Copyright and Privacy Policy stuff
     .span4
       %h5 Contact Us
-      %p.muted
+      %small
         =mail_to 'kadi@sprout.co.ke'
+      %br
       %p
         %a{:href=>'https://twitter.com/kadigame', :class=>'twitter-follow-button'}
       %p.fb-like{'data-href'=>'http://www.facebook.com/kadigame','data-width'=>"400", 'data-show-faces'=>"false", 'data-stream'=>"false", 'data-header'=>"false" }
