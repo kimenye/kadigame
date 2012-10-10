@@ -53,7 +53,11 @@
                 var opt = {
                     rotate: 0 + 'deg'
                 };
-                $(o).transition(opt, 5);
+                if(options.previous) {
+                    opt = { rotate: options.previous + 'deg'};
+                }
+
+                $(o).transition(opt, 1);
                 if ($(o).hasClass('wiggling')) {
                     $(o).removeClass('wiggling');
                 }
