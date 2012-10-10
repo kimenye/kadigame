@@ -158,7 +158,6 @@ describe("Card rules:", function() {
             var requested = kadi.game.Suite.SPADES;
             var move = [kadi.diamonds("A")];
             expect(kadi.game.RuleEngine.canFollowRequestedSuite(move,requested)).toBe(true);
-
         });
 
         it("Anything can follow an empty requested suite", function() {
@@ -168,7 +167,6 @@ describe("Card rules:", function() {
 
             var hand = [kadi.hearts("J"), kadi.clubs("10"), kadi.clubs("5"), kadi.diamonds("8")];
             expect(kadi.game.RuleEngine.canFollowRequestedSuite(move,requested)).toBe(true);
-
         });
 
         it("Cards matching the requested suite", function() {
@@ -365,7 +363,7 @@ describe("Move rules:", function() {
 
 describe("Game mechanics:", function() {
     var playerA = new kadi.game.Player('A', 'Chaos');
-    var playerB = new kadi.game.Player('B', 'Player B', true);
+    var playerB = new kadi.game.Player('B', 'Player B', true, true);
     var playerC = new kadi.game.Player('C', 'Player C');
     var playerD = new kadi.game.Player('D', 'Player D');
 

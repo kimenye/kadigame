@@ -1,12 +1,51 @@
 window.kadi.game = (function(me, $, undefined){
     me.Player = JS.Class({
-        construct : function(id, name,live) {
+        statics : {
+            PUSHER_KEY: "3b40830094bf454823f2"
+        },
+        construct : function(id, name,live,debug) {
             this.id = id;
             this.name = name;
             this.live = live;
-            if (this.live)
-                this.name = "You";
+            if (kadi.getVal(this.live))
+            {
+                if (!kadi.getVal(debug))
+                    this.initRealtime();
+            }
+
             this.onKADI = false;
+        },
+
+        initRealtime: function() {
+//            console.log("Preparing realtime communications");
+            var self = this;
+            Pusher.log = function(message) {
+                if (window.console && window.console.log) window.console.log(message);
+            };
+            Pusher.channel_auth_endpoint = "/pusher/presence/auth";
+            this.pusher = new Pusher(me.Player.PUSHER_KEY, { encrypted: true, auth: { params: { userid: this.id, name: this.name } } });
+            this.pusher.connection.bind('connected', function() {
+                self.socketId = self.pusher.connection.socket_id;
+                console.log("Connected to the realtime server");
+            });
+
+            this.presence = this.pusher.subscribe("presence-gameroom");
+
+            this.presence.bind('pusher:subscription_error', function(msg) {
+                console.log("Subscription error", msg);
+            });
+
+            this.presence.bind('pusher:subscription_succeeded', function() {
+                SHOTGUN.fire(kadi.game.Events.MEMBERSHIP_CHANGED, [self.presence.members.count]);
+            });
+
+            this.presence.bind('pusher:member_added', function(member) {
+                SHOTGUN.fire(kadi.game.Events.MEMBERSHIP_CHANGED, [self.presence.members.count, member]);
+            });
+
+            this.presence.bind('pusher:member_removed', function(member) {
+                SHOTGUN.fire(kadi.game.Events.MEMBERSHIP_CHANGED, [self.presence.members.count, member]);
+            });
         },
 
         eq: function(other) {

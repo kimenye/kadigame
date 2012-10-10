@@ -66,13 +66,14 @@ class Kadi < Padrino::Application
     end
   end
 
-  get :game do
-    if is_logged_in?
-      @player = session[:player]
-      @token = session[:access_token]
-    else
-      get_logged_in_user '/game'
-    end
+  get :game, :with => :id do
+    #if is_logged_in?
+    #  @player = session[:player]
+    #  @token = session[:access_token]
+    #else
+    #  get_logged_in_user '/game'
+    #end
+    @player = Player.find_by_id!(params[:id])
 
     render :game, :layout => :multiplayer
   end
