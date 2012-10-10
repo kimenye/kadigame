@@ -110,9 +110,10 @@ window.kadi.game = (function(me, $, undefined){
 
         returnCards: function() {
             SHOTGUN.fire(kadi.game.Events.RETURNED_CARDS, [this.cards()]);
-            _.each(this.cards(), function(c) {
-                this.removeCard(c,false);
-            },this);
+//            _.each(this.cards(), function(c) {
+//                this.removeCard(c,false);
+//            },this);
+            this.deck.cards = [];
         },
 
         canBlock: function() {
@@ -131,9 +132,9 @@ window.kadi.game = (function(me, $, undefined){
                 });
 
                 SHOTGUN.listen(kadi.game.Events.REJECT_MOVES, function(cards) {
-//                    _.each(cards, function(c) {
-//                        c.container().wiggle('start', { limit: 3 });
-//                    });
+                    _.each(cards, function(c) {
+                        c.container().wiggle('start', {limit: 2});
+                    });
                     self.activateActions(true);
                 }, this.id);
 

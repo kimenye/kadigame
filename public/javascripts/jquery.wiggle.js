@@ -27,13 +27,10 @@
                     $(o).addClass('wiggling');
                 }
                 var degree = options.degrees[step];
-                $(o).css({
-                    '-webkit-transform': 'rotate(' + degree + 'deg)',
-                    '-moz-transform': 'rotate(' + degree + 'deg)',
-                    '-o-transform': 'rotate(' + degree + 'deg)',
-                    '-sand-transform': 'rotate(' + degree + 'deg)',
-                    'transform': 'rotate(' + degree + 'deg)'
-                });
+                var opt = {
+                    rotate: degree + 'deg'
+                };
+                $(o).transition(opt, 5);
                 if (step == (options.degrees.length - 1)) {
                     step = 0;
                     if ($(o).data('wiggles') === undefined) {
@@ -53,13 +50,10 @@
             },
             stop: function(o) {
                 $(o).data('wiggles', 0);
-                $(o).css({
-                    '-webkit-transform': 'rotate(0deg)',
-                    '-moz-transform': 'rotate(0deg)',
-                    '-o-transform': 'rotate(0deg)',
-                    '-sand-transform': 'rotate(0deg)',
-                    'transform': 'rotate(0deg)'
-                });
+                var opt = {
+                    rotate: 0 + 'deg'
+                };
+                $(o).transition(opt, 5);
                 if ($(o).hasClass('wiggling')) {
                     $(o).removeClass('wiggling');
                 }
