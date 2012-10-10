@@ -1,14 +1,17 @@
-=javascript_include_tag "/javascripts/util.js"
+=javascript_include_tag '/javascripts/util.js'
+=javascript_include_tag '/javascripts/game/card.js'
+=javascript_include_tag '/javascripts/game/common-ui.js'
 =javascript_include_tag '/javascripts/app/application.js'
 - if !@player
 - else
   :javascript
     $(document).ready(function() {
-      console.log("We are ready");
       var access_token = "#{@token}";
       var fb_id = "#{@player.fb_id}";
       var name = "#{@player.name}";
 
-      var app = new kadi.app.HomePageApplication(access_token, fb_id, name);
+      console.log("id: %s name: %s", fb_id, name);
+
+      var app = new kadi.app.MultiplayerApplication(access_token, fb_id, name);
       ko.applyBindings(app);
     });

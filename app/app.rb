@@ -40,33 +40,39 @@ class Kadi < Padrino::Application
     def authenticator
       @authenticator ||= Koala::Facebook::OAuth.new(ENV["FACEBOOK_APP_ID"], ENV["FACEBOOK_SECRET"], url("/auth/facebook/callback"))
     end
-  end
 
+    def is_logged_in?
+      return !session[:player].nil?
+    end
 
-  get :index do
-    @graph  = Koala::Facebook::API.new(session[:access_token])
-    @token = session[:access_token]
+    def get_logged_in_user(redirect_to='/')
+      @graph  = Koala::Facebook::API.new(session[:access_token])
 
-    #If we have a valid access token
-    if session[:access_token]
       begin
-        #read the object from the fb graph
         @user = @graph.get_object("me")
         fb_id = @user['id']
         name = @user['name']
-
         @player = Player.find_by_fb_id(fb_id)
         if @player.nil?
           @player = Player.new({:fb_id => fb_id, :name => name})
           @player.save
         end
+        session[:player] = @player
       rescue Koala::Facebook::APIError
-        puts ">>> The Facebook Session has expired. Redirecting to FB"
         session[:access_token] = nil
+        session[:redirect_to] = redirect_to
         redirect "/auth/facebook"
       end
     end
+  end
 
+  get :game do
+    get_logged_in_user '/game'
+    render :game, :layout => :multiplayer
+  end
+
+  get :index do
+    get_logged_in_user
     render :index, :layout => :home
   end
 
@@ -95,7 +101,11 @@ class Kadi < Padrino::Application
 
   get '/auth/facebook/callback' do
     session[:access_token] = authenticator.get_access_token(params[:code])
-    redirect '/'
+    if session[:redirect_to].nil?
+      redirect '/'
+    else
+      redirect session[:redirect_to]
+    end
   end
 
   post "/pusher/presence/auth", :provides => [:json] do

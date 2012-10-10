@@ -5,15 +5,8 @@
         %a
           =image_tag "/images/logo_fb.png", :class => 'logo'
         %small Kenyan Style Poker
-- if !@player
-  .container
-    .row
-      = link_to('Login with Facebook', '/auth/facebook', :class=> 'btn btn-primary')
-- else
-  .container
-    .row
-      = link_to('Multiplayer', '/game', :class => 'btn btn-primary')
-
+.container
+  .row
 -content_for :footer, partial('base/footer')
 -content_for :fb, partial('base/facebook')
 -content_for :lib_js, partial("base/lib_js")

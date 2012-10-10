@@ -147,13 +147,36 @@ window.kadi.app = (function(me, $, undefined){
         }
     });
 
-    me.HomePageApplication = JS.Class({
-
+    me.Member = JS.Class({
         construct: function(fbAccessToken, fbId, playerName) {
             this.fbAccessToken = fbAccessToken;
             this.fbId = fbId;
             this.welcomeMsg = playerName;
             this.profileImage = kadi.fbProfileImage(fbId, "normal");
+            this.roar = me.Roar(fbAccessToken);
+        },
+        init: function(handler) {
+            var createOrLoginHandler = new kadi.Handler(function(params) {
+                console.log("Success: %s The player is %s ", params[0], params[1]);
+            });
+//            -#var createOrLoginHandler = new Handler(function(params) {
+//                -#  console.log("Success: %s The player is %s ", params[0], params[1]);
+//                -#
+//    -#  var dashboard = new DashboardApplication(false);
+//                -#  var syncHandler = new Handler(function(player) {
+//                    -#     dashboard.setPlayer(player);
+//                    -#  });
+//                -#  var player = new Player(params[1], fb_id, name, roar, syncHandler);
+//                -#
+//    -#
+//    -#  ko.applyBindings(dashboard, $("#dashboard")[0]);
+//                -#});
+        }
+    });
+
+    me.MultiplayerApplication = JS.Class({
+        construct: function(fbAccessToken, fbId, playerName) {
+            this.member = new me.Member(fbAccessToken,fbId,playerName);
         }
     });
 
