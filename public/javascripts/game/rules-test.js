@@ -423,6 +423,13 @@ describe("Game mechanics:", function() {
         expect(action).toBe(kadi.game.RuleEngine.ACTION_REVERSE);
     });
 
+    it("Two jumps causes a double jump action", function() {
+        var hand = [kadi.spades("J"), kadi.diamonds("J")];
+        expect(kadi.game.RuleEngine.actionRequired(hand)).toBe(kadi.game.RuleEngine.ACTION_SKIP);
+
+        expect(kadi.game.RuleEngine.calculateTurnsSkipped(hand)).toBe(2);
+    });
+
     it("An ordinary card causes no action", function() {
         var five = kadi.spades("5");
         expect(five.isOrdinary()).toBe(true);
