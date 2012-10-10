@@ -133,6 +133,7 @@ window.kadi.game = (function(me, $, undefined){
             X_C: 730,
             X_D: -30,
             Y_D: 100,
+            Z: 5000,
             TYPE_A: 'A',
             TYPE_B: 'B',
             TYPE_C: 'C',
@@ -276,6 +277,8 @@ window.kadi.game = (function(me, $, undefined){
                     fan = kadi.chineseFan(this.height(), this.top(), kadi.game.CardUI.WIDTH, this.cards.length, 5, this.isLeft());
                     _.each(fan, function (blade, idx) {
                         var card = this.cards[idx];
+                        var z = me.PlayerDeck.Z + idx;
+                        card.container().css('z-index', z);
                         var posY = init + blade.y;
                         var rotate = kadi.game.PlayerDeck.ROTATE_V + blade.rotate;
                         card.moveTo(blade.x, posY, rotate);
@@ -286,6 +289,8 @@ window.kadi.game = (function(me, $, undefined){
                     fan = kadi.flatChineseFan(this.width(),kadi.game.CardUI.WIDTH,kadi.game.CardUI.MARGIN,this.cards.length,this.type == kadi.game.PlayerDeck.TYPE_A);
                     _.each(fan, function(blade, idx) {
                         var card = this.cards[idx];
+                        var z = me.PlayerDeck.Z + idx;
+                        card.container().css('z-index', z);
                         card.moveTo(this.left() + blade.x,null,blade.rotate);
                     }, this);
                 }
@@ -385,8 +390,8 @@ window.kadi.game = (function(me, $, undefined){
                 this.replenished = true;
                 SHOTGUN.fire(kadi.game.Events.REPLENISH_PICKING_CARDS,[]);
             }
-            return this.deck.shift();
-//            return this.deck.pop();
+//            return this.deck.shift();
+            return this.deck.pop();
         }
     });
 
