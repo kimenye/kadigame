@@ -60,7 +60,16 @@ window.kadi.game = (function(me, $, undefined){
     });
 
     me.PlayerLocation = kadi.ui.Box.extend({
-
+        statics: {
+            T_B: "B",
+            T_C: "C",
+            T_D: "D"
+        },
+        construct: function(type) {
+            this.type = type;
+            this.parent.construct.apply(this, ['game', 'position_' + type, 'position ' + type]);
+            this.display();
+        }
     });
 
     me.GamePlayerUI = me.Player.extend({

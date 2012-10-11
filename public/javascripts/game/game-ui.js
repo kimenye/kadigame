@@ -42,7 +42,7 @@ window.kadi.game = (function(me, $, undefined){
             if (kadi.isSomethingMeaningful(player))
                 this.me = new kadi.game.GamePlayerUI(player, new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A));
             this.requestedSuite = null;
-            this.pickingDeck = new kadi.game.PickingDeck();
+            this.pickingDeck = new kadi.game.PickingDeck(this.type);
             this.tableDeck = new kadi.game.TableDeck();
         },
 
@@ -365,11 +365,14 @@ window.kadi.game = (function(me, $, undefined){
 
     me.MultiPlayerGame = me.Game.extend({
         construct: function(player) {
-            this.parent.construct.apply(this, [me.Game.TYPE_SINGLE_PLAYER, player]);
+            this.parent.construct.apply(this, [me.Game.TYPE_MULTI_PLAYER, player]);
         },
 
         display : function() {
             kadi.ui.disableLoading('game');
+            this.positionB = new me.PlayerLocation(me.PlayerLocation.T_B);
+            this.positionC = new me.PlayerLocation(me.PlayerLocation.T_C);
+            this.positionD = new me.PlayerLocation(me.PlayerLocation.T_D);
         }
     });
 

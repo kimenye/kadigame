@@ -274,14 +274,19 @@ window.kadi.game = (function(me, $, undefined){
             WIDTH:  150,
             HEIGHT: 200,
             X: 500,
+            X_M: 400,
             Y: 200,
+            X_TYPE: function(type) {
+                return (type == me.Game.TYPE_SINGLE_PLAYER) ? me.PickingDeck.X : me.PickingDeck.X_M
+            },
             REPLENISH_THRESHOLD: 10
         },
-        construct : function() {
+        construct : function(type) {
             var self = this;
+            this.type = type;
             this.parent.construct.apply(this, ['game', 'picking_box_div', 'picking_box']);
             this.deck = kadi.game.Suite.getDeckOfCards();
-            this.topLeft = function() { return new kadi.Pos(me.PickingDeck.X, me.PickingDeck.Y) };
+            this.topLeft = function() { return new kadi.Pos(me.PickingDeck.X_TYPE(this.type), me.PickingDeck.Y) };
             this.active = false;
             this.replenished = false;
             this.activePlayer = null;

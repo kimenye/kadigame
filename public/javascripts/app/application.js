@@ -12,8 +12,6 @@ window.kadi.app = (function(me, $, undefined){
             SHOTGUN.listen(kadi.game.Events.MEMBERSHIP_CHANGED, function(num, membership,add) {
                 self.numOnline(num);
 
-                console.log(num, membership);
-
                 if (_.isArray(membership)) {
                     _.each(membership, function(member) {
                         if (member.id != self.me.id) {
