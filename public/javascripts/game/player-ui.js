@@ -28,16 +28,21 @@ window.kadi.game = (function(me, $, undefined){
                 console.log("Subscription error", msg);
             });
 
-            this.presence.bind('pusher:subscription_succeeded', function() {
-                SHOTGUN.fire(kadi.game.Events.MEMBERSHIP_CHANGED, [self.presence.members.count]);
+            this.presence.bind('pusher:subscription_succeeded', function(members) {
+                var mem = [];
+                members.each(function (member) {
+                   mem.push(member);
+                });
+                SHOTGUN.fire(kadi.game.Events.MEMBERSHIP_CHANGED, [self.presence.members.count,mem,true]);
+                self.connected = true;
             });
 
             this.presence.bind('pusher:member_added', function(member) {
-                SHOTGUN.fire(kadi.game.Events.MEMBERSHIP_CHANGED, [self.presence.members.count, member]);
+                SHOTGUN.fire(kadi.game.Events.MEMBERSHIP_CHANGED, [self.presence.members.count, [member],true]);
             });
 
             this.presence.bind('pusher:member_removed', function(member) {
-                SHOTGUN.fire(kadi.game.Events.MEMBERSHIP_CHANGED, [self.presence.members.count, member]);
+                SHOTGUN.fire(kadi.game.Events.MEMBERSHIP_CHANGED, [self.presence.members.count, [member],false]);
             });
         },
 
@@ -73,6 +78,7 @@ window.kadi.game = (function(me, $, undefined){
             if (player.live) {
                 this.notification = new kadi.game.PlayerNotification();
             }
+            this.avatarUrl = kadi.fbProfileImage(this.id);
         },
         display: function() {
             this.div = kadi.createDiv('player ' + this.getLocation() + "", "p" + this.id);
@@ -81,12 +87,12 @@ window.kadi.game = (function(me, $, undefined){
             else
                 this.parent = document.getElementById(kadi.game.SinglePlayerGame.ID);
 
-            var url = kadi.fbProfileImage(this.id);
+
             this.avatar = document.createElement("IMG");
             this.avatar.className = "img-polaroid img-rounded avatar";
 
 //            this.avatar.src = "/images/avatars/plain.gif";
-            this.avatar.src = url;
+            this.avatar.src = this.avatarUrl;
             this.div.appendChild(this.avatar);
 
             if (this.live) {

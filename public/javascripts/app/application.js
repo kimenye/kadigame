@@ -2,28 +2,39 @@ window.kadi.app = (function(me, $, undefined){
 
     me.MultiplayerApplication = JS.Class({
         construct: function(fbAccessToken, fbId, playerName) {
-//            SHOTGUN.listen(kadi.game.Events.MEMBERSHIP_CHANGED, function(num) {
-//                console.log("New number of members:", num);
-//            });
-
+            var self = this;
+            this.numOnline = ko.observable(1);
             this.me = new kadi.game.GamePlayerUI({id: fbId, name: playerName, live: true});
+
+            this.players = ko.observableArray([]);
+            this.players.push(this.me);
+
+            SHOTGUN.listen(kadi.game.Events.MEMBERSHIP_CHANGED, function(num, membership,add) {
+                self.numOnline(num);
+
+                console.log(num, membership);
+
+                if (_.isArray(membership)) {
+                    _.each(membership, function(member) {
+                        if (member.id != self.me.id) {
+                            var player = new kadi.game.GamePlayerUI({id: member.id, name: member.info.name });
+                            if (add)
+                                self.players.push(player);
+                            else {
+                                self.players(_.reject(self.players(), function(p) { return p.id == player.id }));
+                            }
+                        }
+                    });
+                }
+            });
 
             this.game = new kadi.game.MultiPlayerGame(this.me);
 
-            this.me.initRealtime();
+//            this.me.initRealtime();
             this.game.display();
-            this.sidebar = new kadi.app.SideBar();
 
             $('#sidebar').show();
-            ko.applyBindings(this.sidebar);
         }
     });
-
-    me.SideBar = JS.Class({
-       construct: function() {
-//           this.parent.construct.apply(this, ['game-container', 'sidebar', 'span2']);
-       }
-    });
-
     return me;
 }) (window.kadi.app || {}, jQuery);

@@ -8,14 +8,22 @@
 .container
   .row-fluid#game-container.game-container
     .span9#game.multiplayer{:style => "display:none;"}
-    .span3#sidebar{:style => "display:none;"}
+    .span3#sidebar
       #accordion.accordion
         .accordion-group
           .accordion-heading
             %a.accordion-toggle{'data-toggle' => 'collapse', 'data-parent' => '#accordion', :href=>'#online'}
-              %span.badge.badge-info.pull-right
-          .accordion#online.accordion-body.collapse.in
+              Who's Online
+              %span.badge.badge-info.pull-right{"data-bind" => "text: numOnline"}
+          #online.accordion-body.collapse.in
             .accordion-inner
+              %table.table.table-bordered
+                %tbody{"data-bind" => "foreach: players"}
+                  %tr
+                    %td
+                      %img{"data-bind" => "attr: { src: avatarUrl }"}
+                    %td
+                      %p.muted{"data-bind" => "text: name"}
 
 -#-content_for :footer, partial('base/footer')
 -content_for :fb, partial('base/facebook')

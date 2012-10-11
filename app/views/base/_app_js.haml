@@ -13,8 +13,6 @@
       var access_token = "#{@token}";
       var fb_id = "#{@player.fb_id}";
       var name = "#{@player.name}";
-
-      console.log("id: %s name: %s", fb_id, name);
-
       var app = new kadi.app.MultiplayerApplication(access_token, fb_id, name);
+      ko.applyBindings(app);
     });
