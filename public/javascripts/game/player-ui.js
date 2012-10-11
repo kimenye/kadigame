@@ -8,12 +8,6 @@ window.kadi.game = (function(me, $, undefined){
             this.name = name;
             this.live = live;
             this.debug = debug;
-            if (kadi.getVal(this.live))
-            {
-                if (!kadi.getVal(debug))
-                    this.initRealtime();
-            }
-
             this.onKADI = false;
         },
 
@@ -60,6 +54,10 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
+//    me.PlayerLocation = kadi.game.Box.extend({
+//
+//    });
+
     me.GamePlayerUI = me.Player.extend({
         statics: {
             BOT_DELAY: 2000
@@ -79,27 +77,13 @@ window.kadi.game = (function(me, $, undefined){
         display: function() {
             this.div = kadi.createDiv('player ' + this.getLocation() + "", "p" + this.id);
             if (this.live)
-                this.parent = document.getElementById(kadi.game.GameUI.CONTAINER_ID);
+                this.parent = document.getElementById(kadi.game.SinglePlayerGame.CONTAINER_ID);
             else
-                this.parent = document.getElementById(kadi.game.GameUI.ID);
+                this.parent = document.getElementById(kadi.game.SinglePlayerGame.ID);
 
             var url = kadi.fbProfileImage(this.id);
             this.avatar = document.createElement("IMG");
             this.avatar.className = "img-polaroid img-rounded avatar";
-
-//            var preload = new createjs.PreloadJS();
-//            preload.onFileLoad = this.handleProfileImageLoaded;
-//            preload.onFileLoad = handleFileComplete;
-//            preload.loadFile('http://createjs.com/images/404/gBot-confused.jpg');
-//            function handleFileComplete(event) {
-//                document.body.appendChild(event.result);
-//            }
-
-//            preload.loadFile(url);
-//            this.handleProfileImageLoaded = function(event) {
-//                console.log("Result ", event);
-//            }
-
 
 //            this.avatar.src = "/images/avatars/plain.gif";
             this.avatar.src = url;
@@ -148,9 +132,6 @@ window.kadi.game = (function(me, $, undefined){
 
         returnCards: function() {
             SHOTGUN.fire(kadi.game.Events.RETURNED_CARDS, [this.cards()]);
-//            _.each(this.cards(), function(c) {
-//                this.removeCard(c,false);
-//            },this);
             this.deck.cards = [];
         },
 

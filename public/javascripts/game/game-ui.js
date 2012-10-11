@@ -37,13 +37,10 @@ window.kadi.game = (function(me, $, undefined){
             TYPE_SINGLE_PLAYER: "single-player",
             TYPE_MULTI_PLAYER: "multi-player"
         },
-        construct: function(player, opponents, type) {
+        construct: function(type, player) {
             this.type = kadi.isSomethingMeaningful(type) ? type : me.Game.TYPE_SINGLE_PLAYER;
-            this.me = player;
-            this.opponents = opponents;
-            this.players = this.opponents;
-            if (kadi.isSomethingMeaningful(this.me))
-                this.players.push(this.me);
+            if (kadi.isSomethingMeaningful(player))
+                this.me = new kadi.game.GamePlayerUI(player, new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A));
             this.requestedSuite = null;
             this.pickingDeck = new kadi.game.PickingDeck();
             this.tableDeck = new kadi.game.TableDeck();
@@ -332,8 +329,7 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
-
-    me.GameUI = me.Game.extend({
+    me.SinglePlayerGame = me.Game.extend({
         statics: {
             width: 800,
             height: 600,
@@ -341,15 +337,19 @@ window.kadi.game = (function(me, $, undefined){
             CONTAINER_ID: 'game-container'
         },
         construct: function(player, vs) {
-            if (kadi.isSomethingMeaningful(player))
-                this.me = new kadi.game.GamePlayerUI(player, new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A));
+            this.parent.construct.apply(this, [me.Game.TYPE_SINGLE_PLAYER, player]);
+            this.players = [];
+            this.players.push(this.me);
 
-            this.opponents = [];
             _.each(vs, function(opponent, idx) {
-                this.opponents.push(new me.GamePlayerUI(opponent,new kadi.game.PlayerDeck.fromIndex(idx)));
+                this.players.push(new me.GamePlayerUI(opponent,new kadi.game.PlayerDeck.fromIndex(idx)));
             },this);
-            this.parent.construct.apply(this, [this.me, this.opponents]);
+
             this.initUIElements();
+        },
+
+        sit: function(player, client) {
+
         },
 
         initUIElements: function() {
@@ -360,6 +360,12 @@ window.kadi.game = (function(me, $, undefined){
         display : function() {
             kadi.ui.disableLoading('game');
             this.startGame();
+        }
+    });
+
+    me.MultiPlayerGame = me.Game.extend({
+        construct: function(player) {
+            this.parent.construct.apply(this, [me.Game.TYPE_SINGLE_PLAYER, player]);
         }
     });
 

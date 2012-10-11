@@ -363,7 +363,7 @@ window.kadi.game = (function(me, $, undefined){
             var positions = kadi.randomizeCardLocations(this.deck.length, this.bBox());
             _.each(this.deck, function(card,idx) {
                 var pos = positions[idx];
-                card.display(me.GameUI.ID, pos.x, pos.y, pos.rotate);
+                card.display(me.SinglePlayerGame.ID, pos.x, pos.y, pos.rotate);
             });
         },
 
@@ -828,7 +828,7 @@ window.kadi.game = (function(me, $, undefined){
     me.initGameUI = function(player, opponents) {
         if (kadi.isSomethingMeaningful(player))
             kadi.ui.updateLoadingText('Welcome ' + player.name + '. Preparing the game...');
-        me.gameObject = new me.GameUI(player, opponents);
+        me.gameObject = new me.SinglePlayerGame(player, opponents);
         me.gameObject.display();
     };
 
