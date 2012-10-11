@@ -9,7 +9,20 @@ window.kadi.app = (function(me, $, undefined){
             this.me = new kadi.game.GamePlayerUI({id: fbId, name: playerName, live: true});
 
             this.game = new kadi.game.MultiPlayerGame(this.me);
+
+            this.me.initRealtime();
+            this.game.display();
+            this.sidebar = new kadi.app.SideBar();
+
+            $('#sidebar').show();
+            ko.applyBindings(this.sidebar);
         }
+    });
+
+    me.SideBar = JS.Class({
+       construct: function() {
+//           this.parent.construct.apply(this, ['game-container', 'sidebar', 'span2']);
+       }
     });
 
     return me;

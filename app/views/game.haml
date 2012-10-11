@@ -7,8 +7,17 @@
         %small Kenyan Style Poker
 .container
   .row-fluid#game-container.game-container
-    .span10#game{:style => "display:none;"}
--content_for :footer, partial('base/footer')
+    .span9#game.multiplayer{:style => "display:none;"}
+    .span3#sidebar{:style => "display:none;"}
+      #accordion.accordion
+        .accordion-group
+          .accordion-heading
+            %a.accordion-toggle{'data-toggle' => 'collapse', 'data-parent' => '#accordion', :href=>'#online'}
+              %span.badge.badge-info.pull-right
+          .accordion#online.accordion-body.collapse.in
+            .accordion-inner
+
+-#-content_for :footer, partial('base/footer')
 -content_for :fb, partial('base/facebook')
 -content_for :lib_js, partial("base/lib_js")
 -content_for :app_js, partial("base/app_js")

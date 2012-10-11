@@ -115,6 +115,23 @@ class Kadi < Padrino::Application
     end
   end
 
+  post '/hooks' do
+    webhook = Pusher::WebHook.new(request)
+    if webhook.valid?
+      webhook.events.each do |event|
+        case event["name"]
+          when 'member_added'
+            puts "Member added #{event}"
+          when 'member_removed'
+            puts "Member removed #{event}"
+        end
+      end
+    else
+      status 401
+    end
+    return
+  end
+
   post "/pusher/presence/auth", :provides => [:json] do
     puts "Authenticating presence channel: #{params}"
     response = Pusher[params[:channel_name]].authenticate(params[:socket_id], {

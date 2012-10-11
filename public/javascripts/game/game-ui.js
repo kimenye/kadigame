@@ -366,6 +366,10 @@ window.kadi.game = (function(me, $, undefined){
     me.MultiPlayerGame = me.Game.extend({
         construct: function(player) {
             this.parent.construct.apply(this, [me.Game.TYPE_SINGLE_PLAYER, player]);
+        },
+
+        display : function() {
+            kadi.ui.disableLoading('game');
         }
     });
 

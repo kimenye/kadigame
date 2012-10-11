@@ -89,36 +89,7 @@ window.kadi.game = (function(me, $, undefined){
         isAntiClockwise: function() { return ! this.isClockwise() }
     });
 
-    me.Box = JS.Class({
-        construct: function(parent,id,className,x,y,width,height) {
-            this.id = id;
-            this.div = document.createElement("DIV");
-            this.div.id = id;
-            this.div.className = className;
-            this.parent = document.getElementById(parent);
-            $(this.div).css('z-index','0');
-        },
-
-        node : function() {
-            return $(this.div);
-        },
-
-        display: function() {
-            this.parent.appendChild(this.div);
-        },
-        moveTo: function(x,y) {
-            var options = {};
-            if (kadi.isSomethingMeaningful(x)) {
-                _.extend(options, {x: x + "px" });
-            }
-            if (kadi.isSomethingMeaningful(y)) {
-                _.extend(options, {y: y + "px" });
-            }
-            this.node().transition(options, 500, 'snap');
-        }
-    });
-
-    me.PlayerDeck = me.Box.extend({
+    me.PlayerDeck = kadi.ui.Box.extend({
         statics: {
             WIDTH_H: 400,
             HEIGHT_H: 100,
@@ -298,7 +269,7 @@ window.kadi.game = (function(me, $, undefined){
         }
     })
 
-    me.PickingDeck = me.Box.extend({
+    me.PickingDeck = kadi.ui.Box.extend({
         statics : {
             WIDTH:  150,
             HEIGHT: 200,
@@ -395,7 +366,7 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
-    me.RequestedSuiteNotification = me.Box.extend({
+    me.RequestedSuiteNotification = kadi.ui.Box.extend({
         statics: {
             WIDTH: 100,
             HEIGHT: 136
@@ -444,7 +415,7 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
-    me.TableDeck = me.Box.extend({
+    me.TableDeck = kadi.ui.Box.extend({
         statics: {
             WIDTH: 150,
             HEIGHT: 200,
@@ -513,7 +484,7 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
-    me.NoticeBoard = me.Box.extend({
+    me.NoticeBoard = kadi.ui.Box.extend({
         statics: {
             WIDTH: 125,
             HEIGHT: 175,
@@ -564,7 +535,7 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
-    me.PlayerNotification = me.Box.extend({
+    me.PlayerNotification = kadi.ui.Box.extend({
         statics: {
             WIDTH: 250,
             HEIGHT: 70
@@ -816,8 +787,6 @@ window.kadi.game = (function(me, $, undefined){
             }, 500, 'snap');
         }
     });
-
-
 
     /**
      * Initialize the game environment

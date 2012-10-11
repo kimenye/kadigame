@@ -54,9 +54,9 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
-//    me.PlayerLocation = kadi.game.Box.extend({
-//
-//    });
+    me.PlayerLocation = kadi.ui.Box.extend({
+
+    });
 
     me.GamePlayerUI = me.Player.extend({
         statics: {
