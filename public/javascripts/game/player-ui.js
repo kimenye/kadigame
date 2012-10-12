@@ -9,6 +9,7 @@ window.kadi.game = (function(me, $, undefined){
             this.live = live;
             this.debug = debug;
             this.onKADI = false;
+            this.inGame = false;
         },
 
         initRealtime: function() {
@@ -49,6 +50,10 @@ window.kadi.game = (function(me, $, undefined){
                 this.presence.bind('client-game-invite', function(invite) {
                     self.handleInvite(invite);
                 });
+
+                this.presence.bind('client-game-invite-accepted', function(invite) {
+                    self.handleAcceptedInvite(invite);
+                });
             }
         },
 
@@ -66,6 +71,16 @@ window.kadi.game = (function(me, $, undefined){
 
         startGame: function() {
             this._simpleSend(this.presence,'client-game-invite', { from: this.id, at: new Date() });
+        },
+
+        acceptInvite: function(to) {
+            this._simpleSend(this.presence,'client-game-invite-accepted', { from: this.id, at: new Date(), to: to });
+        },
+
+        handleAcceptedInvite: function(invite) {
+            if (kadi.msgIsForMe(invite)) {
+                SHOTGUN.fire(kadi.game.Events.INVITE_ACCEPTED, [invite.from, invite.at]);
+            }
         },
 
         handleInvite: function(invite) {

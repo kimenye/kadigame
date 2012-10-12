@@ -6,11 +6,11 @@
           =image_tag "/images/logo_fb.png", :class => 'logo'
         %small Kenyan Style Poker
 .container
-  .row-fluid#game-container.game-container
+  .row-fluid#game-container.game-container.multiplayer
     .span9#game.multiplayer{:style => "display:none;"}
-    .span3#sidebar
+    .span3#sidebar{:style => "display:none;"}
       .btn-group
-        %button.btn.btn-primary.btn-start-game{"data-bind" => "enable: numOnline() > 1, click: startGame", "data-loading-text"=>"Finding opponents..."} Start Game
+        %button.btn.btn-primary.btn-start-game{"data-bind" => "enable: canStartGame(), click: startGame", "data-loading-text"=>"Finding opponents..."} Invite!
       %br
       #accordion.accordion
         .accordion-group
@@ -34,7 +34,7 @@
               %span.badge.badge-success.pull-right.num-invites{"data-bind" => "text: numInvites"}
           #invites.accordion-body.collapse
             .accordion-inner
-              %table.table.table-bordered.table-condensed
+              %table.table.table-bordered.table-condensed{"data-bind" => "visible: invites().length > 0"}
                 %tbody{"data-bind" => "foreach: invites"}
                   %tr
                     %td
@@ -44,10 +44,11 @@
                       %br
                       %small{"data-bind" => "text: at"}
                       .btn-group
-                        %btn.btn.btn-success
+                        %btn.btn.btn-success{"data-bind" => "click: $root.acceptInvite"}
                           %i.icon-white.icon-ok
-                        %btn.btn.btn-danger
+                        %btn.btn.btn-danger{"data-bind" => "click: $root.declineInvite"}
                           %i.icon-remove.icon-white
+              %p.muted{"data-bind" => "visible: numInvites() == 0"} You have no pending invites.
 
 -content_for :footer, partial('base/footer')
 -content_for :fb, partial('base/facebook')

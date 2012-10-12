@@ -29,7 +29,8 @@ window.kadi.game = (function(me, $, undefined){
             RETURNED_CARDS: "returned-cards",
             LATE_KADI: "late-kadi",
             MEMBERSHIP_CHANGED: "membership-changed",
-            INVITE_RECEIVED: "invite-received"
+            INVITE_RECEIVED: "invite-received",
+            INVITE_ACCEPTED: "invite-accepted"
         }
     });
 

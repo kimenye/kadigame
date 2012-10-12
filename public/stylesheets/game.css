@@ -29,17 +29,8 @@
     width: 800px;
 }
 
-.multiplayer {
+.multiplayer #game {
     width: 700px;
-}
-
-.player {
-    margin: auto;
-    width: 100px;
-    height: 100px;
-    display: block;
-    z-index: 7000;
-    position: relative;
 }
 
 .win_screen {
@@ -101,6 +92,25 @@
 .position.D {
     top: 260px;
     left: 70px;
+}
+
+.player {
+    margin: auto;
+    width: 100px;
+    height: 100px;
+    display: block;
+    z-index: 7000;
+    position: relative;
+}
+
+.game-container.multiplayer {
+    height: 670px;
+}
+
+.multiplayer .player.A {
+    position: absolute;
+    left: 480px;
+    top: 755px;
 }
 
 .player.B {
