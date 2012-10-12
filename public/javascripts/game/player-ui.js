@@ -69,7 +69,7 @@ window.kadi.game = (function(me, $, undefined){
             return !this.live;
         },
 
-        startGame: function() {
+        sendInvites: function() {
             this._simpleSend(this.presence,'client-game-invite', { from: this.id, at: new Date() });
         },
 
@@ -125,13 +125,16 @@ window.kadi.game = (function(me, $, undefined){
             }
             this.avatarUrl = kadi.fbProfileImage(this.id);
         },
-        display: function() {
+        display: function(parent) {
             this.div = kadi.createDiv('player ' + this.getLocation() + "", "p" + this.id);
-            if (this.live)
-                this.parent = document.getElementById(kadi.game.SinglePlayerGame.CONTAINER_ID);
-            else
-                this.parent = document.getElementById(kadi.game.SinglePlayerGame.ID);
 
+            if (kadi.isSomethingMeaningful(parent))
+                this.parent = document.getElementById(parent);
+            else
+                if (this.live)
+                    this.parent = document.getElementById(kadi.game.SinglePlayerGame.CONTAINER_ID);
+                else
+                    this.parent = document.getElementById(kadi.game.SinglePlayerGame.ID);
 
             this.avatar = document.createElement("IMG");
             this.avatar.className = "img-polaroid img-rounded avatar";

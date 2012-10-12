@@ -107,15 +107,13 @@
     height: 670px;
 }
 
-.multiplayer .player.A {
-    position: absolute;
-    left: 480px;
-    top: 755px;
-}
-
 .player.B {
    top: 70px;
    left: 360px;
+}
+
+.multiplayer .player.B {
+    left: 310px;
 }
 
 .player.C {

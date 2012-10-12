@@ -14,14 +14,18 @@ window.kadi.app = (function(me, $, undefined){
 //            this.me = new kadi.game.GamePlayerUI({id: fbId, name: playerName, live: true});
             this.game = new kadi.game.MultiPlayerGame({id: fbId, name: playerName, live: true});
             this.me = this.game.me;
-            //this.me.display();
+            this.me.display('player');
             this.players = ko.observableArray([]);
             this.inGame = ko.observable(false);
-            this.players.push(this.me);
+//            this.players.push(this.me);
             this.invites = ko.observableArray([]);
             this.numInvites = ko.computed(function() {
                 return self.invites().length;
             });
+
+            var chaos = new kadi.game.GamePlayerUI({ id: '625987307', name: 'Chaos', live: false});
+//            this.game.master();
+//            this.game.sitPlayer(chaos);
 
             this.canStartGame = ko.computed(function() {
                 return self.numInvites() < 1 && self.numOnline() > 1  && !self.inGame();
@@ -53,7 +57,9 @@ window.kadi.app = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.game.Events.INVITE_ACCEPTED, function(fromId, when) {
-//                var from = _.detect(self.players(), function(p) { return p.id == fromId });
+                var invitedPlayer = _.detect(self.players(), function(p) { return p.id == fromId });
+                self.game.master();
+                self.game.sitPlayer(invitedPlayer);
                 self.inGame(true);
             });
 
@@ -62,7 +68,9 @@ window.kadi.app = (function(me, $, undefined){
 
             this.acceptInvite = function(invite) {
                 self.invites([]); //remove all invites
-                self.me.acceptInvite(invite.id);
+                self.me.acceptInvite(invite.from.id);
+                self.game.slave();
+                self.game.sitPlayer(invite.from);
                 self.inGame(true);
             }
             this.declineInvite = function(invite) {
@@ -74,7 +82,8 @@ window.kadi.app = (function(me, $, undefined){
         },
         startGame: function() {
             $('.btn-start-game').button('loading');
-            this.me.startGame();
+            this.me.sendInvites();
+            this.game.setType(kadi.game.MultiPlayerGame.TYPE_MASTER);
         }
     });
     return me;

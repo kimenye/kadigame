@@ -46,6 +46,8 @@ window.kadi.game = (function(me, $, undefined){
             this.requestedSuite = null;
             this.pickingDeck = new kadi.game.PickingDeck(this.type);
             this.tableDeck = new kadi.game.TableDeck();
+            this.players = [];
+            this.players.push(this.me);
         },
 
         startGame: function() {
@@ -340,18 +342,11 @@ window.kadi.game = (function(me, $, undefined){
         },
         construct: function(player, vs) {
             this.parent.construct.apply(this, [me.Game.TYPE_SINGLE_PLAYER, player]);
-            this.players = [];
-            this.players.push(this.me);
-
             _.each(vs, function(opponent, idx) {
                 this.players.push(new me.GamePlayerUI(opponent,new kadi.game.PlayerDeck.fromIndex(idx)));
             },this);
 
             this.initUIElements();
-        },
-
-        sit: function(player, client) {
-
         },
 
         initUIElements: function() {
@@ -366,15 +361,51 @@ window.kadi.game = (function(me, $, undefined){
     });
 
     me.MultiPlayerGame = me.Game.extend({
+        statics: {
+            TYPE_MASTER: "master",
+            TYPE_SLAVE: "slave"
+        },
         construct: function(player) {
             this.parent.construct.apply(this, [me.Game.TYPE_MULTI_PLAYER, player]);
+            this.setType(me.MultiPlayerGame.TYPE_SLAVE);
         },
 
         display : function() {
             kadi.ui.disableLoading('game');
-            this.positionB = new me.PlayerLocation(me.PlayerLocation.T_B);
-            this.positionC = new me.PlayerLocation(me.PlayerLocation.T_C);
-            this.positionD = new me.PlayerLocation(me.PlayerLocation.T_D);
+            this.positions = [];
+//            this.positions.push(new me.PlayerLocation(me.PlayerLocation.T_B));
+//            this.positionC.push = new me.PlayerLocation(me.PlayerLocation.T_C);
+//            this.positionD = new me.PlayerLocation(me.PlayerLocation.T_D);
+        },
+
+        sitPlayer: function(player) {
+            if (this.players.length < 4) {
+                this.players.push(player);
+                var position = this.players.length - 1;
+                player.deck = new kadi.game.PlayerDeck.fromIndex(position);
+//                this.positions[position].hide();
+                player.display();
+            }
+        },
+
+        setType: function(type) {
+            this.type = type;
+        },
+
+        master: function() {
+            this.setType(me.MultiPlayerGame.TYPE_MASTER);
+        },
+
+        slave: function() {
+            this.setType(me.MultiPlayerGame.TYPE_SLAVE);
+        },
+
+        isSlave: function() {
+            return this.type == me.MultiPlayerGame.TYPE_SLAVE;
+        },
+
+        isMaster: function() {
+            return !this.isSlave();
         }
     });
 

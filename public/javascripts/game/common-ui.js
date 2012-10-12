@@ -64,6 +64,10 @@ window.kadi.ui = (function(me, $, undefined){
             return $(this.div);
         },
 
+        hide: function() {
+            this.node().hide();
+        },
+
         display: function() {
             this.parent.appendChild(this.div);
         },

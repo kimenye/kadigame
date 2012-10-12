@@ -9,9 +9,6 @@
   .row-fluid#game-container.game-container.multiplayer
     .span9#game.multiplayer{:style => "display:none;"}
     .span3#sidebar{:style => "display:none;"}
-      .btn-group
-        %button.btn.btn-primary.btn-start-game{"data-bind" => "enable: canStartGame(), click: startGame", "data-loading-text"=>"Finding opponents..."} Invite!
-      %br
       #accordion.accordion
         .accordion-group
           .accordion-heading
@@ -20,13 +17,20 @@
               %span.badge.badge-info.pull-right{"data-bind" => "text: numOnline"}
           #online.accordion-body.collapse.in
             .accordion-inner
-              %table.table.table-bordered.table-condensed
+              .invite{"data-bind" => "visible: players().length > 0"}
+                .btn-group
+                  %button.btn.btn-primary.btn-start-game{"data-bind" => "enable: canStartGame(), click: startGame", "data-loading-text"=>"Finding opponents..."} Invite!
+                %br
+              %table.table.table-bordered.table-condensed{"data-bind" => "visible: players().length > 0"}
                 %tbody{"data-bind" => "foreach: players"}
                   %tr
                     %td
                       %img{"data-bind" => "attr: { src: avatarUrl }"}
                     %td
                       %p.muted{"data-bind" => "text: name"}
+              %p.muted{"data-bind" => "visible: players().length == 0"}
+                No players are online. Try
+                =link_to "single player", '/test'
         .accordion-group.invites
           .accordion-heading
             %a.accordion-toggle{'data-toggle' => 'collapse', 'data-parent' => '#accordion', :href=>'#invites'}
@@ -49,7 +53,8 @@
                         %btn.btn.btn-danger{"data-bind" => "click: $root.declineInvite"}
                           %i.icon-remove.icon-white
               %p.muted{"data-bind" => "visible: numInvites() == 0"} You have no pending invites.
-
+    .span9#player
+    .span3
 -content_for :footer, partial('base/footer')
 -content_for :fb, partial('base/facebook')
 -content_for :lib_js, partial("base/lib_js")
