@@ -44,7 +44,7 @@
                     %td
                       %img{"data-bind" => "attr: { src: from.avatarUrl }"}
                     %td
-                      %small.muted{"data-bind" => "text: from.name + ' wants to play KADI!'"}
+                      %small.muted{"data-bind" => "text: message"}
                       %br
                       %small{"data-bind" => "text: at"}
                       .btn-group
@@ -53,6 +53,15 @@
                         %btn.btn.btn-danger{"data-bind" => "click: $root.declineInvite"}
                           %i.icon-remove.icon-white
               %p.muted{"data-bind" => "visible: numInvites() == 0"} You have no pending invites.
+        .accordion-group.stream
+          .accordion-heading
+            %a.accordion-toggle{'data-toggle' => 'collapse', 'data-parent' => '#accordion', :href=> '#stream'}
+              Stream
+          #stream.accordion-body.collapse
+            .accordion-inner
+              %ul{"data-bind" => "foreach: updates"}
+                %li
+
     .span9#player
     .span3
 -content_for :footer, partial('base/footer')
