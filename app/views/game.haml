@@ -59,9 +59,10 @@
               Stream
           #stream.accordion-body.collapse
             .accordion-inner
-              %ul{"data-bind" => "foreach: updates"}
+              %ul.unstyled{"data-bind" => "foreach: updates"}
                 %li
-
+                  %small.muted{"data-bind" => "text: message"}
+                  %small.pull-right{'data-bind' => 'text: at'}
     .span9#player
     .span3
 -content_for :footer, partial('base/footer')

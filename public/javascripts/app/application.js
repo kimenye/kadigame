@@ -25,22 +25,19 @@ window.kadi.app = (function(me, $, undefined){
         construct: function(fbAccessToken, fbId, playerName) {
             var self = this;
             this.numOnline = ko.observable(1);
-            this.debug = true;
             this.debug = false;
-//            this.me = new kadi.game.GamePlayerUI({id: fbId, name: playerName, live: true});
             this.game = new kadi.game.MultiPlayerGame({id: fbId, name: playerName, live: true});
             this.me = this.game.me;
             this.me.display('player');
             this.players = ko.observableArray([]);
             this.inGame = ko.observable(false);
-//            this.players.push(this.me);
             this.invites = ko.observableArray([]);
             this.updates = ko.observableArray([]);
             this.numInvites = ko.computed(function() {
                 return self.invites().length;
             });
 
-            var chaos = new kadi.game.GamePlayerUI({ id: '625987307', name: 'Chaos', live: false});
+//            var chaos = new kadi.game.GamePlayerUI({ id: '625987307', name: 'Chaos', live: false});
 //            this.game.master();
 //            this.game.sitPlayer(chaos);
 
@@ -85,6 +82,10 @@ window.kadi.app = (function(me, $, undefined){
                 self.game.master();
                 self.game.sitPlayer(invitedPlayer);
                 self.inGame(true);
+                $('#online').collapse('hide');
+                $('#invites').collapse('hide');
+                $('#stream').collapse('show');
+                self.updates.push(new me.Update(invitedPlayer.name + " has joined the game",new Date()));
             });
 
             this.me.initRealtime();
