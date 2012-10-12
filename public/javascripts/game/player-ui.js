@@ -12,38 +12,44 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         initRealtime: function() {
-            var self = this;
-            Pusher.log = function(message) {
-                if (window.console && window.console.log) window.console.log(message);
-            };
-            Pusher.channel_auth_endpoint = "/pusher/presence/auth";
-            this.pusher = new Pusher(me.Player.PUSHER_KEY, { encrypted: true, auth: { params: { userid: this.id, name: this.name } } });
-            this.pusher.connection.bind('connected', function() {
-                self.socketId = self.pusher.connection.socket_id;
-            });
-
-            this.presence = this.pusher.subscribe("presence-gameroom");
-
-            this.presence.bind('pusher:subscription_error', function(msg) {
-                console.log("Subscription error", msg);
-            });
-
-            this.presence.bind('pusher:subscription_succeeded', function(members) {
-                var mem = [];
-                members.each(function (member) {
-                   mem.push(member);
+            if (this.live && !this.debug) {
+                var self = this;
+                Pusher.log = function(message) {
+                    if (window.console && window.console.log) window.console.log(message);
+                };
+                Pusher.channel_auth_endpoint = "/pusher/presence/auth";
+                this.pusher = new Pusher(me.Player.PUSHER_KEY, { encrypted: true, auth: { params: { userid: this.id, name: this.name } } });
+                this.pusher.connection.bind('connected', function() {
+                    self.socketId = self.pusher.connection.socket_id;
                 });
-                SHOTGUN.fire(kadi.game.Events.MEMBERSHIP_CHANGED, [self.presence.members.count,mem,true]);
-                self.connected = true;
-            });
 
-            this.presence.bind('pusher:member_added', function(member) {
-                SHOTGUN.fire(kadi.game.Events.MEMBERSHIP_CHANGED, [self.presence.members.count, [member],true]);
-            });
+                this.presence = this.pusher.subscribe("presence-gameroom");
 
-            this.presence.bind('pusher:member_removed', function(member) {
-                SHOTGUN.fire(kadi.game.Events.MEMBERSHIP_CHANGED, [self.presence.members.count, [member],false]);
-            });
+                this.presence.bind('pusher:subscription_error', function(msg) {
+                    console.log("Subscription error", msg);
+                });
+
+                this.presence.bind('pusher:subscription_succeeded', function(members) {
+                    var mem = [];
+                    members.each(function (member) {
+                       mem.push(member);
+                    });
+                    SHOTGUN.fire(kadi.game.Events.MEMBERSHIP_CHANGED, [self.presence.members.count,mem,true]);
+                    self.connected = true;
+                });
+
+                this.presence.bind('pusher:member_added', function(member) {
+                    SHOTGUN.fire(kadi.game.Events.MEMBERSHIP_CHANGED, [self.presence.members.count, [member],true]);
+                });
+
+                this.presence.bind('pusher:member_removed', function(member) {
+                    SHOTGUN.fire(kadi.game.Events.MEMBERSHIP_CHANGED, [self.presence.members.count, [member],false]);
+                });
+
+                this.presence.bind('client-game-invite', function(invite) {
+                    self.handleInvite(invite);
+                });
+            }
         },
 
         eq: function(other) {
@@ -56,6 +62,21 @@ window.kadi.game = (function(me, $, undefined){
 
         isBot: function() {
             return !this.live;
+        },
+
+        startGame: function() {
+            this._simpleSend(this.presence,'client-game-invite', { from: this.id, at: new Date() });
+        },
+
+        handleInvite: function(invite) {
+            if (kadi.msgIsForMe(invite)) {
+                SHOTGUN.fire(kadi.game.Events.INVITE_RECEIVED, [invite.from, invite.at]);
+            }
+        },
+
+        //Pusher comms
+        _simpleSend: function(channel, event, message) {
+            channel.trigger(event, message);
         }
     });
 

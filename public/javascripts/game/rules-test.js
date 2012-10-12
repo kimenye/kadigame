@@ -562,6 +562,16 @@ describe("Utilities:", function() {
         hand.push(kadi.joker("0"));
         expect(kadi.highestPickingCard(hand).eq(kadi.joker("0"))).toBe(true);
     });
+
+    describe("Realtime Utils", function() {
+
+        it("A message is not for me if it is from", function() {
+            var msg = { to: "12345", from: "54321" };
+
+            expect(kadi.msgIsForMe(msg, "12345")).toBe(true);
+            expect(kadi.msgIsForMe(msg, "54321")).toBe(false);
+        });
+    });
 });
 
 (function() {

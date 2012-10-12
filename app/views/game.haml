@@ -9,6 +9,9 @@
   .row-fluid#game-container.game-container
     .span9#game.multiplayer{:style => "display:none;"}
     .span3#sidebar
+      .btn-group
+        %button.btn.btn-primary.btn-start-game{"data-bind" => "enable: numOnline() > 1, click: startGame", "data-loading-text"=>"Finding opponents..."} Start Game
+      %br
       #accordion.accordion
         .accordion-group
           .accordion-heading
@@ -17,15 +20,36 @@
               %span.badge.badge-info.pull-right{"data-bind" => "text: numOnline"}
           #online.accordion-body.collapse.in
             .accordion-inner
-              %table.table.table-bordered
+              %table.table.table-bordered.table-condensed
                 %tbody{"data-bind" => "foreach: players"}
                   %tr
                     %td
                       %img{"data-bind" => "attr: { src: avatarUrl }"}
                     %td
                       %p.muted{"data-bind" => "text: name"}
+        .accordion-group.invites
+          .accordion-heading
+            %a.accordion-toggle{'data-toggle' => 'collapse', 'data-parent' => '#accordion', :href=>'#invites'}
+              Invites
+              %span.badge.badge-success.pull-right.num-invites{"data-bind" => "text: numInvites"}
+          #invites.accordion-body.collapse
+            .accordion-inner
+              %table.table.table-bordered.table-condensed
+                %tbody{"data-bind" => "foreach: invites"}
+                  %tr
+                    %td
+                      %img{"data-bind" => "attr: { src: from.avatarUrl }"}
+                    %td
+                      %small.muted{"data-bind" => "text: from.name + ' wants to play KADI!'"}
+                      %br
+                      %small{"data-bind" => "text: at"}
+                      .btn-group
+                        %btn.btn.btn-success
+                          %i.icon-white.icon-ok
+                        %btn.btn.btn-danger
+                          %i.icon-remove.icon-white
 
--#-content_for :footer, partial('base/footer')
+-content_for :footer, partial('base/footer')
 -content_for :fb, partial('base/facebook')
 -content_for :lib_js, partial("base/lib_js")
 -content_for :app_js, partial("base/app_js")

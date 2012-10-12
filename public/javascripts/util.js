@@ -457,7 +457,15 @@ window.kadi = (function(me, $, undefined){
                 for(x[3][i] = x[2][i], f = 0; !f; f = !f)
                     for(j = i; j; x[3][--j] == x[2][i] && (x[3][i] = x[2][i] = (x[2][i] + 1) % l, f = 1));
         return r;
-    };
+    }
+
+    me.msgIsForMe = function(msg, id) {
+        var fromMe = kadi.isSomethingMeaningful(msg) && kadi.isSomethingMeaningful(msg.from) && msg.from == id;
+        var toMe = kadi.isSomethingMeaningful(msg) && kadi.isSomethingMeaningful(msg.to) && msg.to == id;
+
+        return !fromMe || toMe;
+    }
+
 
     window.onerror = function(msg, url, line) {
         console.log("An un caught error occurred %s on line %s", msg, line);
