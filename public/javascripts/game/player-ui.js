@@ -55,6 +55,10 @@ window.kadi.game = (function(me, $, undefined){
                     self.handleAcceptedInvite(invite);
                 });
 
+                this.presence.bind('client-game-broadcast', function(msg) {
+                    self.handleBroadcast(msg);
+                });
+
                 this.presence.bind('client-game-sync-deck', function(msg) {
                     self.handleSyncedDeck(msg);
                 });
@@ -73,6 +77,10 @@ window.kadi.game = (function(me, $, undefined){
             return !this.live;
         },
 
+        broadcastMessage: function(msg) {
+            this._simpleSend(this.presence, 'client-game-broadcast', {from: this.id, msg: msg });
+        },
+
         syncDeck: function(deck) {
             this._simpleSend(this.presence, 'client-game-sync-deck', { from: this.id, deck: deck });
         },
@@ -83,6 +91,12 @@ window.kadi.game = (function(me, $, undefined){
 
         acceptInvite: function(to) {
             this._simpleSend(this.presence,'client-game-invite-accepted', { from: this.id, at: new Date(), to: to });
+        },
+
+        handleBroadcast: function(msg) {
+            if (kadi.msgIsForMe(msg)) {
+                SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED,[msg.msg]);
+            }
         },
 
         handleSyncedDeck: function (msg) {

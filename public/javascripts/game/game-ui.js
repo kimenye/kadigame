@@ -384,7 +384,6 @@ window.kadi.game = (function(me, $, undefined){
                 this.players.push(player);
                 var position = this.players.length - 1;
                 player.deck = new kadi.game.PlayerDeck.fromIndex(position);
-//                this.positions[position].hide();
                 player.display();
             }
         },
@@ -400,9 +399,10 @@ window.kadi.game = (function(me, $, undefined){
                 var starter = this.players[starterIdx];
 
                 this.order = new me.PlayingOrder(this.players, starterIdx);
-                SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ this.order.current().name + " to start. " ]);
+                SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ this.order.current().name + " to start." ]);
                 var deck = this.syncDeck();
                 this.me.syncDeck(deck);
+                this.me.broadcastMessage(this.order.current().name + " to start.");
             }
         },
 
