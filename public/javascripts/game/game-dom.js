@@ -264,6 +264,7 @@ window.kadi.game = (function(me, $, undefined){
                 else if (this.isHorizontal())
                 {
                     var w = (this.isTop() && this.isMultiplayer()) ? kadi.game.CardUI.WIDTH * 0.6 : kadi.game.CardUI.WIDTH;
+//                    var w = this.isTop()? kadi.game.CardUI.WIDTH * 0.6 : kadi.game.CardUI.WIDTH;
 //                    fan = kadi.flatChineseFan(this.width(),kadi.game.CardUI.WIDTH,kadi.game.CardUI.MARGIN,this.cards.length,this.type == kadi.game.PlayerDeck.TYPE_A);
                     fan = kadi.flatChineseFan(this.width(),w,kadi.game.CardUI.MARGIN,this.cards.length,this.type == kadi.game.PlayerDeck.TYPE_A);
                     _.each(fan, function(blade, idx) {
@@ -271,6 +272,7 @@ window.kadi.game = (function(me, $, undefined){
                         var z = me.PlayerDeck.Z + idx;
                         card.container().css('z-index', z);
                         var scale = (this.isMultiplayer() && this.isTop())? 0.6 : null;
+//                        var scale = this.isTop() ? 0.6 : null;
                         card.moveTo(this.left() + blade.x,null,blade.rotate,null,scale);
                     }, this);
                 }
@@ -465,7 +467,7 @@ window.kadi.game = (function(me, $, undefined){
             if (this.cards.length == 1)
                 pos.rotate = 0;
 
-            card.moveTo(pos.x, pos.y, pos.rotate);
+            card.moveTo(pos.x, pos.y, pos.rotate, null, 1);
             if (flip) {
                 card.flip();
             }
