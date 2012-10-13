@@ -263,12 +263,15 @@ window.kadi.game = (function(me, $, undefined){
                 }
                 else if (this.isHorizontal())
                 {
-                    fan = kadi.flatChineseFan(this.width(),kadi.game.CardUI.WIDTH,kadi.game.CardUI.MARGIN,this.cards.length,this.type == kadi.game.PlayerDeck.TYPE_A);
+                    var w = (this.isTop() && this.isMultiplayer()) ? kadi.game.CardUI.WIDTH * 0.6 : kadi.game.CardUI.WIDTH;
+//                    fan = kadi.flatChineseFan(this.width(),kadi.game.CardUI.WIDTH,kadi.game.CardUI.MARGIN,this.cards.length,this.type == kadi.game.PlayerDeck.TYPE_A);
+                    fan = kadi.flatChineseFan(this.width(),w,kadi.game.CardUI.MARGIN,this.cards.length,this.type == kadi.game.PlayerDeck.TYPE_A);
                     _.each(fan, function(blade, idx) {
                         var card = this.cards[idx];
                         var z = me.PlayerDeck.Z + idx;
                         card.container().css('z-index', z);
-                        card.moveTo(this.left() + blade.x,null,blade.rotate);
+                        var scale = (this.isMultiplayer() && this.isTop())? 0.6 : null;
+                        card.moveTo(this.left() + blade.x,null,blade.rotate,null,scale);
                     }, this);
                 }
             }

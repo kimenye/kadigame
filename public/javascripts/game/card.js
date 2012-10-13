@@ -383,7 +383,7 @@ window.kadi.game = (function(me, $, undefined){
             return new kadi.Pos(this.x, this.y, this.rotate, this.transformOrigin);
         },
 
-        moveTo: function(x,y,rotation, transformOrigin) {
+        moveTo: function(x,y,rotation, transformOrigin, scale) {
             var options = {};
             if (kadi.isSomethingMeaningful(x)) {
                 this.x = x;
@@ -400,6 +400,11 @@ window.kadi.game = (function(me, $, undefined){
             if (kadi.isSomethingMeaningful(transformOrigin)) {
                 this.transformOrigin = transformOrigin;
                 _.extend(options, { transformOrigin: transformOrigin });
+            }
+
+            if (kadi.isSomethingMeaningful(scale)) {
+                this.scale = scale;
+                _.extend(options, { scale: scale });
             }
             this.container().transition(options, 500, 'snap');
         },
