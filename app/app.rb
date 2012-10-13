@@ -74,7 +74,7 @@ class Kadi < Padrino::Application
     #  get_logged_in_user '/game'
     #end
     @player = Player.find_by_id!(params[:id])
-
+    @master = params[:master]
     render :game, :layout => :multiplayer
   end
 
@@ -98,6 +98,10 @@ class Kadi < Padrino::Application
 
   get :jasmine do
     render "jasmine", :layout => :jasminetest
+  end
+
+  get :multiplayer_test do
+    render "multiplayer_test", :layout => :jasminetest
   end
 
   get '/auth/facebook' do

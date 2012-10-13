@@ -22,10 +22,11 @@ window.kadi.app = (function(me, $, undefined){
     });
 
     me.MultiplayerApplication = JS.Class({
-        construct: function(fbAccessToken, fbId, playerName) {
+        construct: function(fbAccessToken, fbId, playerName, master) {
             var self = this;
             this.numOnline = ko.observable(1);
-            this.debug = false;
+            this.debug = true;
+            this.master = kadi.getVal(master);
             this.game = new kadi.game.MultiPlayerGame({id: fbId, name: playerName, live: true});
             this.me = this.game.me;
             this.me.display('player');
@@ -59,6 +60,10 @@ window.kadi.app = (function(me, $, undefined){
                             }
                         }
                     });
+                }
+
+                if (self.master) {
+                    self.startGame();
                 }
             });
 
