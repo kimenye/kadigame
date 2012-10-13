@@ -10,6 +10,16 @@ describe("Card rules:", function() {
         expect(jokerA.toS()).toBe("Joker");
     });
 
+    it("A cards id is correctly created", function() {
+        var kingD = kadi.diamonds("K");
+        expect(kingD.id()).toBe("D;K");
+    });
+
+    it("A can can be recreated from its id", function() {
+        var id = kadi.diamonds("K").id();
+        expect(kadi.game.Card.fromId(id).eq(kadi.diamonds("K"))).toBe(true);
+    })
+
     it("Only valid cards can start", function() {
         var king = kadi.diamonds("K");
         expect(kadi.game.RuleEngine.canStart(king)).toBe(false);
@@ -564,13 +574,25 @@ describe("Utilities:", function() {
     });
 
     describe("Realtime Utils", function() {
-
         it("A message is not for me if it is from", function() {
             var msg = { to: "12345", from: "54321" };
 
             expect(kadi.msgIsForMe(msg, "12345")).toBe(true);
             expect(kadi.msgIsForMe(msg, "54321")).toBe(false);
         });
+    });
+
+    describe("It syncs a deck according to the right order", function() {
+        var original_deck = [kadi.spades("5"), kadi.spades("2"), kadi.diamonds("3"), kadi.diamonds("4")];
+        var sync_msg = [kadi.diamonds("4").id(), kadi.diamonds("3").id(), kadi.spades("2").id(), kadi.spades("5").id()];
+
+        var expected = [kadi.diamonds("4"), kadi.diamonds("3"), kadi.spades("2"), kadi.spades("5")];
+        var synced = kadi.resyncDeck(original_deck,sync_msg);
+
+        var first = _.first(synced);
+        var last = _.last(synced);
+        expect(first.eq(_.first(expected))).toBe(true);
+        expect(last.eq(_.last(expected))).toBe(true);
     });
 });
 

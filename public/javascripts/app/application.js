@@ -8,7 +8,6 @@ window.kadi.app = (function(me, $, undefined){
             this.message = message;
             this.at = ko.computed(function() {
                 var dt = self.lastUpdated();
-                console.log("Last updated ", moment(self.when).fromNow());
                 return moment(self.when).fromNow();
             });
         }
@@ -27,6 +26,7 @@ window.kadi.app = (function(me, $, undefined){
             this.numOnline = ko.observable(1);
             this.debug = true;
             this.master = kadi.getVal(master);
+            console.log("Master: %s, Debug: %s", this.master, this.debug);
             this.game = new kadi.game.MultiPlayerGame({id: fbId, name: playerName, live: true});
             this.me = this.game.me;
             this.me.display('player');
@@ -34,13 +34,14 @@ window.kadi.app = (function(me, $, undefined){
             this.inGame = ko.observable(false);
             this.invites = ko.observableArray([]);
             this.updates = ko.observableArray([]);
+
+            this.stream = ko.computed(function() {
+                return _.sortBy(self.updates(), function(u) { return u.when }).reverse();
+            });
+
             this.numInvites = ko.computed(function() {
                 return self.invites().length;
             });
-
-//            var chaos = new kadi.game.GamePlayerUI({ id: '625987307', name: 'Chaos', live: false});
-//            this.game.master();
-//            this.game.sitPlayer(chaos);
 
             this.canStartGame = ko.computed(function() {
                 return self.numInvites() < 1 && self.numOnline() > 1  && !self.inGame();
@@ -62,8 +63,9 @@ window.kadi.app = (function(me, $, undefined){
                     });
                 }
 
-                if (self.master) {
-                    self.startGame();
+                if (self.master && self.debug) {
+//                    console.log("Can send invites...Sending invites...", self.master, self.debug);
+                    self.sendInvites();
                 }
             });
 
@@ -91,6 +93,14 @@ window.kadi.app = (function(me, $, undefined){
                 $('#invites').collapse('hide');
                 $('#stream').collapse('show');
                 self.updates.push(new me.Update(invitedPlayer.name + " has joined the game",new Date()));
+
+//                console.log("Received invite acceptance event");
+                if (self.debug)
+                    self.game.startGame();
+            });
+
+            SHOTGUN.listen(kadi.game.Events.MSG_RECEIVED, function(msg) {
+                self.updates.push(new me.Update(msg,new Date()));
             });
 
             this.me.initRealtime();
@@ -124,7 +134,7 @@ window.kadi.app = (function(me, $, undefined){
                 update.lastUpdated(new Date());
             });
         },
-        startGame: function() {
+        sendInvites: function() {
             $('.btn-start-game').button('loading');
             this.me.sendInvites();
             this.game.setType(kadi.game.MultiPlayerGame.TYPE_MASTER);

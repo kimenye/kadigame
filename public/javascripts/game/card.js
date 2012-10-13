@@ -141,6 +141,10 @@ window.kadi.game = (function(me, $, undefined){
             },
             getJokerRankText : function() {
                 return "J" + "<br />" + "O" + "<br />" + "K" + "<br />" + "E" + "<br />" + "R";
+            },
+            fromId: function(id) {
+                var split = id.split(";");
+                return new kadi.game.Card(split[1], split[0]);
             }
         },
         construct : function(rank,suite) {

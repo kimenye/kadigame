@@ -16,7 +16,7 @@ window.kadi.game = (function(me, $, undefined){
             if (this.live && !this.debug) {
                 var self = this;
                 Pusher.log = function(message) {
-                    if (window.console && window.console.log) window.console.log(message);
+//                    if (window.console && window.console.log) window.console.log(message);
                 };
                 Pusher.channel_auth_endpoint = "/pusher/presence/auth";
                 this.pusher = new Pusher(me.Player.PUSHER_KEY, { encrypted: true, auth: { params: { userid: this.id, name: this.name } } });
@@ -54,6 +54,10 @@ window.kadi.game = (function(me, $, undefined){
                 this.presence.bind('client-game-invite-accepted', function(invite) {
                     self.handleAcceptedInvite(invite);
                 });
+
+                this.presence.bind('client-game-sync-deck', function(msg) {
+                    self.handleSyncedDeck(msg);
+                });
             }
         },
 
@@ -69,12 +73,22 @@ window.kadi.game = (function(me, $, undefined){
             return !this.live;
         },
 
+        syncDeck: function(deck) {
+            this._simpleSend(this.presence, 'client-game-sync-deck', { from: this.id, deck: deck });
+        },
+
         sendInvites: function() {
             this._simpleSend(this.presence,'client-game-invite', { from: this.id, at: new Date() });
         },
 
         acceptInvite: function(to) {
             this._simpleSend(this.presence,'client-game-invite-accepted', { from: this.id, at: new Date(), to: to });
+        },
+
+        handleSyncedDeck: function (msg) {
+            if (kadi.msgIsForMe(msg)) {
+                SHOTGUN.fire(kadi.game.Events.SYNC_PICKING_DECK, [msg.deck]);
+            }
         },
 
         handleAcceptedInvite: function(invite) {

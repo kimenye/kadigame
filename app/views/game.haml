@@ -19,7 +19,7 @@
             .accordion-inner
               .invite{"data-bind" => "visible: players().length > 0"}
                 .btn-group
-                  %button.btn.btn-primary.btn-start-game{"data-bind" => "enable: canStartGame(), click: startGame", "data-loading-text"=>"Finding opponents..."} Invite!
+                  %button.btn.btn-primary.btn-start-game{"data-bind" => "enable: canStartGame(), click: sendInvites", "data-loading-text"=>"Finding opponents..."} Invite!
                 %br
               %table.table.table-bordered.table-condensed{"data-bind" => "visible: players().length > 0"}
                 %tbody{"data-bind" => "foreach: players"}
@@ -59,10 +59,10 @@
               Stream
           #stream.accordion-body.collapse
             .accordion-inner
-              %ul.unstyled{"data-bind" => "foreach: updates"}
+              %ul.unstyled{"data-bind" => "foreach: stream"}
                 %li
-                  %small.muted{"data-bind" => "text: message"}
-                  %small.pull-right{'data-bind' => 'text: at'}
+                  %small{"data-bind" => "text: message"}
+                  %small.muted{'data-bind' => 'text: at'}
     .span9#player
     .span3
 -content_for :footer, partial('base/footer')

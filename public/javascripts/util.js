@@ -466,6 +466,13 @@ window.kadi = (function(me, $, undefined){
         return !fromMe || toMe;
     }
 
+    me.resyncDeck = function(before,after) {
+        var newDeck = [];
+        _.each(after, function(id) {
+            newDeck.push(kadi.game.Card.fromId(id));
+        })
+        return newDeck;
+    }
 
     window.onerror = function(msg, url, line) {
         console.log("An un caught error occurred %s on line %s", msg, line);

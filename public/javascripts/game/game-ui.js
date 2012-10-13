@@ -30,7 +30,8 @@ window.kadi.game = (function(me, $, undefined){
             LATE_KADI: "late-kadi",
             MEMBERSHIP_CHANGED: "membership-changed",
             INVITE_RECEIVED: "invite-received",
-            INVITE_ACCEPTED: "invite-accepted"
+            INVITE_ACCEPTED: "invite-accepted",
+            SYNC_PICKING_DECK: "sync-picking-deck"
         }
     });
 
@@ -385,6 +386,43 @@ window.kadi.game = (function(me, $, undefined){
                 player.deck = new kadi.game.PlayerDeck.fromIndex(position);
 //                this.positions[position].hide();
                 player.display();
+            }
+        },
+
+        syncDeck: function() {
+            /*dealCards: function() {
+                _.each(_.range(3), function(idx) {
+                    _.each(this.players, function(p) {
+                        var card = this.pickingDeck.deal();
+                        p.addCard(card);
+                    },this);
+                },this);
+
+                var card = this.pickingDeck.cut();
+                this.tableDeck.addCard(card, true);
+
+                SHOTGUN.fire(kadi.game.Events.CARDS_DEALT,[]);
+                var starter = this.order.current();
+                SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[this.tableDeck.topCard()],starter.id);
+                SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[starter], 'deck');
+            }*/
+
+//            var cards = [];
+//            _.each(this.pickingDeck.deck, function(c) {
+//                cards.push()
+//            });
+            return _.collect(this.pickingDeck.deck, function(c) { return c.id() });
+        },
+
+        startGame: function() {
+            if (this.isMaster()) {
+                var starterIdx = kadi.coinToss(this.players);
+                var starter = this.players[starterIdx];
+
+                this.order = new me.PlayingOrder(this.players, starterIdx);
+                SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ this.order.current().name + " to start. " ]);
+                var deck = this.syncDeck();
+                this.me.syncDeck(deck);
             }
         },
 
