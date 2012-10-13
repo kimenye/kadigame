@@ -32,7 +32,8 @@ window.kadi.game = (function(me, $, undefined){
             INVITE_RECEIVED: "invite-received",
             INVITE_ACCEPTED: "invite-accepted",
             SYNC_PICKING_DECK: "sync-picking-deck",
-            DEAL: "deal"
+            DEAL: "deal",
+            GIVE_TURN: "give-turn"
         }
     });
 
@@ -376,14 +377,14 @@ window.kadi.game = (function(me, $, undefined){
             SHOTGUN.listen(kadi.game.Events.DEAL, function(order) {
                 self.dealCards(order);
             });
+
+            SHOTGUN.listen(kadi.game.Events.GIVE_TURN, function(playerId) {
+                self.giveTurn(playerId);
+            });
         },
 
         display : function() {
             kadi.ui.disableLoading('game');
-            this.positions = [];
-//            this.positions.push(new me.PlayerLocation(me.PlayerLocation.T_B));
-//            this.positionC.push = new me.PlayerLocation(me.PlayerLocation.T_C);
-//            this.positionD = new me.PlayerLocation(me.PlayerLocation.T_D);
         },
 
         sitPlayer: function(player) {
@@ -400,6 +401,16 @@ window.kadi.game = (function(me, $, undefined){
             return _.collect(this.pickingDeck.deck, function(c) { return c.id() });
         },
 
+        getPlayer: function(id) {
+            return _.detect(this.players, function(p) {  return p.id == id })
+        },
+
+        giveTurn: function(playerId) {
+            var player = this.getPlayer(playerId);
+            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[this.tableDeck.topCard()],playerId);
+            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[player], 'deck');
+        },
+
         dealCards: function(order) {
             _.each(_.range(3), function(idx) {
                 _.each(order, function(id) {
@@ -413,9 +424,6 @@ window.kadi.game = (function(me, $, undefined){
             this.tableDeck.addCard(card, true);
 
             SHOTGUN.fire(kadi.game.Events.CARDS_DEALT,[]);
-//            var starter = this.order.current();
-//            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[this.tableDeck.topCard()],starter.id);
-//            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[starter], 'deck');
         },
 
         startGame: function() {
@@ -432,6 +440,9 @@ window.kadi.game = (function(me, $, undefined){
                 var dealOrder = _.collect(this.players, function(p) { return p.id });
                 this.me.deal(dealOrder);
                 SHOTGUN.fire(kadi.game.Events.DEAL, [dealOrder]);
+
+                this.me.syncTurn(starter);
+                SHOTGUN.fire(kadi.game.Events.GIVE_TURN, [starter.id]);
             }
         },
 

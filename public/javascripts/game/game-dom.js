@@ -106,6 +106,7 @@ window.kadi.game = (function(me, $, undefined){
             X_D: -30,
             Y_D: 100,
             Z: 5000,
+            SCALE: 1,
             TYPE_A: 'A',
             TYPE_B: 'B',
             TYPE_C: 'C',
@@ -263,16 +264,13 @@ window.kadi.game = (function(me, $, undefined){
                 }
                 else if (this.isHorizontal())
                 {
-                    var w = (this.isTop() && this.isMultiplayer()) ? kadi.game.CardUI.WIDTH * 0.6 : kadi.game.CardUI.WIDTH;
-//                    var w = this.isTop()? kadi.game.CardUI.WIDTH * 0.6 : kadi.game.CardUI.WIDTH;
-//                    fan = kadi.flatChineseFan(this.width(),kadi.game.CardUI.WIDTH,kadi.game.CardUI.MARGIN,this.cards.length,this.type == kadi.game.PlayerDeck.TYPE_A);
+                    var w = (this.isTop() && this.isMultiplayer()) ? kadi.game.CardUI.WIDTH * me.PlayerDeck.SCALE : kadi.game.CardUI.WIDTH;
                     fan = kadi.flatChineseFan(this.width(),w,kadi.game.CardUI.MARGIN,this.cards.length,this.type == kadi.game.PlayerDeck.TYPE_A);
                     _.each(fan, function(blade, idx) {
                         var card = this.cards[idx];
                         var z = me.PlayerDeck.Z + idx;
                         card.container().css('z-index', z);
-                        var scale = (this.isMultiplayer() && this.isTop())? 0.6 : null;
-//                        var scale = this.isTop() ? 0.6 : null;
+                        var scale = (this.isMultiplayer() && this.isTop())? me.PlayerDeck.SCALE : null;
                         card.moveTo(this.left() + blade.x,null,blade.rotate,null,scale);
                     }, this);
                 }

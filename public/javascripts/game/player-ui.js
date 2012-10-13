@@ -61,7 +61,11 @@ window.kadi.game = (function(me, $, undefined){
 
                 this.presence.bind('client-game-deal', function(deal) {
                     self.handleDeal(deal);
-                })
+                });
+
+                this.presence.bind('client-game-sync-turn', function(turn) {
+                    self.handleTurnSync(turn);
+                });
 
                 this.presence.bind('client-game-sync-deck', function(msg) {
                     self.handleSyncedDeck(msg);
@@ -89,6 +93,10 @@ window.kadi.game = (function(me, $, undefined){
             this._simpleSend(this.presence, 'client-game-broadcast', {from: this.id, msg: msg });
         },
 
+        syncTurn: function(player) {
+            this._simpleSend(this.presence, 'client-game-sync-turn', {turn: player.id });
+        },
+
         syncDeck: function(deck) {
             this._simpleSend(this.presence, 'client-game-sync-deck', { from: this.id, deck: deck });
         },
@@ -103,6 +111,10 @@ window.kadi.game = (function(me, $, undefined){
 
         handleDeal: function(deal) {
             SHOTGUN.fire(kadi.game.Events.DEAL, [deal.order]);
+        },
+
+        handleTurnSync: function(turn) {
+            SHOTGUN.fire(kadi.game.Events.GIVE_TURN, [turn]);
         },
 
         handleBroadcast: function(msg) {
