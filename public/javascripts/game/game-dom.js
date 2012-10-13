@@ -434,11 +434,13 @@ window.kadi.game = (function(me, $, undefined){
             WIDTH: 150,
             HEIGHT: 200,
             X: 300,
+            X_M: 250,
             Y: 200,
             Z: 5000,
             MIN_CARDS: 5
         },
-        construct : function() {
+        construct : function(type) {
+            this.type = type;
             this.parent.construct.apply(this, ['game', 'table_deck_div', 'table_deck']);
             this.cards = [];
             this.highestCard = kadi.game.TableDeck.Z;
@@ -478,7 +480,8 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         bBox : function() {
-            var topLeft = new kadi.Pos(kadi.game.TableDeck.X,kadi.game.TableDeck.Y);
+            var topLeft = new kadi.Pos(this.type == me.Game.TYPE_SINGLE_PLAYER ? kadi.game.TableDeck.X : kadi.game.TableDeck.X_M,
+                kadi.game.TableDeck.Y);
             return new kadi.BBox(topLeft, kadi.game.TableDeck.WIDTH, kadi.game.TableDeck.HEIGHT);
         },
 

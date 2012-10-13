@@ -59,6 +59,10 @@ window.kadi.game = (function(me, $, undefined){
                     self.handleBroadcast(msg);
                 });
 
+                this.presence.bind('client-game-deal', function(deal) {
+                    self.handleDeal(deal);
+                })
+
                 this.presence.bind('client-game-sync-deck', function(msg) {
                     self.handleSyncedDeck(msg);
                 });
@@ -77,6 +81,10 @@ window.kadi.game = (function(me, $, undefined){
             return !this.live;
         },
 
+        deal: function(order) {
+            this._simpleSend(this.presence, 'client-game-deal', { to: "all", order: order });
+        },
+
         broadcastMessage: function(msg) {
             this._simpleSend(this.presence, 'client-game-broadcast', {from: this.id, msg: msg });
         },
@@ -91,6 +99,10 @@ window.kadi.game = (function(me, $, undefined){
 
         acceptInvite: function(to) {
             this._simpleSend(this.presence,'client-game-invite-accepted', { from: this.id, at: new Date(), to: to });
+        },
+
+        handleDeal: function(deal) {
+            SHOTGUN.fire(kadi.game.Events.DEAL, [deal.order]);
         },
 
         handleBroadcast: function(msg) {
@@ -121,6 +133,12 @@ window.kadi.game = (function(me, $, undefined){
         _simpleSend: function(channel, event, message) {
             channel.trigger(event, message);
         }
+    });
+
+
+    //TODO: Move realtime communications methods to this class...
+    me.Multiplayer = me.Player.extend({
+
     });
 
     me.PlayerLocation = kadi.ui.Box.extend({
@@ -221,7 +239,6 @@ window.kadi.game = (function(me, $, undefined){
             return kadi.game.RuleEngine.canBlock(this.deck.cards);
         },
         initHandlers: function() {
-            this.display();
             var self = this;
             if (this.live) {
                 SHOTGUN.listen(kadi.game.Events.CARD_SELECTED, function(card) {

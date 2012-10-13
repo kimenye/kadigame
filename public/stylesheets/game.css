@@ -10,6 +10,20 @@
     left: 400px;
 }
 
+
+.table_deck {
+    width: 150px;
+    height: 200px;
+    left: 300px;
+    top: 200px;
+    /*border: 1px solid #000000;*/
+    position: absolute;
+}
+
+.multiplayer .table_deck {
+    left: 250px;
+}
+
 .hidden {
     display: none;
 }
@@ -154,15 +168,6 @@
 
 .action_buttons {
     left: 20px;
-}
-
-.table_deck {
-    width: 150px;
-    height: 200px;
-    left: 300px;
-    top: 200px;
-    /*border: 1px solid #000000;*/
-    position: absolute;
 }
 
 .player_deck {

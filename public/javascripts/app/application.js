@@ -26,7 +26,7 @@ window.kadi.app = (function(me, $, undefined){
             this.numOnline = ko.observable(1);
             this.debug = true;
             this.master = kadi.getVal(master);
-            console.log("Master: %s, Debug: %s", this.master, this.debug);
+//            console.log("Master: %s, Debug: %s", this.master, this.debug);
             this.game = new kadi.game.MultiPlayerGame({id: fbId, name: playerName, live: true});
             this.me = this.game.me;
             this.me.display('player');
@@ -95,8 +95,7 @@ window.kadi.app = (function(me, $, undefined){
                 self.updates.push(new me.Update(invitedPlayer.name + " has joined the game",new Date()));
 
 //                console.log("Received invite acceptance event");
-                if (self.debug)
-                    self.game.startGame();
+                self.game.startGame();
             });
 
             SHOTGUN.listen(kadi.game.Events.MSG_RECEIVED, function(msg) {
@@ -104,6 +103,7 @@ window.kadi.app = (function(me, $, undefined){
             });
 
             this.me.initRealtime();
+            this.me.initHandlers();
             this.game.display();
 
             this.acceptInvite = function(invite) {

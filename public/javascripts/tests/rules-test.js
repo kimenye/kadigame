@@ -579,6 +579,7 @@ describe("Utilities:", function() {
 
             expect(kadi.msgIsForMe(msg, "12345")).toBe(true);
             expect(kadi.msgIsForMe(msg, "54321")).toBe(false);
+            expect(kadi.msgIsForMe({to: "all"})).toBe(true);
         });
     });
 

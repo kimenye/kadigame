@@ -462,8 +462,9 @@ window.kadi = (function(me, $, undefined){
     me.msgIsForMe = function(msg, id) {
         var fromMe = kadi.isSomethingMeaningful(msg) && kadi.isSomethingMeaningful(msg.from) && msg.from == id;
         var toMe = kadi.isSomethingMeaningful(msg) && kadi.isSomethingMeaningful(msg.to) && msg.to == id;
+        var toEveryone = kadi.isSomethingMeaningful(msg) && kadi.isSomethingMeaningful(msg.to) && msg.to == "all";
 
-        return !fromMe || toMe;
+        return !fromMe || toMe || toEveryone;
     }
 
     me.resyncDeck = function(before,after) {
