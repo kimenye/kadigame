@@ -99,6 +99,7 @@ window.kadi.game = (function(me, $, undefined){
             Y_A: 500,
             Y_B: -60,
             X_A: 200,
+            X_A_M: 150,
             X_B: 200,
             Y_C: 100,
             X_C: 730,
@@ -119,21 +120,26 @@ window.kadi.game = (function(me, $, undefined){
                 var types = [kadi.game.PlayerDeck.TYPE_D,kadi.game.PlayerDeck.TYPE_B,kadi.game.PlayerDeck.TYPE_C];
                 return types[index];
             },
-            fromIndex : function(index) {
-                return new me.PlayerDeck(me.PlayerDeck.typeFromIndex(index));
+            fromIndex : function(index, playerType) {
+                return new me.PlayerDeck(me.PlayerDeck.typeFromIndex(index), playerType);
             }
 
         },
-        construct: function(type) {
+        construct: function(type,playerType) {
             this.type = type;
+            this.playerType = playerType;
             this.parent.construct.apply(this, ['game', 'player_deck_div' + type, 'player_deck ' + type]);
             this.display();
             this.cards = [];
         },
 
+        isMultiplayer : function() {
+            return this.playerType == me.Game.TYPE_MULTI_PLAYER;
+        },
+
         left: function() {
             if (this.isHorizontal())
-                return kadi.game.PlayerDeck.X_A;
+                return this.isMultiplayer() ? kadi.game.PlayerDeck.X_A_M : kadi.game.PlayerDeck.X_A;
             else if (this.isRight())
                 return kadi.game.PlayerDeck.X_C;
             else if (this.isLeft())

@@ -44,7 +44,7 @@ window.kadi.game = (function(me, $, undefined){
         construct: function(type, player) {
             this.type = kadi.isSomethingMeaningful(type) ? type : me.Game.TYPE_SINGLE_PLAYER;
             if (kadi.isSomethingMeaningful(player))
-                this.me = new kadi.game.GamePlayerUI(player, new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A));
+                this.me = new kadi.game.GamePlayerUI(player, new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A, this.type));
             this.requestedSuite = null;
             this.pickingDeck = new kadi.game.PickingDeck(this.type);
             this.tableDeck = new kadi.game.TableDeck(type);
@@ -390,14 +390,13 @@ window.kadi.game = (function(me, $, undefined){
             if (this.players.length < 4) {
                 this.players.push(player);
                 var position = this.players.length - 1;
-                player.deck = new kadi.game.PlayerDeck.fromIndex(position);
+                player.deck = new kadi.game.PlayerDeck.fromIndex(position,me.Game.TYPE_MULTI_PLAYER);
                 player.display();
                 player.initHandlers();
             }
         },
 
         syncDeck: function() {
-            console.log("First card: ", _.first(this.pickingDeck.deck).toS());
             return _.collect(this.pickingDeck.deck, function(c) { return c.id() });
         },
 
@@ -417,8 +416,6 @@ window.kadi.game = (function(me, $, undefined){
 //            var starter = this.order.current();
 //            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[this.tableDeck.topCard()],starter.id);
 //            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[starter], 'deck');
-
-//            me.dealCards
         },
 
         startGame: function() {

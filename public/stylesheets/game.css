@@ -187,6 +187,10 @@
     height: 100px;
 }
 
+.multiplayer .player_deck.A, .multiplayer .player_deck.B {
+    left: 150px;
+}
+
 .player_deck.B {
     top: 0;
 }

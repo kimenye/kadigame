@@ -35,6 +35,11 @@ window.kadi.app = (function(me, $, undefined){
             this.invites = ko.observableArray([]);
             this.updates = ko.observableArray([]);
 
+//            var chaos = new kadi.game.GamePlayerUI({ id: '625987307', name: 'Chaos', live: false});
+//            this.game.master();
+//            this.game.sitPlayer(chaos);
+//            this.game.startGame();
+
             this.stream = ko.computed(function() {
                 return _.sortBy(self.updates(), function(u) { return u.when }).reverse();
             });
