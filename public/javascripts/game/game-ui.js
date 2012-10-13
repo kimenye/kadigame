@@ -390,27 +390,7 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         syncDeck: function() {
-            /*dealCards: function() {
-                _.each(_.range(3), function(idx) {
-                    _.each(this.players, function(p) {
-                        var card = this.pickingDeck.deal();
-                        p.addCard(card);
-                    },this);
-                },this);
-
-                var card = this.pickingDeck.cut();
-                this.tableDeck.addCard(card, true);
-
-                SHOTGUN.fire(kadi.game.Events.CARDS_DEALT,[]);
-                var starter = this.order.current();
-                SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[this.tableDeck.topCard()],starter.id);
-                SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[starter], 'deck');
-            }*/
-
-//            var cards = [];
-//            _.each(this.pickingDeck.deck, function(c) {
-//                cards.push()
-//            });
+            console.log("First card: ", _.first(this.pickingDeck.deck).toS());
             return _.collect(this.pickingDeck.deck, function(c) { return c.id() });
         },
 

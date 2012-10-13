@@ -468,9 +468,11 @@ window.kadi = (function(me, $, undefined){
 
     me.resyncDeck = function(before,after) {
         var newDeck = [];
-        _.each(after, function(id) {
-            newDeck.push(kadi.game.Card.fromId(id));
-        })
+        _.each(after, function(id, idx) {
+            var c =  kadi.game.Card.fromId(id);
+            var card = _.detect(before, function(cd) { return cd.eq(c) });
+            newDeck[idx] = card;
+        });
         return newDeck;
     }
 

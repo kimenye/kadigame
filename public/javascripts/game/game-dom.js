@@ -314,6 +314,10 @@ window.kadi.game = (function(me, $, undefined){
                 self.active = player.live;
                 self.activePlayer = player; //TODO: this is still tightly coupled, you need to pass an event to the game
             }, 'deck');
+
+            SHOTGUN.listen(kadi.game.Events.SYNC_PICKING_DECK, function(deck) {
+                self.syncDeck(deck);
+            });
         },
 
         returnCard: function(card) {
@@ -341,6 +345,11 @@ window.kadi.game = (function(me, $, undefined){
                 var pos = positions[idx];
                 card.display(me.SinglePlayerGame.ID, pos.x, pos.y, pos.rotate);
             });
+        },
+
+        syncDeck: function(deck) {
+            this.deck = kadi.resyncDeck(this.deck, deck);
+            console.log("First card : ", _.first(this.deck).toS());
         },
 
         numCards: function() {
