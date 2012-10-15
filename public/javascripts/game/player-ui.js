@@ -94,7 +94,7 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         broadCastEvent: function(event, data) {
-//            this._simpleSend(this.presence, 'client-game-event-broadcast', { to: "all", event: event, data: data});
+            this._simpleSend(this.presence, 'client-game-event-broadcast', { to: "all", event: event, data: data});
         },
 
         broadcastMessage: function(msg) {
@@ -131,8 +131,10 @@ window.kadi.game = (function(me, $, undefined){
             }
         },
 
-        handleEventBroadcast: function(event) {
-
+        handleEventBroadcast: function(msg) {
+            if (kadi.msgIsForMe(msg)) {
+                SHOTGUN.fire(kadi.game.Events.FORWARD_EVENT, [msg.event, msg.data]);
+            }
         },
 
         handleSyncedDeck: function (msg) {

@@ -33,7 +33,8 @@ window.kadi.game = (function(me, $, undefined){
             INVITE_ACCEPTED: "invite-accepted",
             SYNC_PICKING_DECK: "sync-picking-deck",
             DEAL: "deal",
-            GIVE_TURN: "give-turn"
+            GIVE_TURN: "give-turn",
+            FORWARD_EVENT: "forward-event"
         }
     });
 
@@ -394,6 +395,16 @@ window.kadi.game = (function(me, $, undefined){
                 //broadcast
                 if (self.isMaster())
                     self.me.broadCastEvent(kadi.game.Events.PICK_CARD, { player: player.id, num: num });
+            });
+
+            SHOTGUN.listen(kadi.game.Events.FORWARD_EVENT, function(event, data) {
+                if (kadi.isSomethingMeaningful(data.player)) {
+                    var player = player = self.getPlayer(data.player);
+                    data = _.omit(data,'player');
+                    var eventParams = [player];
+                    eventParams = eventParams.concat(_.values(data));
+                    SHOTGUN.fire(event, eventParams);
+                }
             });
         },
 

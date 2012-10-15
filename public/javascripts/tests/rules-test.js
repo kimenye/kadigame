@@ -463,14 +463,9 @@ describe("Game mechanics:", function() {
     it("The best suite to ask for is the one most common in my hand", function() {
         var hand = [kadi.spades("Q"), kadi.spades("4"), kadi.diamonds("3")];
         var suite = kadi.game.Strategy.askFor(hand);
-
         expect(suite).toBe(kadi.game.Suite.SPADES);
 
         hand = hand.concat([kadi.diamonds("Q"), kadi.diamonds("K")]);
-
-        expect(kadi.game.Strategy.askFor(hand)).toBe(kadi.game.Suite.DIAMONDS);
-
-        hand = hand.concat([kadi.spades("2")]);
         expect(kadi.game.Strategy.askFor(hand)).toBe(kadi.game.Suite.DIAMONDS);
 
         hand = [kadi.hearts("5")];
