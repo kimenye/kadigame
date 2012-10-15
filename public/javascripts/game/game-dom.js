@@ -220,7 +220,7 @@ window.kadi.game = (function(me, $, undefined){
         removeCard: function(card) {
             this.cards = _.reject(this.cards, function(c) {
                 return c.id == card.id;
-            })
+            });
         },
 
         hasCards: function() {

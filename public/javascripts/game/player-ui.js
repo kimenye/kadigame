@@ -158,9 +158,20 @@ window.kadi.game = (function(me, $, undefined){
         //Pusher comms
         _simpleSend: function(channel, event, message) {
             channel.trigger(event, message);
+        },
+        getLocation: function() {
+            return this.deck.type;
+        },
+        cards: function() {
+            return this.deck.cards;
+        },
+        canBlock: function() {
+            return kadi.game.RuleEngine.canBlock(this.cards());
+        },
+        canDeclareKADI: function() {
+            return this.cards().length > 0 && kadi.game.RuleEngine.canDeclareKADI(this.cards());
         }
     });
-
 
     //TODO: Move realtime communications methods to this class...
     me.Multiplayer = me.Player.extend({
@@ -228,15 +239,6 @@ window.kadi.game = (function(me, $, undefined){
 
             this.parent.appendChild(this.div);
         },
-        getLocation: function() {
-            return this.deck.type;
-        },
-        clearSelections: function() {
-            this.selections = [];
-        },
-        cards: function() {
-            return this.deck.cards;
-        },
         addCard: function(card,redraw) {
             if (this.live)
                 card.flip();
@@ -261,8 +263,8 @@ window.kadi.game = (function(me, $, undefined){
             this.deck.cards = [];
         },
 
-        canBlock: function() {
-            return kadi.game.RuleEngine.canBlock(this.deck.cards);
+        clearSelections: function() {
+            this.selections = [];
         },
         initHandlers: function() {
             var self = this;
@@ -416,9 +418,7 @@ window.kadi.game = (function(me, $, undefined){
                 SHOTGUN.fire(kadi.game.Events.BLOCK, [this, [ace], pickingCards, false]);
             }
         },
-        canDeclareKADI: function() {
-            return this.cards().length > 0 && kadi.game.RuleEngine.canDeclareKADI(this.cards());
-        },
+
         pick: function() {
             SHOTGUN.fire(kadi.game.Events.PICK_CARD, [this, 1]);
             this.endTurn(kadi.game.RuleEngine.ACTION_NONE, []);
