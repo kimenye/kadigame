@@ -81,6 +81,9 @@ window.kadi.game = (function(me, $, undefined){
 //                var num = kadi.game.RuleEngine.calculatePicking(playedCards);
                 return _.reject(hand, function(c) { return !c.isJack() }).length;
             },
+            calculateTurnsReverse: function(hand) {
+                return _.reject(hand, function(c) { return !c.isKing() }).length;
+            },
             calculatePicking: function(hand) {
                 var total = 0;
                 _.each(hand, function(c) {

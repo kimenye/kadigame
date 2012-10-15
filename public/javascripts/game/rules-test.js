@@ -416,11 +416,21 @@ describe("Game mechanics:", function() {
         expect(order.current().eq(playerA)).toBe(true);
     });
 
-    it("A King causes a reverse action", function() {
+    it("A single King causes a reverse action", function() {
         var king = kadi.spades("K");
         var h = [king];
         var action = kadi.game.RuleEngine.actionRequired(h);
         expect(action).toBe(kadi.game.RuleEngine.ACTION_REVERSE);
+        expect(kadi.game.RuleEngine.calculateTurnsReverse(h)).toBe(1);
+    });
+    
+    it("Two Kings cause no reverse action", function() {
+        
+        var hand = [kadi.spades("K"), kadi.hearts("8"), kadi.diamonds("K")];
+        var action = kadi.game.RuleEngine.actionRequired(hand);
+
+        expect(action).toBe(kadi.game.RuleEngine.ACTION_REVERSE);
+        expect(kadi.game.RuleEngine.calculateTurnsReverse(hand)).toBe(2);
     });
 
     it("Two jumps causes a double jump action", function() {
