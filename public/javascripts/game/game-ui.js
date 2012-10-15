@@ -381,6 +381,20 @@ window.kadi.game = (function(me, $, undefined){
             SHOTGUN.listen(kadi.game.Events.GIVE_TURN, function(playerId) {
                 self.giveTurn(playerId);
             });
+
+            SHOTGUN.listen(kadi.game.Events.PICK_CARD, function(player, num) {
+                self.giveCard(player,num);
+                if (player.onKADI) {
+                    //need to check if we are still on kadi...
+                    if (!player.canDeclareKADI()) {
+                        player.kadi(false);
+                    }
+                }
+
+                //broadcast
+                if (self.me.isMaster())
+                    self.me.broadCastEvent(kadi.game.Events.PICK_CARD, { player: player.id, num: num });
+            });
         },
 
         display : function() {
@@ -429,6 +443,7 @@ window.kadi.game = (function(me, $, undefined){
         startGame: function() {
             if (this.isMaster()) {
                 var starterIdx = kadi.coinToss(this.players);
+                starterIdx = 0;
                 var starter = this.players[starterIdx];
 
                 this.order = new me.PlayingOrder(this.players, starterIdx);

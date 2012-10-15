@@ -67,6 +67,10 @@ window.kadi.game = (function(me, $, undefined){
                     self.handleTurnSync(turn);
                 });
 
+                this.presence.bind('client-game-event-broadcast', function(event) {
+                    self.handleEventBroadcast(event);
+                });
+
                 this.presence.bind('client-game-sync-deck', function(msg) {
                     self.handleSyncedDeck(msg);
                 });
@@ -87,6 +91,10 @@ window.kadi.game = (function(me, $, undefined){
 
         deal: function(order) {
             this._simpleSend(this.presence, 'client-game-deal', { to: "all", order: order });
+        },
+
+        broadCastEvent: function(event, data) {
+//            this._simpleSend(this.presence, 'client-game-event-broadcast', { to: "all", event: event, data: data});
         },
 
         broadcastMessage: function(msg) {
@@ -121,6 +129,10 @@ window.kadi.game = (function(me, $, undefined){
             if (kadi.msgIsForMe(msg)) {
                 SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED,[msg.msg]);
             }
+        },
+
+        handleEventBroadcast: function(event) {
+
         },
 
         handleSyncedDeck: function (msg) {
@@ -271,10 +283,6 @@ window.kadi.game = (function(me, $, undefined){
                 this.btnMove = $('.btn-move').click(function(btn) {
                     if (kadi.isEnabled(this))
                         self.move();
-                });
-                this.btnPick = $('.btn-pick').click(function() {
-                    if (kadi.isEnabled(this))
-                        self.pick();
                 });
                 this.btnKadi = $('.btn-kadi').click(function() {
                     if (kadi.isEnabled(this))
