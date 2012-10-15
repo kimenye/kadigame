@@ -122,7 +122,7 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         handleTurnSync: function(turn) {
-            SHOTGUN.fire(kadi.game.Events.GIVE_TURN, [turn]);
+            SHOTGUN.fire(kadi.game.Events.GIVE_TURN, [turn.turn]);
         },
 
         handleBroadcast: function(msg) {

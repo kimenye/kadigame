@@ -392,7 +392,7 @@ window.kadi.game = (function(me, $, undefined){
                 }
 
                 //broadcast
-                if (self.me.isMaster())
+                if (self.isMaster())
                     self.me.broadCastEvent(kadi.game.Events.PICK_CARD, { player: player.id, num: num });
             });
         },
