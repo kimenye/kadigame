@@ -44,14 +44,11 @@ window.kadi.game = (function(me, $, undefined){
             TYPE_MULTI_PLAYER: "multi-player"
         },
         construct: function(type, player) {
-            this.type = kadi.isSomethingMeaningful(type) ? type : me.Game.TYPE_SINGLE_PLAYER;
-            if (kadi.isSomethingMeaningful(player))
-                this.me = new kadi.game.GamePlayerUI(player, new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A, this.type));
+            this.type = type;
             this.requestedSuite = null;
             this.pickingDeck = new kadi.game.PickingDeck(this.type);
             this.tableDeck = new kadi.game.TableDeck(type);
             this.players = [];
-            this.players.push(this.me);
         },
 
         startGame: function() {
@@ -346,9 +343,11 @@ window.kadi.game = (function(me, $, undefined){
             CONTAINER_ID: 'game-container'
         },
         construct: function(player, vs) {
-            this.parent.construct.apply(this, [me.Game.TYPE_SINGLE_PLAYER, player]);
+            this.parent.construct.apply(this, [me.Game.TYPE_SINGLE_PLAYER]);
+            this.me = new kadi.game.PlayerUI(player, new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A, this.type));
+            this.players.push(this.me);
             _.each(vs, function(opponent, idx) {
-                this.players.push(new me.GamePlayerUI(opponent,new kadi.game.PlayerDeck.fromIndex(idx)));
+                this.players.push(new me.PlayerUI(opponent,new kadi.game.PlayerDeck.fromIndex(idx)));
             },this);
 
             this.initUIElements();
@@ -372,8 +371,10 @@ window.kadi.game = (function(me, $, undefined){
         },
         construct: function(player) {
             var self = this;
-            this.parent.construct.apply(this, [me.Game.TYPE_MULTI_PLAYER, player]);
+            this.parent.construct.apply(this, [me.Game.TYPE_MULTI_PLAYER]);
             this.setType(me.MultiPlayerGame.TYPE_SLAVE);
+            this.me = new kadi.game.PlayerUI(player, new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A, this.type));
+            this.players.push(this.me);
 
             SHOTGUN.listen(kadi.game.Events.DEAL, function(order) {
                 self.dealCards(order);

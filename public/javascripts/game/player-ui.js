@@ -191,7 +191,7 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
-    me.GamePlayerUI = me.Player.extend({
+    me.PlayerUI = me.Player.extend({
         statics: {
             BOT_DELAY: 2000
         },
@@ -309,7 +309,7 @@ window.kadi.game = (function(me, $, undefined){
                             prev.disableKADI();
                         }
                         self.bot(card, requestedSuite);
-                    },kadi.game.GamePlayerUI.BOT_DELAY);
+                    },kadi.game.PlayerUI.BOT_DELAY);
                 }
 
                 $(self.avatar).addClass('active');

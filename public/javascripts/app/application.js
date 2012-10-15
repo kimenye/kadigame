@@ -58,7 +58,7 @@ window.kadi.app = (function(me, $, undefined){
                 if (_.isArray(membership)) {
                     _.each(membership, function(member) {
                         if (member.id != self.me.id) {
-                            var player = new kadi.game.GamePlayerUI({id: member.id, name: member.info.name });
+                            var player = new kadi.game.PlayerUI({id: member.id, name: member.info.name });
                             if (add)
                                 self.players.push(player);
                             else {
