@@ -314,10 +314,10 @@ window.kadi.game = (function(me, $, undefined){
                 if (!wasOnKADI)
                     player.endTurn(action,cards);
                 else {
-                    console.log("%s has finished the game", player.name);
+                    console.log("%s has finished the game with hand %s", player.name, kadi.handToS(cards));
                     _.delay(function() {
                         SHOTGUN.fire(kadi.game.Events.FINISH, [player]);
-                    }, 1000);
+                    }, 2000);
                 }
             } else {
                 SHOTGUN.fire(kadi.game.Events.REJECT_MOVES, [cards], player.id);

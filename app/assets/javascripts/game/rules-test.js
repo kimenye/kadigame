@@ -291,7 +291,7 @@ describe("Card rules:", function() {
             expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(false);
         });
 
-        it("A player can be on on kadi if their remainig cards can form a single move", function() {
+        it("A player can be on on kadi if their remaining cards can form a single move", function() {
             var hand = [kadi.spades("4"), kadi.diamonds("4")];
             expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
         });
@@ -299,6 +299,9 @@ describe("Card rules:", function() {
         it("A player can be on kadi if they have questions that can be answered", function() {
             var hand = [kadi.spades("8"), kadi.diamonds("8"), kadi.diamonds("Q"), kadi.diamonds("4")];
             expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
+
+            hand = [kadi.spades("Q"), kadi.hearts("Q")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(false);
         });
 
         it("A player can finish with a single card", function() {

@@ -318,8 +318,9 @@ window.kadi.game = (function(me, $, undefined){
                 var hasJ = kadi.containsCardOfRank(hand,kadi.game.Card.JACK);
                 var singleCard = hand.length < 2;
                 var hasAce = kadi.containsCardOfRank(hand,kadi.game.Card.ACE);
+                var endsWithPickingCard = _.last(hand).isQuestion();
 
-                if(!handHasPickingCard && !hasK && !hasJ && !hasAce) {
+                if(!handHasPickingCard && !hasK && !hasJ && !hasAce && !endsWithPickingCard) {
                     if (singleCard)
                         return me.RuleEngine.canEndMove(_.first(hand));
                     else {
