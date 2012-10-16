@@ -1,12 +1,15 @@
 require 'koala'
 require 'pusher'
+require 'sprockets'
 
 class Kadi < Padrino::Application
   use ActiveRecord::ConnectionAdapters::ConnectionManagement
   register Padrino::Rendering
   register Padrino::Mailer
   register Padrino::Helpers
+  register Padrino::Sprockets
 
+  sprockets :minify => false
 
   enable :sessions
 

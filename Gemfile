@@ -20,6 +20,8 @@ gem 'pusher'
 
 # Padrino Stable Gem
 gem 'padrino', '0.10.7'
+gem 'padrino-sprockets', :require => 'padrino/sprockets', :git => 'git://github.com/nightsailer/padrino-sprockets'
+gem 'jsmin'
 
 gem 'koala'
 

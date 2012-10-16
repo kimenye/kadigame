@@ -1,12 +1,10 @@
--#.container
+.container
   .page-header
     %h1
       %a
         =image_tag "/images/logo_fb.png", :class => 'logo'
       %small Kenyan Style Poker
 .container
-  -#.row
-    %br
   .row#game-container
     #loading.loading
       %h5#loading-text Loading...
@@ -15,20 +13,4 @@
         %li
         %li
         %li
-
-
     #game{:style => "display:none;"}
-
--#.container
-  .row
-    %hr
-    .span4
-      %h6 ABOUT US
-    .span4
-      %h6 HOW TO PLAY
-    .span4
-      %h6 PRIVACY
-
-
--content_for :lib_js, partial("base/lib_js")
--content_for :app_js, partial("base/test_js")
