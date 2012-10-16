@@ -81,6 +81,9 @@ window.kadi.game = (function(me, $, undefined){
 //                var num = kadi.game.RuleEngine.calculatePicking(playedCards);
                 return _.reject(hand, function(c) { return !c.isJack() }).length;
             },
+            calculateTurnsReverse: function(hand) {
+                return _.reject(hand, function(c) { return !c.isKing() }).length;
+            },
             calculatePicking: function(hand) {
                 var total = 0;
                 _.each(hand, function(c) {
@@ -166,13 +169,16 @@ window.kadi.game = (function(me, $, undefined){
                 return false;
             },
 
-            canPlayTogetherWith: function(card, other) {
+            canPlayTogetherWith: function(card, other, previousCards) {
                 var follow = me.RuleEngine.canFollow(card,other);
                 var sameRank = card.rank == other.rank;
                 var sameSuite = card.suite == other.suite;
 
-                if (card.isQueen() || card.isEight())
+                if (card.isQueen() || card.isEight() )
                     return follow && (sameSuite || sameRank);
+                else if (card.isKing() && kadi.isSomethingMeaningful(previousCards) && kadi.countNumberOfCardsOfRank(previousCards, "K") % 2 != 0 ) {
+                    return follow && (sameSuite || sameRank);
+                }
                 else
                     return follow && sameRank;
             },
@@ -194,15 +200,22 @@ window.kadi.game = (function(me, $, undefined){
             evaluateGroup: function(hand) {
                 if (hand.length < 2)
                     return false;
-
+                
                 var _result = false;
                 var _preceding = _.first(hand);
 
-                var _idx = _.indexOf(hand, _preceding, false) + 1;
+                var _idx = 1;
+                
                 while(_idx < hand.length) {
+                    var _previous = [];
+                    if(hand.length > 2 && _idx > 1) {
+                        _previous = _.first(hand, _idx-1);
+                    }
+                    
                     var _following = _.first(_.rest(hand, _idx));
-                    _result = kadi.game.RuleEngine.canPlayTogetherWith(_preceding, _following);
-
+                    var _others = _.rest(hand, _idx + 1);
+                    _result = kadi.game.RuleEngine.canPlayTogetherWith(_preceding, _following, _previous);
+                
                     if (!_result)
                         break;
                     _idx++;
