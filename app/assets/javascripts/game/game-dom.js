@@ -269,7 +269,7 @@ window.kadi.game = (function(me, $, undefined){
             card.moveTo(left,top, rotate, origin);
         },
 
-        redrawCards: function(init) {
+        redrawCards: function() {
             if (this.hasCards()) {
                 var fan = [];
                 if (this.isVertical()) {
