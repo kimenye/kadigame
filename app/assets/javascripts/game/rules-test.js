@@ -194,6 +194,10 @@ describe("Card rules:", function() {
             expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.joker("0"), kadi.spades("2"))).toBe(true);
         });
 
+        it("Returns the number of cards that can be used to block", function() {
+            expect(kadi.game.RuleEngine.countBlockingCards([kadi.spades("A")])).toBe(1);
+        });
+
         it("A picking move cannot mix a picking card and an ace", function() {
             var h = [kadi.diamonds("3"), kadi.spades("A")];
             expect(kadi.game.RuleEngine.canBlock(h)).toBe(true);

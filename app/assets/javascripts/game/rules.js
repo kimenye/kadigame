@@ -103,11 +103,12 @@ window.kadi.game = (function(me, $, undefined){
                 return !card.isFaceCard() && !card.isSpecialCard() && !card.isAce();
             },
 
-            canBlock: function(hand) {
-                var handHasAce = kadi.containsCardOfRank(hand, kadi.game.Card.ACE);
-                var handHasPickingCard = kadi.containsPickingCard(hand);
+            countBlockingCards: function(hand) {
+                return _.filter(hand, function(c) { return c.isBlockingCard() }).length;
+            },
 
-                return handHasAce || handHasPickingCard;
+            canBlock: function(hand) {
+                return kadi.game.RuleEngine.countBlockingCards(hand) > 0;
             },
 
             isValidBlockingMove : function(move) {

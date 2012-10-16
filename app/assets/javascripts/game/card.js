@@ -185,6 +185,10 @@ window.kadi.game = (function(me, $, undefined){
                 return 0;
             }
 
+            this.isBlockingCard = function() {
+                return this.isPickingCard() || this.isAce();
+            };
+
             this.isPickingCard = function() {
                 return this.isJoker() || this.is("2") || this.is("3");
             };
