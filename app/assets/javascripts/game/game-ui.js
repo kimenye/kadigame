@@ -292,7 +292,7 @@ window.kadi.game = (function(me, $, undefined){
                 meetsRequestedSuite = kadi.game.RuleEngine.canFollowRequestedSuite(cards,this.requestedSuite);
             }
 
-            var canPlay = kadi.game.RuleEngine.canPlay(cards,this.tableDeck.topCard());
+            var canPlay = kadi.game.RuleEngine.isValidMove(cards, this.tableDeck.topCard());
             if (canPlay && meetsRequestedSuite) {
                 if (clearRequested) {
                     this.requestedSuite = null;

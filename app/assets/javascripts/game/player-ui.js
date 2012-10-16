@@ -110,9 +110,6 @@ window.kadi.game = (function(me, $, undefined){
 
         returnCards: function() {
             SHOTGUN.fire(kadi.game.Events.RETURNED_CARDS, [this.cards()]);
-//            _.each(this.cards(), function(c) {
-//                this.removeCard(c,false);
-//            },this);
             this.deck.cards = [];
         },
 
@@ -141,10 +138,6 @@ window.kadi.game = (function(me, $, undefined){
                 this.btnMove = $('.btn-move').click(function(btn) {
                     if (kadi.isEnabled(this))
                         self.move();
-                });
-                this.btnPick = $('.btn-pick').click(function() {
-                    if (kadi.isEnabled(this))
-                        self.pick();
                 });
                 this.btnKadi = $('.btn-kadi').click(function() {
                     if (kadi.isEnabled(this))

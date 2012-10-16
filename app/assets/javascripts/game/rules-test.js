@@ -83,7 +83,7 @@ describe("Card rules:", function() {
         expect(kadi.game.RuleEngine.canPlayTogetherWith(king_spades, queen_spades)).toBe(false);
     });
     
-    it("A Queen can be in a move with Kings if the player reverses cancell each other out", function() {
+    it("A Queen can be in a move with Kings if the player reverses cancel each other out", function() {
         
         var king_diamonds = kadi.diamonds("K");
         var king_spades = kadi.spades("K");
@@ -91,16 +91,25 @@ describe("Card rules:", function() {
         var hand = [king_diamonds, king_spades, queen_spades];
         
         expect(kadi.game.RuleEngine.evaluateGroup(hand)).toBe(true);
-        
         expect(kadi.game.RuleEngine.evaluateGroup([kadi.diamonds("K"), kadi.diamonds("Q")])).toBe(false);
-        
         expect(kadi.game.RuleEngine.evaluateGroup([kadi.hearts("K"), kadi.diamonds("K"), kadi.diamonds("Q")])).toBe(true);
-        
         expect(kadi.game.RuleEngine.evaluateGroup([kadi.hearts("K"), kadi.spades("K"), kadi.diamonds("K"), kadi.diamonds("Q")])).toBe(false);
+
+        hand = [kadi.hearts("K"), kadi.spades("K"), kadi.diamonds("K"), kadi.diamonds("Q")];
+        expect(kadi.game.RuleEngine.isValidMove(hand, kadi.joker('0'))).toBe(false);
+
+        hand = [kadi.hearts("K"), kadi.spades("K"), kadi.clubs("K"), kadi.diamonds("K"), kadi.diamonds("Q")];
+        expect(kadi.game.RuleEngine.evaluateGroup(hand)).toBe(true);
         
-        expect(kadi.game.RuleEngine.evaluateGroup([kadi.hearts("K"), kadi.spades("K"), kadi.clubs("K"), kadi.diamonds("K"), kadi.diamonds("Q")])).toBe(true);
-        
-        expect(kadi.game.RuleEngine.canPlay(hand, kadi.joker('0'))).toBe(true);
+        expect(kadi.game.RuleEngine.isValidMove(hand, kadi.joker('0'))).toBe(true);
+        expect(kadi.game.RuleEngine.isValidMove([kadi.clubs("8")], kadi.clubs("3"))).toBe(true);
+    });
+
+    it("Assesses whether a move is valid", function() {
+        var hand = [kadi.joker("0"), kadi.spades("2")];
+        expect(kadi.game.RuleEngine.isValidMove(hand, kadi.diamonds("6"))).toBe(true);
+        hand = [kadi.spades("2"),kadi.joker("0")];
+        expect(kadi.game.RuleEngine.isValidMove(hand, kadi.diamonds("6"))).toBe(false);
     });
     
     it("A Queen can follow a King if the previous number of kings after the first king is odd", function() {
@@ -166,23 +175,23 @@ describe("Card rules:", function() {
     describe("Picking card rules", function() {
 
         it("An ace can block any picking card", function() {
-
             var h = [kadi.diamonds("A"), kadi.diamonds("5")];
-
             expect(kadi.game.RuleEngine.canBlock(h)).toBe(true);
         });
 
         it("An ordinary card cannot block a picking card", function() {
-
             var h = [kadi.diamonds("5")];
             expect(kadi.game.RuleEngine.canBlock(h)).toBe(false);
         });
 
         it("Any picking card block another picking card", function() {
-
             var h = [kadi.diamonds("3"), kadi.spades("5"), kadi.clubs("J")];
-
             expect(kadi.game.RuleEngine.canBlock(h)).toBe(true);
+        });
+
+        it("A picking card is a picking card", function() {
+            expect(kadi.game.RuleEngine.canFollow(kadi.diamonds("3"), kadi.spades("2"))).toBe(true);
+            expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.joker("0"), kadi.spades("2"))).toBe(true);
         });
 
         it("A picking move cannot mix a picking card and an ace", function() {
@@ -191,7 +200,6 @@ describe("Card rules:", function() {
             expect(kadi.game.RuleEngine.isValidBlockingMove(h)).toBe(false);
             expect(kadi.game.RuleEngine.isValidBlockingMove([kadi.spades("A")])).toBe(true);
             expect(kadi.game.RuleEngine.isValidBlockingMove([kadi.spades("3"), kadi.clubs("2")])).toBe(true);
-
         });
     });
 

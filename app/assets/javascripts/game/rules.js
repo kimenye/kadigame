@@ -120,8 +120,9 @@ window.kadi.game = (function(me, $, undefined){
             canFollow: function(card, other) {
                 var isSameSuite = card.suite == other.suite;
                 var isSameRank = card.rank == other.rank;
+                var areBothPickingCards = card.isPickingCard() && other.isPickingCard();
 
-                var can_follow = (isSameRank || isSameSuite || other.isAce() || card.isAce() || card.isJoker() || other.isJoker());
+                var can_follow = (isSameRank || isSameSuite || other.isAce() || card.isAce() || card.isJoker() || other.isJoker() || areBothPickingCards);
                 return can_follow;
             },
 
@@ -169,8 +170,19 @@ window.kadi.game = (function(me, $, undefined){
                 return false;
             },
 
+            isValidMove: function(hand, topCard) {
+                if (hand.length > 1) {
+                    var validGroup = kadi.game.RuleEngine.evaluateGroup(hand);
+                    return validGroup && kadi.game.RuleEngine.canFollow(_.first(hand), topCard);
+                } else {
+                    var _card = _.first(hand);
+                    return kadi.game.RuleEngine.canFollow(_card,topCard);
+                }
+            },
+
             canPlayTogetherWith: function(card, other, previousCards) {
                 var follow = me.RuleEngine.canFollow(card,other);
+                var bothPickingCards = card.isPickingCard() && other.isPickingCard();
                 var sameRank = card.rank == other.rank;
                 var sameSuite = card.suite == other.suite;
 
@@ -180,7 +192,7 @@ window.kadi.game = (function(me, $, undefined){
                     return follow && (sameSuite || sameRank);
                 }
                 else
-                    return follow && sameRank;
+                    return (follow && sameRank) || bothPickingCards;
             },
 
             canEndMove: function(card) {
