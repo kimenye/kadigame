@@ -387,6 +387,11 @@ window.kadi = (function(me, $, undefined){
         }
         return span;
     };
+    
+    me.countNumberOfCardsOfRank = function(hand, rank) {
+        
+        return _.filter(hand, function(c) { return c.rank == rank }).length;
+    };
 
     me.containsCardOfRank = function(hand, rank) {
         return kadi.isSomethingMeaningful(_.detect(hand, function(c) { return c.rank == rank }));
