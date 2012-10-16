@@ -74,6 +74,57 @@ describe("Card rules:", function() {
 
         expect(kadi.game.RuleEngine.canPlayTogetherWith(five_d, ace)).toBe(false);
     });
+    
+    it("A King and a Queen cannot be in a move even if they are in the same rank", function() {
+        
+        var king_spades = kadi.spades("K");
+        var queen_spades = kadi.spades("Q");
+        
+        expect(kadi.game.RuleEngine.canPlayTogetherWith(king_spades, queen_spades)).toBe(false);
+    });
+    
+    it("A Queen can be in a move with Kings if the player reverses cancell each other out", function() {
+        
+        var king_diamonds = kadi.diamonds("K");
+        var king_spades = kadi.spades("K");
+        var queen_spades = kadi.spades("Q");
+        var hand = [king_diamonds, king_spades, queen_spades];
+        
+        expect(kadi.game.RuleEngine.evaluateGroup(hand)).toBe(true);
+        
+        expect(kadi.game.RuleEngine.evaluateGroup([kadi.diamonds("K"), kadi.diamonds("Q")])).toBe(false);
+        
+        expect(kadi.game.RuleEngine.evaluateGroup([kadi.hearts("K"), kadi.diamonds("K"), kadi.diamonds("Q")])).toBe(true);
+        
+        expect(kadi.game.RuleEngine.evaluateGroup([kadi.hearts("K"), kadi.spades("K"), kadi.diamonds("K"), kadi.diamonds("Q")])).toBe(false);
+        
+        expect(kadi.game.RuleEngine.evaluateGroup([kadi.hearts("K"), kadi.spades("K"), kadi.clubs("K"), kadi.diamonds("K"), kadi.diamonds("Q")])).toBe(true);
+        
+        expect(kadi.game.RuleEngine.canPlay(hand, kadi.joker('0'))).toBe(true);
+    });
+    
+    it("A Queen can follow a King if the previous number of kings after the first king is odd", function() {
+        //K,Q
+        expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.diamonds("K"), kadi.diamonds("Q"))).toBe(false);
+        
+        //K,K,Q
+        expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.diamonds("K"), kadi.diamonds("Q"), [kadi.hearts("K")])).toBe(true);
+       
+        expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.diamonds("K"), kadi.diamonds("Q"), [kadi.hearts("K"), kadi.spades("K")])).toBe(false);
+       
+        expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.diamonds("K"), kadi.diamonds("Q"), [kadi.hearts("K"), kadi.spades("K"), kadi.clubs("K")])).toBe(true);
+    });
+    
+    it("An ace can only follow a King if the previous card to the King is also a King", function() {
+       expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.diamonds("K"), kadi.diamonds("A"))).toBe(false);
+       
+       expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.diamonds("K"), kadi.diamonds("A"), [kadi.hearts("K")])).toBe(true);
+       
+       expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.diamonds("K"), kadi.diamonds("A"), [kadi.hearts("K"), kadi.spades("K")])).toBe(false);
+       
+       expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.diamonds("K"), kadi.diamonds("A"), [kadi.hearts("K"), kadi.spades("K"), kadi.clubs("K")])).toBe(true);
+       
+    });
 
     it("A queen cannot finish a move", function() {
         var card = kadi.diamonds("Q");
@@ -424,7 +475,7 @@ describe("Game mechanics:", function() {
         expect(kadi.game.RuleEngine.calculateTurnsReverse(h)).toBe(1);
     });
     
-    it("Two Kings cause no reverse action", function() {
+    it("Two Kings cause a double reverse action", function() {
         
         var hand = [kadi.spades("K"), kadi.hearts("8"), kadi.diamonds("K")];
         var action = kadi.game.RuleEngine.actionRequired(hand);
@@ -567,6 +618,17 @@ describe("Utilities:", function() {
 
         hand.push(kadi.joker("0"));
         expect(kadi.highestPickingCard(hand).eq(kadi.joker("0"))).toBe(true);
+    });
+    
+    it("Returns the number of cards of the specified rank in the hand", function() {
+       var hand = [kadi.diamonds("K")];
+       expect(kadi.countNumberOfCardsOfRank(hand, "Q")).toBe(0);
+       expect(kadi.countNumberOfCardsOfRank(hand,"K")).toBe(1);
+       
+       var newHand = hand.concat([kadi.spades("K"), kadi.hearts("K")]);
+       expect(kadi.countNumberOfCardsOfRank(newHand,"K")).toBe(3);
+       
+       
     });
 });
 
