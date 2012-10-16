@@ -46,8 +46,8 @@ window.kadi.game = (function(me, $, undefined){
         construct: function(type, player) {
             this.type = type;
             this.requestedSuite = null;
-            this.pickingDeck = new kadi.game.PickingDeck(this.type);
-            this.tableDeck = new kadi.game.TableDeck(type);
+//            this.pickingDeck = new kadi.game.PickingDeck(this.type);
+//            this.tableDeck = new kadi.game.TableDeck(type);
             this.players = [];
         },
 
@@ -344,13 +344,16 @@ window.kadi.game = (function(me, $, undefined){
         },
         construct: function(player, vs) {
             this.parent.construct.apply(this, [me.Game.TYPE_SINGLE_PLAYER]);
-            this.me = new kadi.game.PlayerUI(player, new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A, this.type));
-            this.players.push(this.me);
-            _.each(vs, function(opponent, idx) {
-                this.players.push(new me.PlayerUI(opponent,new kadi.game.PlayerDeck.fromIndex(idx)));
-            },this);
 
-            this.initUIElements();
+            this.me = player;
+
+//            this.me = new kadi.game.PlayerUI(player, new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A, this.type));
+            this.players.push(this.me);
+//            _.each(vs, function(opponent, idx) {
+//                this.players.push(new me.PlayerUI(opponent,new kadi.game.PlayerDeck.fromIndex(idx)));
+//            },this);
+//
+//            this.initUIElements();
         },
 
         initUIElements: function() {

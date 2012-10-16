@@ -1,4 +1,15 @@
 window.kadi.game = (function(me, $, undefined){
+
+    me.Deck = JS.Class({
+        construct: function() {
+            this.cards = [];
+        },
+
+        addCard: function(card) {
+            this.cards.push(card);
+        }
+    });
+
     me.Player = JS.Class({
         statics : {
             PUSHER_KEY: "3b40830094bf454823f2"
@@ -10,6 +21,7 @@ window.kadi.game = (function(me, $, undefined){
             this.debug = debug;
             this.onKADI = false;
             this.inGame = false;
+            this.deck = new kadi.game.Deck();
         },
 
         initRealtime: function() {
