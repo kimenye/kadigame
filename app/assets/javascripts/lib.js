@@ -11,4 +11,5 @@
 //= require shotgun
 //= require underscore-min
 //= require stacktrace-min-0.4
+//= require browser
 //= require util.js

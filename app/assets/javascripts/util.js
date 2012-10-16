@@ -444,7 +444,11 @@ window.kadi = (function(me, $, undefined){
             str += c.toS() + ",";
         });
         return str;
-    }
+    };
+
+    me.isChromeOnLinux = function() {
+        return BrowserDetect.browser == "Chrome" && BrowserDetect.OS == "Linux";
+    };
 
     //+ Jonas Raoni Soares Silva
     //@ http://jsfromhell.com/array/permute [rev. #1]
