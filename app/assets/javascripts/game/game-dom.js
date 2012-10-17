@@ -824,7 +824,7 @@ window.kadi.game = (function(me, $, undefined){
             ID: 'game',
             CONTAINER_ID: 'game-container'
         },
-        construct: function(player, vs) {
+        construct: function(player, vs, mode) {
             this.id = me.GameUI.ID;
             if (kadi.isSomethingMeaningful(player))
                 this.me = new kadi.game.GamePlayerUI(player, new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A));
@@ -833,7 +833,7 @@ window.kadi.game = (function(me, $, undefined){
             _.each(vs, function(opponent, idx) {
                 this.opponents.push(new me.GamePlayerUI(opponent,new kadi.game.PlayerDeck.fromIndex(idx)));
             },this);
-            this.game = new me.Game(this.me,this.opponents);
+            this.game = new me.Game(this.me,this.opponents, mode);
         },
 
         display : function() {
@@ -851,7 +851,7 @@ window.kadi.game = (function(me, $, undefined){
     me.initGameUI = function(player, opponents) {
         if (kadi.isSomethingMeaningful(player))
             kadi.ui.updateLoadingText('Welcome ' + player.name + '. Preparing the game...');
-        me.gameObject = new me.GameUI(player, opponents);
+        me.gameObject = new me.GameUI(player, opponents, kadi.game.Game.MODE_LAST_PLAYER_STANDING);
         me.gameObject.display();
     };
 

@@ -36,8 +36,9 @@ window.kadi.game = (function(me, $, undefined){
             MODE_LAST_PLAYER_STANDING: "last-player-standing",
             MODE_FIRST_TO_WIN: "first-to-win"
         },
-        construct: function(player, opponents) {
+        construct: function(player, opponents, mode) {
             this.me = player;
+            this.mode = mode;
             this.opponents = opponents;
             this.players = this.opponents;
             if (kadi.isSomethingMeaningful(this.me))
@@ -140,6 +141,11 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.game.Events.FINISH, function(player) {
+//                if (self.mode == kadi.game.Game.MODE_FIRST_TO_WIN)
+//                    self.order.end();
+//                else {
+//
+//                }
                 self.order.end();
             });
 
