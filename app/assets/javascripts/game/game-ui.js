@@ -32,6 +32,10 @@ window.kadi.game = (function(me, $, undefined){
     });
 
     me.Game = JS.Class({
+        statics: {
+            MODE_LAST_PLAYER_STANDING: "last-player-standing",
+            MODE_FIRST_TO_WIN: "first-to-win"
+        },
         construct: function(player, opponents) {
             this.me = player;
             this.opponents = opponents;

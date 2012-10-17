@@ -446,6 +446,13 @@ window.kadi = (function(me, $, undefined){
         return str;
     };
 
+    me.getProfileUrl = function(id,live) {
+        if (!live)
+            return "/images/avatars/" + id + ".png";
+        else
+            return "http://graph.facebook.com/" + id + "/picture"
+    };
+
     me.isChromeOnLinux = function() {
         return BrowserDetect.browser == "Chrome" && BrowserDetect.OS == "Linux";
     };

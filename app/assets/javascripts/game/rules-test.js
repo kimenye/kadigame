@@ -642,8 +642,11 @@ describe("Utilities:", function() {
        
        var newHand = hand.concat([kadi.spades("K"), kadi.hearts("K")]);
        expect(kadi.countNumberOfCardsOfRank(newHand,"K")).toBe(3);
-       
-       
+    });
+
+    it("Builds the correct profile url", function() {
+        expect(kadi.getProfileUrl("FD03", false)).toBe("/images/avatars/FD03.png");
+        expect(kadi.getProfileUrl("FD03", true)).toBe("http://graph.facebook.com/FD03/picture");
     });
 });
 
