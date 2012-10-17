@@ -141,12 +141,11 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.game.Events.FINISH, function(player) {
-//                if (self.mode == kadi.game.Game.MODE_FIRST_TO_WIN)
-//                    self.order.end();
-//                else {
-//
-//                }
-                self.order.end();
+                if (self.mode == kadi.game.Game.MODE_FIRST_TO_WIN)
+                    self.order.end();
+                else {
+
+                }
             });
 
             SHOTGUN.listen(kadi.game.Events.RESTART_GAME, function(winner) {

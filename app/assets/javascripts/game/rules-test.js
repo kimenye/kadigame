@@ -302,6 +302,8 @@ describe("Card rules:", function() {
 
             hand = [kadi.spades("Q"), kadi.hearts("Q")];
             expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(false);
+
+            expect(kadi.game.RuleEngine.hasQuestionThatCantBeAnswered(hand)).toBe(true);
         });
 
         it("A player can finish with a single card", function() {

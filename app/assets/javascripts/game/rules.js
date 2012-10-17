@@ -312,6 +312,19 @@ window.kadi.game = (function(me, $, undefined){
                     });
             },
 
+            hasQuestionThatCantBeAnswered: function(hand) {
+                var hasQ = kadi.containsCardOfRank(hand, kadi.game.Card.QUEEN);
+                var hasEight = kadi.containsCardOfRank(hand, kadi.game.Card.EIGHT);
+
+                if (hasQ || hasEight) {
+                    var questions = _.reject(hand, function(c) { return !c.isQuestion() });
+                    if (questions.length == hand.length) { //TODO: complete this feature
+                        return true;
+                    }
+                }
+                return false;
+            },
+
             canDeclareKADI: function(hand) {
                 var handHasPickingCard = kadi.containsPickingCard(hand);
                 var hasK = kadi.containsCardOfRank(hand,kadi.game.Card.KING);
