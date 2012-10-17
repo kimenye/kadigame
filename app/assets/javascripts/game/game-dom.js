@@ -11,8 +11,10 @@ window.kadi.game = (function(me, $, undefined){
             this.turnCount = 0;
             this.isPaused = false;
             this.pauseHandler = null;
-            this.playerCount = this.players.length;
             this.begin();
+        },
+        playerCount: function() {
+            return this.players.length;
         },
         begin: function() {
             this.currentIdx = this.startIdx;
@@ -23,6 +25,9 @@ window.kadi.game = (function(me, $, undefined){
         pause: function(handler) {
             this.pauseHandler = handler;
             this.isPaused = true;
+        },
+        finish: function(player) {
+            this.players = _.reject(this.players, function(p) { return p.eq(player); }, this);
         },
         end: function() {
             this.isPaused = true;
@@ -40,7 +45,7 @@ window.kadi.game = (function(me, $, undefined){
             var n = this.currentIdx;
             if (this.isClockwise()) {
                 n += 1;
-                if (n >= this.playerCount)
+                if (n >= this.playerCount())
                     n = 0;
             }   else {
                 n = Math.max(0, n -1 );
@@ -63,13 +68,13 @@ window.kadi.game = (function(me, $, undefined){
                 this.turnCount++;
                 if (this.isClockwise()) {
                     var n = this.currentIdx + 1;
-                    if (n >= this.playerCount)
+                    if (n >= this.playerCount())
                         n = 0;
                     this.currentIdx = n;
                 } else {
                     var n = this.currentIdx - 1;
                     if (n < 0)
-                        n = this.playerCount - 1;
+                        n = this.playerCount() - 1;
                     this.currentIdx = n;
                 }
             }
@@ -589,7 +594,9 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.game.Events.FINISH, function(player) {
-                self.showPlayAgain(player);
+                if (self.mode == kadi.game.Game.MODE_FIRST_TO_WIN || player.live) {
+                    self.showPlayAgain(player);
+                }
             });
 
             SHOTGUN.listen(kadi.game.Events.UNHANDLED_ERROR, function(err) {

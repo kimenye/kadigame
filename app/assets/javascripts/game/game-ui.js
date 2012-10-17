@@ -140,11 +140,13 @@ window.kadi.game = (function(me, $, undefined){
                 self.progressPlay(player,kadi.game.RuleEngine.ACTION_NONE,[]);
             });
 
-            SHOTGUN.listen(kadi.game.Events.FINISH, function(player) {
-                if (self.mode == kadi.game.Game.MODE_FIRST_TO_WIN)
+            SHOTGUN.listen(kadi.game.Events.FINISH, function(player, action, playedCards) {
+                if (self.mode == kadi.game.Game.MODE_FIRST_TO_WIN || player.live)
                     self.order.end();
                 else {
-
+                    player.hide();
+                    self.order.finish(player);
+                    player.endTurn(action, playedCards);
                 }
             });
 
@@ -325,7 +327,7 @@ window.kadi.game = (function(me, $, undefined){
                 else {
                     console.log("%s has finished the game with hand %s", player.name, kadi.handToS(cards));
                     _.delay(function() {
-                        SHOTGUN.fire(kadi.game.Events.FINISH, [player]);
+                        SHOTGUN.fire(kadi.game.Events.FINISH, [player, action, cards]);
                     }, 2000);
                 }
             } else {

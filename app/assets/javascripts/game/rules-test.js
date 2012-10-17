@@ -484,6 +484,19 @@ describe("Game mechanics:", function() {
         expect(order.current().eq(playerA)).toBe(true);
     });
 
+    it("When a player finishes the game in last player standing the game continues without the player", function() {
+        var order = new kadi.game.PlayingOrder([playerA, playerB, playerC, playerD], 0);
+        order.next();
+        order.next();
+        expect(order.current().eq(playerC)).toBe(true);
+        expect(order.peek().eq(playerD)).toBe(true);
+
+        order.finish(playerC);
+        expect(order.current().eq(playerD)).toBe(true);
+        order.next();
+        expect(order.current().eq(playerA)).toBe(true);
+    });
+
     it("A single King causes a reverse action", function() {
         var king = kadi.spades("K");
         var h = [king];

@@ -89,6 +89,12 @@ window.kadi.game = (function(me, $, undefined){
         cards: function() {
             return this.deck.cards;
         },
+        hide: function() {
+            $(this.avatar).addClass('hidden');
+        },
+        show: function() {
+            $(this.avatar).removeClass('hidden');
+        },
         addCard: function(card,redraw) {
             if (this.live)
                 card.flip();
@@ -105,6 +111,7 @@ window.kadi.game = (function(me, $, undefined){
         reset: function() {
             this.kadi(false);
             this.returnCards();
+            this.show();
             $(this.avatar).removeClass('active');
         },
 
@@ -214,7 +221,9 @@ window.kadi.game = (function(me, $, undefined){
 
             if (kadi.isSomethingMeaningful(requestedSuite)) {
                 var canPlayWithRequestedSuite = kadi.game.RuleEngine.canMeetMatchingSuite(cards, requestedSuite);
+//                console.log("Can play with requested suite: ", requestedSuite, canPlayWithRequestedSuite);
                 if (!canPlayWithRequestedSuite) {
+//                    console.log("About to pick");
                     this.pick();
                 }
                 else
