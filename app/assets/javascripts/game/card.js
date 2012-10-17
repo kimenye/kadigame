@@ -286,6 +286,11 @@ window.kadi.game = (function(me, $, undefined){
             this.div.appendChild(this.buildFront());
 
             this.card_container.appendChild(this.div);
+
+            if (kadi.isChromeOnLinux()) {
+                this.container().children().find('.front').removeClass('front').addClass('temp');
+                this.container().children().find('.inner').css('display', 'none');
+            }
         },
 
         deSelect: function() {
