@@ -45,3 +45,54 @@ body {
     position: relative;
     overflow: hidden;
 }
+
+
+#largeFbButtonWrap {
+    text-align: center;
+    height: 54px;
+    margin: 60px auto 100px auto;
+}
+
+.largeFbButton {
+    font-size: 35px;
+    height: 54px;
+    color: #fff;
+    margin: 60px auto 100px auto;
+    display: inline-block;
+    padding: 0;
+    line-height: 54px;
+    text-decoration: none;
+    background: url(../images/fb_sprite.png) no-repeat 0 0;
+}
+
+.largeFbButton span {
+    display: block;
+    margin-left: 54px;
+    background: url(../images/fb_sprite.png) no-repeat right -54px;
+    padding: 0 55px;
+    color: #fff;
+    font-family: MuseoSans-500;
+}
+
+.largeFbButton a:hover {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.largeFbButton:hover{
+    background-position:0 -108px;
+    color:#fff;
+    text-decoration:none
+}
+
+.largeFbButton:hover span{
+    background-position:right -162px
+}
+
+/**
+  * HOW TO USE
+  * #largeFbButtonWrap
+  *   .largeFbButton
+  *     %a
+  *       %span Play
+  */
