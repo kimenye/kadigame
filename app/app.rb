@@ -9,7 +9,7 @@ class Kadi < Padrino::Application
   register Padrino::Helpers
   register Padrino::Sprockets
 
-  sprockets :minify => true
+  sprockets :minify => false
 
   enable :sessions
 
