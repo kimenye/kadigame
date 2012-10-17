@@ -1,0 +1,24 @@
+.container
+  .page-header
+    %h1
+      %a{:href=> '/'}
+        =image_tag "/images/logo_fb.png", :class => 'logo'
+      %small Kenyan Style Poker
+.container
+  .row#game-container
+    #loading.loading
+      %h5#loading-text Loading...
+      %ul.drops.red
+        %li
+        %li
+        %li
+        %li
+    #game{:style => "display:none;"}
+:javascript
+  $(document).ready(function () {
+      var me = new kadi.game.Player("#{@player.fb_id}", "You",true);
+      var compB = new kadi.game.Player('FD03', 'Karucy',false);
+      var compC = new kadi.game.Player('O03', 'Makmende',false);
+      var compD = new kadi.game.Player('O02', 'Prezzo',false);
+      kadi.game.initGameUI(me,[compD, compB, compC]);
+  });

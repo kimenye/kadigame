@@ -858,7 +858,7 @@ window.kadi.game = (function(me, $, undefined){
     me.initGameUI = function(player, opponents) {
         if (kadi.isSomethingMeaningful(player))
             kadi.ui.updateLoadingText('Welcome ' + player.name + '. Preparing the game...');
-        me.gameObject = new me.GameUI(player, opponents, kadi.game.Game.MODE_LAST_PLAYER_STANDING);
+        me.gameObject = new me.GameUI(player, opponents, kadi.game.Game.MODE_FIRST_TO_WIN);
         me.gameObject.display();
     };
 
