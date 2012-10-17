@@ -51,6 +51,9 @@ body {
     text-align: center;
     height: 54px;
     margin: 60px auto 100px auto;
+    position: relative;
+    top: -412px;
+    left: 55px;
 }
 
 .largeFbButton {
@@ -89,10 +92,45 @@ body {
     background-position:right -162px
 }
 
-/**
-  * HOW TO USE
-  * #largeFbButtonWrap
-  *   .largeFbButton
-  *     %a
-  *       %span Play
-  */
+.links {
+    position: relative;
+    z-index: 2;
+    left: 140px;
+    width: 800px;
+    height: 90px;
+    top: -308px;
+}
+
+.sprout_logo {
+    display: block;
+    float: right;
+    margin-top: 10px;
+    position: relative;
+}
+
+.twitter {
+    position: relative;
+    float: left;
+    padding-top: 26px;
+}
+
+.fb {
+    float: left;
+    top: 30px;
+    width: 400px;
+    padding-top: 30px;
+}
+
+.container {
+    width: 940px !important
+}
+
+.main {
+    margin: 50px auto !important;
+}
+
+.splash {
+    background-image: url('/images/home_splash.png');
+    width: 960px;
+    height: 621px;
+}
