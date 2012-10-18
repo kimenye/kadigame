@@ -179,6 +179,10 @@ describe("Card rules:", function() {
             expect(kadi.game.RuleEngine.canBlock(h)).toBe(true);
         });
 
+        it("An ace can answer any question", function() {
+            expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.spades("Q"), kadi.hearts("A")));
+        });
+
         it("An ordinary card cannot block a picking card", function() {
             var h = [kadi.diamonds("5")];
             expect(kadi.game.RuleEngine.canBlock(h)).toBe(false);

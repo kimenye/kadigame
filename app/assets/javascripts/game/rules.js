@@ -186,9 +186,10 @@ window.kadi.game = (function(me, $, undefined){
                 var bothPickingCards = card.isPickingCard() && other.isPickingCard();
                 var sameRank = card.rank == other.rank;
                 var sameSuite = card.suite == other.suite;
+                var otherIsAce = other.isAce();
 
                 if (card.isQueen() || card.isEight() )
-                    return follow && (sameSuite || sameRank);
+                    return follow && (sameSuite || sameRank) || otherIsAce;
                 else if (card.isKing() && kadi.isSomethingMeaningful(previousCards) && kadi.countNumberOfCardsOfRank(previousCards, "K") % 2 != 0 ) {
                     return follow && (sameSuite || sameRank);
                 }
