@@ -594,10 +594,9 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.game.Events.FINISH, function(player, action, playedCards, mode) {
-//                console.log("Mode is ", mode);
-//                if (mode == kadi.game.Game.MODE_FIRST_TO_WIN || player.live) {
+                if (mode == kadi.game.Game.MODE_FIRST_TO_WIN || player.live) {
                     self.showPlayAgain(player);
-//                }
+                }
             });
 
             SHOTGUN.listen(kadi.game.Events.UNHANDLED_ERROR, function(err) {

@@ -141,14 +141,13 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.game.Events.FINISH, function(player, action, playedCards, mode) {
-//                console.log("Mode: ", self.mode);
-//                if (self.mode == kadi.game.Game.MODE_FIRST_TO_WIN || player.live)
+                if (mode == kadi.game.Game.MODE_FIRST_TO_WIN || player.live)
                     self.order.end();
-//                else {
-//                    player.hide();
-//                    self.order.finish(player);
-//                    player.endTurn(action, playedCards);
-//                }
+                else {
+                    player.hide();
+                    self.order.finish(player);
+                    player.endTurn(action, playedCards);
+                }
             });
 
             SHOTGUN.listen(kadi.game.Events.RESTART_GAME, function(winner) {
@@ -296,7 +295,7 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         attemptPlay : function(player, cards, isBlock, wasOnKADI) {
-
+            var self = this;
             var meetsRequestedSuite = true;
             var clearRequested = false;
             if (kadi.isSomethingMeaningful(this.requestedSuite)) {

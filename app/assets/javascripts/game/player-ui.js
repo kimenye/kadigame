@@ -24,7 +24,7 @@ window.kadi.game = (function(me, $, undefined){
 
     me.GamePlayerUI = me.Player.extend({
         statics: {
-            BOT_DELAY: 2000
+            BOT_DELAY: 2500
         },
         construct : function(player, deck) {
             this.parent.construct.apply(this, [player.id,player.name,player.live]);
