@@ -312,34 +312,20 @@ window.kadi.game = (function(me, $, undefined){
                     });
             },
 
-            hasQuestionThatCantBeAnswered: function(hand) {
-                var hasQ = kadi.containsCardOfRank(hand, kadi.game.Card.QUEEN);
-                var hasEight = kadi.containsCardOfRank(hand, kadi.game.Card.EIGHT);
-
-                if (hasQ || hasEight) {
-                    var questions = _.reject(hand, function(c) { return !c.isQuestion() });
-                    if (questions.length == hand.length) { //TODO: complete this feature
-                        return true;
-                    }
-                }
-                return false;
-            },
-
             canDeclareKADI: function(hand) {
                 var handHasPickingCard = kadi.containsPickingCard(hand);
                 var hasK = kadi.containsCardOfRank(hand,kadi.game.Card.KING);
                 var hasJ = kadi.containsCardOfRank(hand,kadi.game.Card.JACK);
                 var singleCard = hand.length < 2;
                 var hasAce = kadi.containsCardOfRank(hand,kadi.game.Card.ACE);
-                var endsWithPickingCard = _.last(hand).isQuestion();
 
-                if(!handHasPickingCard && !hasK && !hasJ && !hasAce && !endsWithPickingCard) {
+                if(!handHasPickingCard && !hasK && !hasJ && !hasAce) {
                     if (singleCard)
                         return me.RuleEngine.canEndMove(_.first(hand));
                     else {
                         var moves = kadi.permute(hand);
                         var validMove = _.detect(moves, function(move) {
-                            return me.RuleEngine.evaluateGroup(move);
+                            return !_.last(move).isQuestion() && me.RuleEngine.evaluateGroup(move);
                         });
                         return kadi.isSomethingMeaningful(validMove);
                     }
