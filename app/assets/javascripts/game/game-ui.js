@@ -319,8 +319,11 @@ window.kadi.game = (function(me, $, undefined){
                 player.clearSelections();
                 var action = kadi.game.RuleEngine.actionRequired(cards);
                 var ignoreA = kadi.getVal(isBlock);
-                if (ignoreA) {
+                if (ignoreA && (kadi.countNumberOfCardsOfRank(cards, "A") <= 1)) {
                     action = kadi.game.RuleEngine.ACTION_NONE;
+                }
+                if (ignoreA && (kadi.countNumberOfCardsOfRank(cards, "A") > 1)) {
+                    action = kadi.game.RuleEngine.ACTION_PICK_SUITE;
                 }
                 if (!wasOnKADI)
                     player.endTurn(action,cards);
