@@ -103,6 +103,8 @@ describe("Card rules:", function() {
         
         expect(kadi.game.RuleEngine.isValidMove(hand, kadi.joker('0'))).toBe(true);
         expect(kadi.game.RuleEngine.isValidMove([kadi.clubs("8")], kadi.clubs("3"))).toBe(true);
+
+        expect(kadi.game.RuleEngine.isValidMove([kadi.hearts("K"), kadi.clubs("K"), kadi.joker("0")], kadi.joker("1"))).toBe(true);
     });
 
     it("Assesses whether a move is valid", function() {
