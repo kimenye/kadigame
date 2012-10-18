@@ -30,6 +30,10 @@
     background-color: white;
 }
 
+.win_screen .avatar {
+    top: 20px;
+    position: absolute;
+}
 .win_screen h3, h4, p {
     text-align: center;
 }

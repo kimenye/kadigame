@@ -656,6 +656,11 @@ window.kadi.game = (function(me, $, undefined){
             title.innerHTML = player.name + " won!";
             this.gameOverDialog.appendChild(title);
 
+            var avatar = document.createElement("IMG");
+            avatar.className = "img-polaroid img-rounded avatar";
+            avatar.src = player.avatar.src;
+            this.gameOverDialog.appendChild(avatar);
+
             var playAgainButton = kadi.createButton("btn btn-large btn-success","Play Again!");
             $(playAgainButton).click(function() {
                 SHOTGUN.fire(kadi.game.Events.RESTART_GAME, []);
