@@ -296,14 +296,15 @@ describe("Card rules:", function() {
             expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
         });
 
-        it("A player can be on kadi if they have questions that can be answered", function() {
+        it("A player can be on kadi if they have questions only if they can be answered", function() {
             var hand = [kadi.spades("8"), kadi.diamonds("8"), kadi.diamonds("Q"), kadi.diamonds("4")];
             expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
 
             hand = [kadi.spades("Q"), kadi.hearts("Q")];
             expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(false);
 
-            expect(kadi.game.RuleEngine.hasQuestionThatCantBeAnswered(hand)).toBe(true);
+            hand = [kadi.spades("Q"), kadi.spades("5"), kadi.hearts("Q")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
         });
 
         it("A player can finish with a single card", function() {

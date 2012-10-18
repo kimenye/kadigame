@@ -593,8 +593,8 @@ window.kadi.game = (function(me, $, undefined){
                 }
             });
 
-            SHOTGUN.listen(kadi.game.Events.FINISH, function(player) {
-                if (self.mode == kadi.game.Game.MODE_FIRST_TO_WIN || player.live) {
+            SHOTGUN.listen(kadi.game.Events.FINISH, function(player, action, playedCards, mode) {
+                if (mode == kadi.game.Game.MODE_FIRST_TO_WIN || player.live) {
                     self.showPlayAgain(player);
                 }
             });
