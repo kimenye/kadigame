@@ -72,6 +72,13 @@ class Kadi < Padrino::Application
   get :index do
     render :index
   end
+  
+  get :version do
+    status 200
+    body({
+            :version => "1.0"
+          }.to_json)
+  end
 
   post '/player/sync', :provides => [:json] do
     @player = Player.find_by_fb_id(params[:fb_id])
@@ -83,7 +90,8 @@ class Kadi < Padrino::Application
   end
 
   get :play do
-    get_logged_in_user '/play'
+    #get_logged_in_user '/play'
+    @player = Player.first
     render :play
   end
 
