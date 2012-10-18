@@ -363,6 +363,20 @@ describe("Card rules:", function() {
             var moves = kadi.game.RuleEngine.movesThatCanFollowTopCardOrSuite(hand, null, requestedSuite);
             expect(moves.length).toBe(1);
         });
+
+        it("In single card KADI mode, you can only be only finish with one card", function() {
+            var hand = [kadi.spades("8"), kadi.spades("4")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand,true)).toBe(false);
+
+            hand = [kadi.spades("8")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand,true)).toBe(false);
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand,false)).toBe(false);
+
+            hand = [kadi.spades("4")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand,true)).toBe(true);
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand,false)).toBe(true);
+        });
     });
 });
 
