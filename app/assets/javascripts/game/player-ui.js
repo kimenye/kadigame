@@ -41,6 +41,7 @@ window.kadi.game = (function(me, $, undefined){
             this.cardsToPick = [];
             this.kadiMode = false;
             this.selections = [];
+            this.cardlessPlayerExists = false;
             if (player.live) {
                 this.notification = new kadi.game.PlayerNotification();
             }
@@ -98,6 +99,9 @@ window.kadi.game = (function(me, $, undefined){
             $(this.avatar).removeClass('hidden');
         },
         addCard: function(card,redraw) {
+            if (this.cards().length < 1) {
+                SHOTGUN.fire(kadi.game.Events.DECREMENT_CARDLESS_COUNTER);
+            }
             if (this.live)
                 card.flip();
             this.deck.addCard(card);
@@ -108,6 +112,9 @@ window.kadi.game = (function(me, $, undefined){
             this.deck.removeCard(card);
             if (redraw)
                 this.deck.redrawCards();
+            if (this.cards().length < 1) {
+                SHOTGUN.fire(kadi.game.Events.INCREMENT_CARDLESS_COUNTER);
+            }
         },
 
         reset: function() {
@@ -158,7 +165,8 @@ window.kadi.game = (function(me, $, undefined){
                 self.deck.redrawCards();
             });
 
-            SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function(card, requestedSuite, prev) {
+            SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function(card, requestedSuite, prev,cardlessPlayerExists) {
+                self.cardlessPlayerExists = cardlessPlayerExists;
                 if (self.live) {
                     self.activate(true);
                     self.requestedSuite = requestedSuite;
@@ -168,7 +176,7 @@ window.kadi.game = (function(me, $, undefined){
                         if (kadi.isSomethingMeaningful(prev) && prev.live) {
                             prev.disableKADI();
                         }
-                        self.bot(card, requestedSuite);
+                        self.bot(card, requestedSuite, cardlessPlayerExists);
                     },kadi.game.GamePlayerUI.BOT_DELAY);
                 }
 
@@ -217,7 +225,7 @@ window.kadi.game = (function(me, $, undefined){
             $('.btn-kadi').attr('disabled', true);
             $('.btn-kadi').addClass('disabled');
         },
-        bot: function(card, requestedSuite) {
+        bot: function(card, requestedSuite, cardlessPlayerExists) {
             //TODO: give the players some thinking time...
             var cards = this.cards();
 
@@ -230,7 +238,7 @@ window.kadi.game = (function(me, $, undefined){
                 }
                 else
                 {
-                    var canFinish = this.onKADI &&  kadi.game.RuleEngine.canFinish(cards,null,requestedSuite);
+                    var canFinish = this.onKADI &&  kadi.game.RuleEngine.canFinish(cards,null,requestedSuite,cardlessPlayerExists);
 
                     var move = kadi.game.Strategy.bestMoveForRequestedSuite(cards,requestedSuite);
                     if (canFinish) {
@@ -241,7 +249,7 @@ window.kadi.game = (function(me, $, undefined){
                 }
 
             } else {
-                var canFinish = this.onKADI && kadi.game.RuleEngine.canFinish(cards,card,null);
+                var canFinish = this.onKADI && kadi.game.RuleEngine.canFinish(cards,card,null,cardlessPlayerExists);
                 if (canFinish) {
                     var moves = kadi.game.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,card,null);
                     var move = _.first(moves);
@@ -303,7 +311,7 @@ window.kadi.game = (function(me, $, undefined){
             {
                 if (this.selections.length > 0) {
                     this.activateActions(false);
-                    var canFinish = this.onKADI & kadi.game.RuleEngine.canFinish(this.cards(), this.topCard, this.requestedSuite);
+                    var canFinish = this.onKADI & kadi.game.RuleEngine.canFinish(this.cards(), this.topCard, this.requestedSuite, this.cardlessPlayerExists);
                     SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, this.selections, canFinish]);
                 }
             }
