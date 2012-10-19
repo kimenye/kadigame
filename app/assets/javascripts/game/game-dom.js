@@ -652,7 +652,7 @@ window.kadi.game = (function(me, $, undefined){
             this.resetDialog(this.gameOverDialog);
             this.gameOverDialog = kadi.createDiv('win_screen', 'gameOverDialog');
 
-            var title = document.createElement("h3");
+            var title = document.createElement("h4");
             title.innerHTML = player.name + " won!";
             this.gameOverDialog.appendChild(title);
 
