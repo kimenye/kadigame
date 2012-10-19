@@ -74,6 +74,13 @@ window.kadi = (function(me, $, undefined){
         return max;
     }
 
+    me.enable = function(elem, status) {
+        elem.attr("disabled", !status);
+        if (status)
+            elem.removeClass('disabled');
+        else
+            elem.addClass('disabled');
+    }
 
     me.calculateFanWidthWithoutOverlap = function(itemWidth, optionalMargin, numItems) {
         var minWidth = optionalMargin;
@@ -94,6 +101,18 @@ window.kadi = (function(me, $, undefined){
         elem.className = className;
         if (kadi.isSomethingMeaningful(id))
             elem.id = id;
+        return elem;
+    }
+
+    me.createElement = function(type, className, id, text) {
+        var elem = document.createElement(type);
+
+        if (kadi.isSomethingMeaningful(className))
+            elem.className = className;
+        if (kadi.isSomethingMeaningful(id))
+            elem.id = id;
+        if (kadi.isSomethingMeaningful(text))
+            elem.innerHTML = text;
         return elem;
     }
 

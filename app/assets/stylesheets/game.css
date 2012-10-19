@@ -18,8 +18,39 @@
     overflow: hidden;
 }
 
-.options {
+.options .page-header {
+    margin: 0px 0px 10px 0px;
+}
 
+.options .lead {
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+.options .opponent {
+    height: 50px;
+    width: 50px;
+}
+
+.thumbnail .caption {
+    padding: 0px;
+    text-align: center;
+}
+
+.options .selected {
+    box-shadow: 0px 0px 15px 5px rgba(255, 255, 190, .75);
+}
+
+.options .thumbnail {
+    cursor: pointer;
+}
+
+.options h3 {
+    line-height: 24px;
+}
+
+.options legend {
+    font-size: 18px;
 }
 
 .player {

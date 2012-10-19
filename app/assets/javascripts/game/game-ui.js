@@ -34,14 +34,17 @@ window.kadi.game = (function(me, $, undefined){
     me.GameOptions = JS.Class({
         statics: {
             MODE_LAST_PLAYER_STANDING: "last-player-standing",
-            MODE_FIRST_TO_WIN: "first-to-win"
+            MODE_FIRST_TO_WIN: "first-to-win",
+            ONE_CARD_KADI: "one-card-kadi",
+            ANY_CARDS_KADI: "any-cards-kadi"
         }
     });
 
     me.Game = JS.Class({
-        construct: function(player, opponents, mode) {
+        construct: function(player, opponents, mode, kadiMode) {
             this.me = player;
             this.mode = mode;
+            this.kadiMode = kadiMode;
             this.opponents = opponents;
             this.players = this.opponents;
             if (kadi.isSomethingMeaningful(this.me))
@@ -60,6 +63,7 @@ window.kadi.game = (function(me, $, undefined){
 
             _.each(this.players, function(p) {
                 p.initHandlers();
+                p.kadiMode = self.kadiMode;
             });
 
             this.order = new me.PlayingOrder(this.players, starterIdx);

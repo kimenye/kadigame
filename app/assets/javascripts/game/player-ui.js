@@ -5,6 +5,7 @@ window.kadi.game = (function(me, $, undefined){
             this.name = name;
             this.live = live;
             this.onKADI = false;
+            this.selectedOpponent = true;
         },
 
         eq: function(other) {
@@ -31,19 +32,23 @@ window.kadi.game = (function(me, $, undefined){
         statics: {
             BOT_DELAY: 2500
         },
-        construct : function(player, deck) {
+        construct : function(player, deck, prepare) {
             this.parent.construct.apply(this, [player.id,player.name,player.live]);
             this.deck = deck;
             this.topCard = null;
             this.requestedSuite = null;
             this.blockMode = false;
             this.cardsToPick = [];
+            this.kadiMode = false;
             this.selections = [];
             if (player.live) {
                 this.notification = new kadi.game.PlayerNotification();
             }
+            if (kadi.getVal(prepare))
+                this.initDisplay();
         },
-        display: function() {
+        initDisplay: function() {
+            var self = this;
             this.div = kadi.createDiv('player ' + this.getLocation() + "", "p" + this.id);
             if (this.live)
                 this.parent = document.getElementById(kadi.game.GameUI.CONTAINER_ID);
@@ -53,22 +58,13 @@ window.kadi.game = (function(me, $, undefined){
             var url = kadi.getProfileUrl(this.id, this.live);
             this.avatar = document.createElement("IMG");
             this.avatar.className = "img-polaroid img-rounded avatar";
+            this.imageLoaded = false;
 
-//            var preload = new createjs.PreloadJS();
-//            preload.onFileLoad = this.handleProfileImageLoaded;
-//            preload.onFileLoad = handleFileComplete;
-//            preload.loadFile('http://createjs.com/images/404/gBot-confused.jpg');
-//            function handleFileComplete(event) {
-//                document.body.appendChild(event.result);
-//            }
+            var self = this;
+            this.avatar.onload = function() {
+                self.imageLoaded = true;
+            };
 
-//            preload.loadFile(url);
-//            this.handleProfileImageLoaded = function(event) {
-//                console.log("Result ", event);
-//            }
-
-
-//            this.avatar.src = "/images/avatars/plain.gif";
             this.avatar.src = url;
             this.div.appendChild(this.avatar);
 
@@ -82,7 +78,8 @@ window.kadi.game = (function(me, $, undefined){
 
                 this.div.appendChild(this.buttonDiv);
             }
-
+        },
+        display: function() {
             this.parent.appendChild(this.div);
         },
         getLocation: function() {
@@ -284,7 +281,7 @@ window.kadi.game = (function(me, $, undefined){
             }
         },
         canDeclareKADI: function() {
-            return this.cards().length > 0 && kadi.game.RuleEngine.canDeclareKADI(this.cards());
+            return this.cards().length > 0 && kadi.game.RuleEngine.canDeclareKADI(this.cards(), this.kadiMode);
         },
         pick: function() {
             SHOTGUN.fire(kadi.game.Events.PICK_CARD, [this, 1]);
