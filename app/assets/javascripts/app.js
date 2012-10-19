@@ -4,6 +4,7 @@
 // It's not advisable to add code directly here, but if you do, it'll appear at the bottom of the
 // the compiled file.
 //
+//= require preloadjs-0.2.0.min
 //= require game/common-ui
 //= require game/card
 //= require game/game-ui

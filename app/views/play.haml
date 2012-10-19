@@ -14,11 +14,9 @@
         %li
         %li
     #game{:style => "display:none;"}
+    #game-options{:style => "display:none;"}
 :javascript
   $(document).ready(function () {
-      var me = new kadi.game.Player("#{@player.fb_id}", "You",true);
-      var compB = new kadi.game.Player('FD03', 'Karucy',false);
-      var compC = new kadi.game.Player('O03', 'Makmende',false);
-      var compD = new kadi.game.Player('O02', 'Prezzo',false);
-      kadi.game.initGameUI(me,[compD, compB, compC]);
+      var me = new kadi.game.Player("#{@player.fb_id}", "#{@player.name}",true);
+      kadi.game.initGameUI(me);
   });
