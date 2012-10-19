@@ -100,7 +100,7 @@ window.kadi.game = (function(me, $, undefined){
             this.div = document.createElement("DIV");
             this.div.id = id;
             this.div.className = className;
-            this.parent = document.getElementById(parent);
+            this.parentDiv = document.getElementById(parent);
             $(this.div).css('z-index','0');
         },
 
@@ -109,7 +109,7 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         display: function() {
-            this.parent.appendChild(this.div);
+            this.parentDiv.appendChild(this.div);
         },
         moveTo: function(x,y) {
             var options = {};
@@ -364,7 +364,7 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         display: function() {
-            this.parent.appendChild(this.div);
+            this.parentDiv.appendChild(this.div);
             var positions = kadi.randomizeCardLocations(this.deck.length, this.bBox());
             _.each(this.deck, function(card,idx) {
                 var pos = positions[idx];
@@ -583,7 +583,7 @@ window.kadi.game = (function(me, $, undefined){
             $(this.div).css('z-index',8001);
 
             this.overlay = kadi.createDiv('overlay hidden', 'notification_overlay');
-            this.parent.appendChild(this.overlay);
+            this.parentDiv.appendChild(this.overlay);
 
             SHOTGUN.listen(kadi.game.Events.PLAYER_NOTIFICATION_UI, function(player, action, playedCards) {
                 if (action == kadi.game.RuleEngine.ACTION_PICK_OR_BLOCK) {
@@ -594,7 +594,7 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.game.Events.FINISH, function(player, action, playedCards, mode) {
-                if (mode == kadi.game.Game.MODE_FIRST_TO_WIN || player.live) {
+                if (mode == kadi.game.GameOptions.MODE_FIRST_TO_WIN || player.live) {
                     self.showPlayAgain(player);
                 }
             });
@@ -652,9 +652,14 @@ window.kadi.game = (function(me, $, undefined){
             this.resetDialog(this.gameOverDialog);
             this.gameOverDialog = kadi.createDiv('win_screen', 'gameOverDialog');
 
-            var title = document.createElement("h3");
+            var title = document.createElement("h4");
             title.innerHTML = player.name + " won!";
             this.gameOverDialog.appendChild(title);
+
+            var avatar = document.createElement("IMG");
+            avatar.className = "img-polaroid img-rounded avatar";
+            avatar.src = player.avatar.src;
+            this.gameOverDialog.appendChild(avatar);
 
             var playAgainButton = kadi.createButton("btn btn-large btn-success","Play Again!");
             $(playAgainButton).click(function() {
@@ -844,11 +849,22 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         display : function() {
-            kadi.ui.disableLoading('game');
-            this.game.startGame();
+            var self = this;
+            _.delay(function() {
+                kadi.ui.disableLoading('game');
+                self.game.startGame();
+            }, 2000);
         }
     });
 
+    me.GameOptionsUI = JS.Class({
+        construct: function() {
+//            this.optionsDialog = kadi.createDiv('options', 'options-dialog');
+        },
+
+        display: function() {
+        }
+    });
     /**
      * Initialize the game environment
      *
@@ -857,9 +873,45 @@ window.kadi.game = (function(me, $, undefined){
      */
     me.initGameUI = function(player, opponents) {
         if (kadi.isSomethingMeaningful(player))
-            kadi.ui.updateLoadingText('Welcome ' + player.name + '. Preparing the game...');
-        me.gameObject = new me.GameUI(player, opponents, kadi.game.Game.MODE_FIRST_TO_WIN);
-        me.gameObject.display();
+            kadi.ui.updateLoadingText('Welcome ' + player.name + ". The game will be ready in a few moments...");
+
+
+        var preload = new createjs.PreloadJS();
+        preload.onFileLoad = handleFileLoaded;
+        preload.onError = handleFileError;
+
+        var loadCount = 0;
+
+        function handleFileLoaded(event) {
+            switch (event.type){
+                case createjs.PreloadJS.CSS:
+                    loadCount++;
+                    break;
+                case createjs.PreloadJS.IMAGE:
+                    loadCount++;
+                    if (loadCount == 2)
+                        startGame();
+                    break;
+            }
+        }
+
+        function handleFileError(result) {
+            console.log("Error with loading file ", result);
+        }
+
+
+        function startGame() {
+            var compB = new kadi.game.Player('FD03', 'Karucy',false);
+            var compC = new kadi.game.Player('O03', 'Makmende',false);
+            var compD = new kadi.game.Player('O02', 'Prezzo',false);
+
+            var opponents = [compB, compC, compD];
+
+            me.gameObject = new me.GameUI(player, opponents, kadi.game.Game.MODE_FIRST_TO_WIN);
+            me.gameObject.display();
+        }
+        preload.loadFile('../images/woodback.jpg');
+        preload.loadFile('../images/card_back_generic.png');
     };
 
     return me;

@@ -33,11 +33,14 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
-    me.Game = JS.Class({
+    me.GameOptions = JS.Class({
         statics: {
             MODE_LAST_PLAYER_STANDING: "last-player-standing",
             MODE_FIRST_TO_WIN: "first-to-win"
-        },
+        }
+    });
+
+    me.Game = JS.Class({
         construct: function(player, opponents, mode) {
             this.me = player;
             this.mode = mode;
@@ -144,7 +147,7 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.game.Events.FINISH, function(player, action, playedCards, mode) {
-                if (mode == kadi.game.Game.MODE_FIRST_TO_WIN || player.live)
+                if (mode == kadi.game.GameOptions.MODE_FIRST_TO_WIN || player.live)
                     self.order.end();
                 else {
                     player.hide();

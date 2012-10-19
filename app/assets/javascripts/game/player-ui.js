@@ -4,8 +4,6 @@ window.kadi.game = (function(me, $, undefined){
             this.id = id;
             this.name = name;
             this.live = live;
-            if (this.live)
-                this.name = "You";
             this.onKADI = false;
         },
 
@@ -15,6 +13,13 @@ window.kadi.game = (function(me, $, undefined){
 
         toS: function() {
             return this.id + " - " + this.name;
+        },
+
+        name: function(personal) {
+            if (this.live && kadi.getVal(personal))
+                return "You";
+            else
+                return this.name;
         },
 
         isBot: function() {

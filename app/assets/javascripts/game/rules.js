@@ -187,11 +187,12 @@ window.kadi.game = (function(me, $, undefined){
                 var sameRank = card.rank == other.rank;
                 var sameSuite = card.suite == other.suite;
                 var otherIsAce = other.isAce();
+                var otherIsJoker = other.isJoker();
 
                 if (card.isQueen() || card.isEight() )
                     return follow && (sameSuite || sameRank) || otherIsAce;
                 else if (card.isKing() && kadi.isSomethingMeaningful(previousCards) && kadi.countNumberOfCardsOfRank(previousCards, "K") % 2 != 0 ) {
-                    return follow && (sameSuite || sameRank);
+                    return follow && (sameSuite || sameRank || otherIsJoker);
                 }
                 else
                     return (follow && sameRank) || bothPickingCards;
@@ -315,26 +316,32 @@ window.kadi.game = (function(me, $, undefined){
                     });
             },
 
-            canDeclareKADI: function(hand) {
+            canDeclareKADI: function(hand, singleCardOnly) {
                 var handHasPickingCard = kadi.containsPickingCard(hand);
                 var hasK = kadi.containsCardOfRank(hand,kadi.game.Card.KING);
                 var hasJ = kadi.containsCardOfRank(hand,kadi.game.Card.JACK);
                 var singleCard = hand.length < 2;
                 var hasAce = kadi.containsCardOfRank(hand,kadi.game.Card.ACE);
+                var singleOnly = kadi.getVal(singleCardOnly);
 
                 if(!handHasPickingCard && !hasK && !hasJ && !hasAce) {
-                    if (singleCard)
-                        return me.RuleEngine.canEndMove(_.first(hand));
-                    else {
-                        var moves = kadi.permute(hand);
-                        var validMove = _.detect(moves, function(move) {
-                            return !_.last(move).isQuestion() && me.RuleEngine.evaluateGroup(move);
-                        });
-                        return kadi.isSomethingMeaningful(validMove);
+                    if (singleOnly) {
+                        if (singleCard)
+                            return me.RuleEngine.canEndMove(_.first(hand));
+                    }
+                    else{
+                        if (singleCard)
+                            return me.RuleEngine.canEndMove(_.first(hand));
+                        else {
+                            var moves = kadi.permute(hand);
+                            var validMove = _.detect(moves, function(move) {
+                                return !_.last(move).isQuestion() && me.RuleEngine.evaluateGroup(move);
+                            });
+                            return kadi.isSomethingMeaningful(validMove);
+                        }
                     }
                 }
-                else
-                    return false;
+                return false;
             }
         }
     });

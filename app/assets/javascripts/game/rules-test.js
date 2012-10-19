@@ -103,6 +103,8 @@ describe("Card rules:", function() {
         
         expect(kadi.game.RuleEngine.isValidMove(hand, kadi.joker('0'))).toBe(true);
         expect(kadi.game.RuleEngine.isValidMove([kadi.clubs("8")], kadi.clubs("3"))).toBe(true);
+
+        expect(kadi.game.RuleEngine.isValidMove([kadi.hearts("K"), kadi.clubs("K"), kadi.joker("0")], kadi.joker("1"))).toBe(true);
     });
 
     it("Assesses whether a move is valid", function() {
@@ -360,6 +362,20 @@ describe("Card rules:", function() {
             hand = [kadi.spades("4")];
             var moves = kadi.game.RuleEngine.movesThatCanFollowTopCardOrSuite(hand, null, requestedSuite);
             expect(moves.length).toBe(1);
+        });
+
+        it("In single card KADI mode, you can only be only finish with one card", function() {
+            var hand = [kadi.spades("8"), kadi.spades("4")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand,true)).toBe(false);
+
+            hand = [kadi.spades("8")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand,true)).toBe(false);
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand,false)).toBe(false);
+
+            hand = [kadi.spades("4")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand,true)).toBe(true);
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand,false)).toBe(true);
         });
     });
 });

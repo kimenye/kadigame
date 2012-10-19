@@ -8,6 +8,18 @@
 
 #game {
     margin-top: 20px;
+    background:radial-gradient(rgba(80,0,0,0.1) 0%, rgba(80,0,0,0.2) 30%, rgba(21,11,1,0.9) 100% ), url(../images/woodback.jpg);
+    border-radius: 10px;
+    width: 800px;
+    height: 600px;
+    display:block;
+    margin:auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.options {
+
 }
 
 .player {
@@ -24,12 +36,15 @@
     width: 300px;
     height: 110px;
     left: 250px;
-    /*top: 200px;*/
     border: 1px solid grey;
     border-radius: 5px;
     background-color: white;
 }
 
+.win_screen .avatar {
+    top: 20px;
+    position: absolute;
+}
 .win_screen h3, h4, p {
     text-align: center;
 }
@@ -54,7 +69,6 @@
 }
 
 .kadi {
-    /*border-color: red;*/
     box-shadow: 0px 0px 15px 5px rgba(255, 0, 0, .75);
 }
 

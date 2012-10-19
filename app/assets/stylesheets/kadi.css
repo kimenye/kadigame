@@ -8,10 +8,6 @@ body {
     /*font-family: MuseoSans-500;*/
 }
 
-.hero-unit {
-    background-image: url(../images/game_bg.png);
-}
-
 .logo {
     max-width: 240px;
 }
@@ -33,19 +29,6 @@ body {
 .hidden {
     display: none;
 }
-
-#game {
-    /*background: url(../images/woodback.jpg);*/
-    background:radial-gradient(rgba(80,0,0,0.1) 0%, rgba(80,0,0,0.2) 30%, rgba(21,11,1,0.9) 100% ), url(../images/woodback.jpg);
-    border-radius: 10px;
-    width: 800px;
-    height: 600px;
-    display:block;
-    margin:auto;
-    position: relative;
-    overflow: hidden;
-}
-
 
 #largeFbButtonWrap {
     text-align: center;

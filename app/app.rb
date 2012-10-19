@@ -70,7 +70,7 @@ class Kadi < Padrino::Application
   end
 
   get :index do
-    render :index
+    render :index, :layout => :home
   end
   
   get :version do
