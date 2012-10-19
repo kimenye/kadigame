@@ -90,8 +90,8 @@ class Kadi < Padrino::Application
   end
 
   get :play do
-    #get_logged_in_user '/play'
-    @player = Player.first
+    get_logged_in_user '/play'
+    #@player = Player.first
     render :play
   end
 
