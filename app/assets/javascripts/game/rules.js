@@ -78,7 +78,6 @@ window.kadi.game = (function(me, $, undefined){
                     return me.RuleEngine.ACTION_PICK_SUITE;
             },
             calculateTurnsSkipped: function(hand) {
-//                var num = kadi.game.RuleEngine.calculatePicking(playedCards);
                 return _.reject(hand, function(c) { return !c.isJack() }).length;
             },
             calculateTurnsReverse: function(hand) {
@@ -87,15 +86,14 @@ window.kadi.game = (function(me, $, undefined){
             calculatePicking: function(hand) {
                 var total = 0;
                 _.each(hand, function(c) {
-                    if (c.is("2")) {
-                        total += 2;
-                    }
-                    else if(c.is("3")) {
-                        total += 3;
-                    }
-                    else if(c.isJoker()) {
-                        total += 5;
-                    }
+                    total += c.pickingValue()
+                });
+                return total;
+            },
+            calculateHandEliminationValue: function(hand) {
+                var total = 0;
+                _.each(hand, function(c) {
+                    total += c.eliminationValue()
                 });
                 return total;
             },

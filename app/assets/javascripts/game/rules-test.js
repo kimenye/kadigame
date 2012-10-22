@@ -184,13 +184,22 @@ describe("Card rules:", function() {
             expect(kadi.spades("5").eliminationValue()).toBe(5);
             expect(kadi.spades("6").eliminationValue()).toBe(6);
             expect(kadi.spades("7").eliminationValue()).toBe(7);
-            expect(kadi.spades("8").eliminationValue()).toBe(8);
+            expect(kadi.hearts("8").eliminationValue()).toBe(8);
             expect(kadi.spades("9").eliminationValue()).toBe(9);
             expect(kadi.spades("10").eliminationValue()).toBe(10);
-            expect(kadi.spades("J").eliminationValue()).toBe(20);
-            expect(kadi.spades("Q").eliminationValue()).toBe(20);
+            expect(kadi.clubs("J").eliminationValue()).toBe(20);
+            expect(kadi.diamonds("Q").eliminationValue()).toBe(20);
             expect(kadi.spades("K").eliminationValue()).toBe(20);
             expect(kadi.joker("0").eliminationValue()).toBe(500);
+            expect(kadi.joker("1").eliminationValue()).toBe(500);
+        });
+
+        it("The hand value is the sum of the elimination values of the cards in the hand", function() {
+            var hand = [kadi.spades("2"), kadi.diamonds("4"), kadi.hearts("7")];
+            expect(kadi.game.RuleEngine.calculateHandEliminationValue(hand)).toBe(61);
+
+            hand = hand.concat([kadi.spades("3"), kadi.joker("0"), kadi.spades("A"), kadi.hearts("A")]);
+            expect(kadi.game.RuleEngine.calculateHandEliminationValue(hand)).toBe(836);
         });
     });
 

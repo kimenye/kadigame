@@ -169,7 +169,6 @@ window.kadi.game = (function(me, $, undefined){
                 return this.isEight() || this.isQueen();
             };
 
-            //TODO: Testing required
             this.pickingValue = function() {
                 if (this.isPickingCard()) {
                     if (this.is("2")) {
