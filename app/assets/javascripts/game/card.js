@@ -163,11 +163,11 @@ window.kadi.game = (function(me, $, undefined){
 
             this.is = function(rank) {
                 return this.rank == rank;
-            }
+            };
 
             this.isQuestion = function() {
                 return this.isEight() || this.isQueen();
-            }
+            };
 
             //TODO: Testing required
             this.pickingValue = function() {
@@ -183,7 +183,35 @@ window.kadi.game = (function(me, $, undefined){
                     }
                 }
                 return 0;
-            }
+            };
+
+            this.eliminationValue = function() {
+                var value = 0;
+                switch (this.rank) {
+                    case kadi.game.Card.ACE:
+                        value = 100;
+                        break;
+                    case kadi.game.Card.TWO:
+                        value = 50;
+                        break;
+                    case kadi.game.Card.THREE:
+                        value = 75;
+                        break;
+                    case kadi.game.Card.JACK:
+                    case kadi.game.Card.QUEEN:
+                    case kadi.game.Card.KING:
+                        value = 20;
+                        break;
+                    case kadi.game.Card.JOKER_A:
+                    case kadi.game.Card.JOKER_B:
+                        value = 500;
+                        break;
+                    default:
+                        value = parseInt(this.rank);
+                }
+
+                return value;
+            };
 
             this.isBlockingCard = function() {
                 return this.isPickingCard() || this.isAce();

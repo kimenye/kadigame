@@ -174,6 +174,26 @@ describe("Card rules:", function() {
         });
     });
 
+    describe("Elimination rules", function() {
+
+        it("Cards have specified values that are used for eliminating players", function() {
+            expect(kadi.spades("A").eliminationValue()).toBe(100);
+            expect(kadi.spades("2").eliminationValue()).toBe(50);
+            expect(kadi.spades("3").eliminationValue()).toBe(75);
+            expect(kadi.spades("4").eliminationValue()).toBe(4);
+            expect(kadi.spades("5").eliminationValue()).toBe(5);
+            expect(kadi.spades("6").eliminationValue()).toBe(6);
+            expect(kadi.spades("7").eliminationValue()).toBe(7);
+            expect(kadi.spades("8").eliminationValue()).toBe(8);
+            expect(kadi.spades("9").eliminationValue()).toBe(9);
+            expect(kadi.spades("10").eliminationValue()).toBe(10);
+            expect(kadi.spades("J").eliminationValue()).toBe(20);
+            expect(kadi.spades("Q").eliminationValue()).toBe(20);
+            expect(kadi.spades("K").eliminationValue()).toBe(20);
+            expect(kadi.joker("0").eliminationValue()).toBe(500);
+        });
+    });
+
     describe("Picking card rules", function() {
 
         it("An ace can block any picking card", function() {
