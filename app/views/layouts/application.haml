@@ -9,3 +9,5 @@
     = yield
     =javascript_include_tag "/assets/lib.js"
     =javascript_include_tag "/assets/app.js"
+    - if production?
+      =javascript_include_tag "/assets/ga.js"
