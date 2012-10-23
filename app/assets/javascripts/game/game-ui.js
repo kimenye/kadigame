@@ -156,12 +156,6 @@ window.kadi.game = (function(me, $, undefined){
             this.tableDeck = new kadi.game.TableDeck();
             this.noticeBoard = new kadi.game.NoticeBoard();
             this.requestedSuiteDeck = new kadi.game.RequestedSuiteNotification();
-
-            if (this.mode == kadi.game.GameOptions.MODE_ELIMINATION)
-                this.eliminationScreen = new kadi.game.EliminationScreenUI();
-            else
-                this.gameOverScreen = new kadi.game.GameOverScreenUI(this.mode);
-
             this.cardless = 0;
         },
 

@@ -699,6 +699,10 @@ window.kadi.game = (function(me, $, undefined){
                         self.showPlayAgain(winner);
                     }
                 });
+            } else {
+                SHOTGUN.listen(kadi.game.Events.ELIMINATION_GAME_OVER, function(players, winner) {
+                    self.showGameOverScreen(players, winner);
+                });
             }
         },
         showPlayAgain: function(winner) {
@@ -731,25 +735,6 @@ window.kadi.game = (function(me, $, undefined){
             });
             bootbox.dialog($(dialog), btns);
         },
-        rematch: function(winner) {
-            SHOTGUN.fire(kadi.game.Events.REINIT_GAME, [winner]);
-            this.hide(1000);
-        },
-        hide: function(delay) {
-            _.delay(function() {
-                bootbox.hideAll();
-            }, delay);
-        }
-    });
-
-    me.EliminationScreenUI = JS.Class({
-        construct: function() {
-            var self = this;
-            SHOTGUN.listen(kadi.game.Events.ELIMINATION_GAME_OVER, function(players, winner) {
-                self.showGameOverScreen(players, winner);
-            });
-        },
-
         showGameOverScreen: function(players, winner) {
             var self = this;
             var dialog = kadi.createDiv('game-over-elimination', 'game_over');
@@ -838,21 +823,18 @@ window.kadi.game = (function(me, $, undefined){
             dialog.appendChild(playersDiv);
             bootbox.dialog($(dialog), btns);
         },
-
+        continue: function(eliminated, winner) {
+            SHOTGUN.fire(kadi.game.Events.ELIMINATE_PLAYER, [eliminated, winner]);
+            this.hide(1000);
+        },
         rematch: function(winner) {
             SHOTGUN.fire(kadi.game.Events.REINIT_GAME, [winner]);
             this.hide(1000);
         },
-
         hide: function(delay) {
             _.delay(function() {
                 bootbox.hideAll();
             }, delay);
-        },
-
-        continue: function(eliminated, winner) {
-            SHOTGUN.fire(kadi.game.Events.ELIMINATE_PLAYER, [eliminated, winner]);
-            this.hide(1000);
         }
     });
 
@@ -974,9 +956,9 @@ window.kadi.game = (function(me, $, undefined){
             _.each(vs, function(opponent, idx) {
                 this.opponents.push(new me.GamePlayerUI(opponent,new kadi.game.PlayerDeck.fromIndex(idx), true));
             },this);
+            this.gameOverScreen = new kadi.game.GameOverScreenUI(mode);
             this.game = new me.Game(this.me,this.opponents, mode, kadiMode);
         },
-
         display : function() {
             var self = this;
             _.delay(function() {
