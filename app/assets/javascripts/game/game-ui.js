@@ -241,7 +241,7 @@ window.kadi.game = (function(me, $, undefined){
                 SHOTGUN.fire(kadi.game.Events.PICK_CARD, [player,num]);
                 _.delay(function() {
                     SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ self.order.turn() ]);
-                    SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[self.tableDeck.topCard(),null,player,this.cardlessPlayerExists()],next.id);
+                    SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[self.tableDeck.topCard(),null,player,self.cardlessPlayerExists()],next.id);
                     SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[next],'deck');
                 },1000);
             });

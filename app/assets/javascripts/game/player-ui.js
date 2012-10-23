@@ -231,20 +231,18 @@ window.kadi.game = (function(me, $, undefined){
 
             if (kadi.isSomethingMeaningful(requestedSuite)) {
                 var canPlayWithRequestedSuite = kadi.game.RuleEngine.canMeetMatchingSuite(cards, requestedSuite);
-//                console.log("Can play with requested suite: ", requestedSuite, canPlayWithRequestedSuite);
                 if (!canPlayWithRequestedSuite) {
-//                    console.log("About to pick");
                     this.pick();
                 }
                 else
                 {
                     var canFinish = this.onKADI &&  kadi.game.RuleEngine.canFinish(cards,null,requestedSuite,cardlessPlayerExists);
-
                     var move = kadi.game.Strategy.bestMoveForRequestedSuite(cards,requestedSuite);
                     if (canFinish) {
                         var moves = kadi.game.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,null,requestedSuite);
                         move = _.first(moves);
                     }
+                    console.log("Fired A: ", this, kadi.handToS(move), this.onKADI, new Date());
                     SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, move, this.onKADI]);
                 }
 
@@ -253,6 +251,7 @@ window.kadi.game = (function(me, $, undefined){
                 if (canFinish) {
                     var moves = kadi.game.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,card,null);
                     var move = _.first(moves);
+                    console.log("Fired B: ", this, kadi.handToS(move), this.onKADI, new Date());
                     SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, move, this.onKADI]);
                 }
                 else {
@@ -263,9 +262,11 @@ window.kadi.game = (function(me, $, undefined){
                             //look for a possible move
                             var moves = kadi.game.RuleEngine.possibleMoves(card, cards);
                             var move = _.first(moves);
+                            console.log("Fired: C", this, kadi.handToS(move.cards), this.onKADI, new Date());
                             SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, move.cards, this.onKADI]);
                         } else {
                             var move = _.first(groups);
+                            console.log("Fired: D", this, kadi.handToS(move), this.onKADI, new Date());
                             SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, move, this.onKADI]);
                         }
                     }
