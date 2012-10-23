@@ -634,6 +634,14 @@ describe("Game mechanics:", function() {
         expect(kadi.game.RuleEngine.calculatePicking(h)).toBe(8);
     });
 
+    it("When the game mode is to pick only the top card", function() {
+        var h = [kadi.joker("0"), kadi.spades("2")];
+
+        expect(kadi.game.RuleEngine.calculatePicking(h)).toBe(7);
+        expect(kadi.game.RuleEngine.calculatePicking(h, false)).toBe(7);
+        expect(kadi.game.RuleEngine.calculatePicking(h, true)).toBe(2);
+    });
+
     it("A Question card causes an incomplete action", function() {
         var card = kadi.spades("Q");
         var h = [card];

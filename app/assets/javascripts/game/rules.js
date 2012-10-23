@@ -83,7 +83,10 @@ window.kadi.game = (function(me, $, undefined){
             calculateTurnsReverse: function(hand) {
                 return _.reject(hand, function(c) { return !c.isKing() }).length;
             },
-            calculatePicking: function(hand) {
+            calculatePicking: function(hand, topCardOnly) {
+                if (kadi.getVal(topCardOnly)) {
+                    return _.last(hand).pickingValue();
+                }
                 var total = 0;
                 _.each(hand, function(c) {
                     total += c.pickingValue()
