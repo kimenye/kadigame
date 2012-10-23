@@ -705,8 +705,7 @@ window.kadi.game = (function(me, $, undefined){
                 });
             }
         },
-        showPlayAgain: function(winner) {
-            var self = this;
+        buildHeader: function(winner) {
             var dialog = kadi.createDiv('game-over-elimination', 'game_over');
             var header = kadi.createDiv('page-header', 'game_over_header');
             header.appendChild(kadi.createElement("h3", "", "", "Game Over"));
@@ -722,8 +721,12 @@ window.kadi.game = (function(me, $, undefined){
             winnerDiv.appendChild(win);
 
             dialog.appendChild(winnerDiv);
-
             dialog.appendChild(kadi.createElement("hr"));
+            return dialog;
+        },
+        showPlayAgain: function(winner) {
+            var self = this;
+            var dialog =  this.buildHeader(winner);
             var btns = [];
             btns.push({
                 "label" : "Re-match!",
@@ -737,23 +740,7 @@ window.kadi.game = (function(me, $, undefined){
         },
         showGameOverScreen: function(players, winner) {
             var self = this;
-            var dialog = kadi.createDiv('game-over-elimination', 'game_over');
-            var header = kadi.createDiv('page-header', 'game_over_header');
-            header.appendChild(kadi.createElement("h3", "", "", "Game Over"));
-            dialog.appendChild(header);
-
-            var winnerDiv = kadi.createElement('div', 'winner');
-
-            var avatar = kadi.createElement('img', 'opponent center');
-            avatar.src = winner.avatar.src;
-            winnerDiv.appendChild(avatar);
-
-            var win = kadi.createElement('p', "lead", "", winner.name + " wins!");
-            winnerDiv.appendChild(win);
-
-            dialog.appendChild(winnerDiv);
-
-            dialog.appendChild(kadi.createElement("hr"));
+            var dialog = this.buildHeader(winner);
 
             var playersDiv = kadi.createElement("div");
             players = _.sortBy(players, function(p) { return kadi.game.RuleEngine.calculateHandEliminationValue(p.cards()) });
@@ -957,6 +944,7 @@ window.kadi.game = (function(me, $, undefined){
                 this.opponents.push(new me.GamePlayerUI(opponent,new kadi.game.PlayerDeck.fromIndex(idx), true));
             },this);
             this.gameOverScreen = new kadi.game.GameOverScreenUI(mode);
+            this.requestedSuiteDeck = new kadi.game.RequestedSuiteNotification();
             this.game = new me.Game(this.me,this.opponents, mode, kadiMode);
         },
         display : function() {

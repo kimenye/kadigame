@@ -155,7 +155,6 @@ window.kadi.game = (function(me, $, undefined){
             this.pickingDeck = new kadi.game.PickingDeck();
             this.tableDeck = new kadi.game.TableDeck();
             this.noticeBoard = new kadi.game.NoticeBoard();
-            this.requestedSuiteDeck = new kadi.game.RequestedSuiteNotification();
             this.cardless = 0;
         },
 

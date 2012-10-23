@@ -41,7 +41,7 @@
 
 .opponent_result {
     margin-bottom: 10px;
-    height: 80px;
+    height: 85px;
 }
 
 .opponent_result .thumbnail {
@@ -51,6 +51,7 @@
 
 .opponent_result .thumbnail .caption {
     padding: 0px;
+    line-height: 10px;
 }
 
 .cards {
