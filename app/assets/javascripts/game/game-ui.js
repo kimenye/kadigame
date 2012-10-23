@@ -29,14 +29,114 @@ window.kadi.game = (function(me, $, undefined){
             RETURNED_CARDS: "returned-cards",
             LATE_KADI: "late-kadi",
             INCREMENT_CARDLESS_COUNTER: "increment-cardless-counter",
-            DECREMENT_CARDLESS_COUNTER: "decrement-cardless-counter"
+            DECREMENT_CARDLESS_COUNTER: "decrement-cardless-counter",
+            ELIMINATION_GAME_OVER: "elimination-game-over",
+            ELIMINATE_PLAYER: "eliminate-player",
+            REINIT_GAME: "re-init-game"
         }
     });
+
+    me.PlayingOrder = JS.Class({
+        statics: {
+            CLOCKWISE: 1,
+            ANTI_CLOCKWISE: 0
+        },
+        construct: function(players, startIdx) {
+            this.players = players;
+            this.startIdx = startIdx;
+            this.direction = me.PlayingOrder.CLOCKWISE;
+            this.turnCount = 0;
+            this.isPaused = false;
+            this.pauseHandler = null;
+            this.begin();
+        },
+        playerCount: function() {
+            return this.players.length;
+        },
+        begin: function() {
+            this.currentIdx = this.startIdx;
+        },
+        current: function() {
+            return this.players[this.currentIdx];
+        },
+        pause: function(handler) {
+            this.pauseHandler = handler;
+            this.isPaused = true;
+        },
+        finish: function(player) {
+            this.players = _.reject(this.players, function(p) { return p.eq(player); }, this);
+        },
+        end: function() {
+            this.isPaused = true;
+        },
+        unPause: function() {
+            this.isPaused = false;
+            this.pauseHandler = null;
+        },
+        executeHandler : function() {
+            if (kadi.isSomethingMeaningful(this.pauseHandler)) {
+                this.pauseHandler.callBack();
+            }
+        },
+        peek: function() {
+            var n = this.currentIdx;
+            if (this.isClockwise()) {
+                n += 1;
+                if (n >= this.playerCount())
+                    n = 0;
+            }   else {
+                n = Math.max(0, n -1 );
+            }
+            return this.players[n];
+        },
+        turn: function() {
+            var n = this.current();
+            return n.live? "Your turn to play" : this.formatTurn(n.name);
+        },
+        formatTurn: function(name) {
+            if (name.charAt(name.length - 1) == "s") {
+                return name + "' turn to play";
+            }
+            else
+                return name + "'s turn to play";
+        },
+        next: function() {
+            if (!this.isPaused) {
+                this.turnCount++;
+                if (this.isClockwise()) {
+                    var n = this.currentIdx + 1;
+                    if (n >= this.playerCount())
+                        n = 0;
+                    this.currentIdx = n;
+                } else {
+                    var n = this.currentIdx - 1;
+                    if (n < 0)
+                        n = this.playerCount() - 1;
+                    this.currentIdx = n;
+                }
+            }
+        },
+        reverse: function() {
+            if (!this.isPaused) {
+                if (this.isClockwise())
+                    this.direction = kadi.game.PlayingOrder.ANTI_CLOCKWISE;
+                else
+                    this.direction = kadi.game.PlayingOrder.CLOCKWISE;
+                this.next();
+            }
+        },
+        isClockwise: function() {
+            return this.direction == kadi.game.PlayingOrder.CLOCKWISE;
+        },
+        isAntiClockwise: function() { return ! this.isClockwise() }
+    });
+
 
     me.GameOptions = JS.Class({
         statics: {
             MODE_LAST_PLAYER_STANDING: "last-player-standing",
             MODE_FIRST_TO_WIN: "first-to-win",
+            MODE_ELIMINATION: "elimination",
             ONE_CARD_KADI: "one-card-kadi",
             ANY_CARDS_KADI: "any-cards-kadi"
         }
@@ -49,6 +149,7 @@ window.kadi.game = (function(me, $, undefined){
             this.kadiMode = kadiMode;
             this.opponents = opponents;
             this.players = this.opponents;
+            this.original = this.players;
             if (kadi.isSomethingMeaningful(this.me))
                 this.players.push(this.me);
             this.requestedSuite = null;
@@ -56,12 +157,16 @@ window.kadi.game = (function(me, $, undefined){
             this.tableDeck = new kadi.game.TableDeck();
             this.noticeBoard = new kadi.game.NoticeBoard();
             this.requestedSuiteDeck = new kadi.game.RequestedSuiteNotification();
+
+            if (this.mode == kadi.game.GameOptions.MODE_ELIMINATION)
+                this.eliminationScreen = new kadi.game.EliminationScreenUI();
             this.cardless = 0;
         },
 
         startGame: function() {
             var self = this;
             var starterIdx = kadi.coinToss(this.players);
+//            starterIdx = this.players.length - 1;
             var starter = this.players[starterIdx];
 
             _.each(this.players, function(p) {
@@ -145,19 +250,30 @@ window.kadi.game = (function(me, $, undefined){
                     SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[next],'deck');
                 },1000);
             });
+            SHOTGUN.listen(kadi.game.Events.FINISH, function(player, action, playedCards, mode) {
+                if (mode == kadi.game.GameOptions.MODE_FIRST_TO_WIN) {
+                    self.order.end();
+                } else if (mode == kadi.game.GameOptions.MODE_ELIMINATION) {
+                    self.order.end();
+                    SHOTGUN.fire(kadi.game.Events.ELIMINATION_GAME_OVER, [self.players, player]);
+                }
+            });
+
             SHOTGUN.listen(kadi.game.Events.SUITE_REQUESTED, function(player, suite) {
                 self.requestedSuite = suite;
                 self.progressPlay(player,kadi.game.RuleEngine.ACTION_NONE,[]);
             });
 
-            SHOTGUN.listen(kadi.game.Events.FINISH, function(player, action, playedCards, mode) {
-                if (mode == kadi.game.GameOptions.MODE_FIRST_TO_WIN || player.live)
-                    self.order.end();
-                else {
-                    player.hide();
-                    self.order.finish(player);
-                    player.endTurn(action, playedCards);
-                }
+            SHOTGUN.listen(kadi.game.Events.ELIMINATE_PLAYER, function(player, winner) {
+                player.reset();
+                player.hide();
+                self.players = _.reject(self.players, function(p) { return p.eq(player); });
+                SHOTGUN.fire(kadi.game.Events.RESTART_GAME, [winner]);
+            });
+
+            SHOTGUN.listen(kadi.game.Events.REINIT_GAME, function(winner) {
+                self.players = self.original;
+                SHOTGUN.fire(kadi.game.Events.RESTART_GAME, [winner]);
             });
 
             SHOTGUN.listen(kadi.game.Events.RESTART_GAME, function(winner) {
@@ -196,6 +312,11 @@ window.kadi.game = (function(me, $, undefined){
             SHOTGUN.listen(kadi.game.Events.DECREMENT_CARDLESS_COUNTER, function() {
                 self.cardless--;
             });
+
+//            _.delay(function() {
+//                starter.returnCards();
+//                SHOTGUN.fire(kadi.game.Events.FINISH, [starter, kadi.game.RuleEngine.ACTION_NONE, [], self.mode]);
+//            }, 0);
         },
 
         progressPlay: function(player, action, playedCards, test) {

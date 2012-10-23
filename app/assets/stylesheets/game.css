@@ -18,7 +18,19 @@
     overflow: hidden;
 }
 
-.options .page-header {
+.play .modal-backdrop {
+    z-index: 8000;
+}
+
+.play .modal {
+    z-index: 8001;
+}
+
+.play .modal-body {
+    max-height: inherit;
+}
+
+.options .page-header, .game-over-elimination .page-header {
     margin: 0px 0px 10px 0px;
 }
 
@@ -27,7 +39,57 @@
     font-size: 15px;
 }
 
-.options .opponent {
+.opponent_result {
+    margin-bottom: 10px;
+    height: 80px;
+}
+
+.opponent_result .thumbnail {
+    width: 70px;
+    float: left;
+}
+
+.opponent_result .thumbnail .caption {
+    padding: 0px;
+}
+
+.cards {
+    width: 400px;
+    height: 81px;
+    display: inline-block;
+    float: left;
+    margin-left: 5px;
+}
+
+.cards .card_container {
+    float: left;
+    position: absolute;
+}
+
+.score {
+    float: left;
+    margin-top: 20px;
+}
+
+.eliminated {
+    font-weight: bold;
+    color: red;
+    text-line-through-style: double;
+}
+
+.strikethrough {
+    display: block;
+    width: 100%;
+    border-top: 1px solid red;
+    border-bottom: 1px solid red;
+    text-align: center;
+    position: relative;
+    top: 36px;
+    height: 1px;
+    z-index: 7000;
+}
+
+.options .opponent, .game-over-elimination .opponent {
     height: 50px;
     width: 50px;
 }
@@ -45,13 +107,15 @@
     cursor: pointer;
 }
 
-.options h3 {
+.options h3, .game-over-elimination h3 {
     line-height: 24px;
 }
 
 .options legend {
     font-size: 18px;
 }
+
+.center {   display: block;   margin-left: auto;   margin-right: auto; }
 
 .player {
     margin: auto;
@@ -199,7 +263,6 @@
 .card_container {
     width: 100px;
     height: 136px;
-    /*border: 1px solid #000000;*/
     position: absolute;
     perspective: 800px;
 }

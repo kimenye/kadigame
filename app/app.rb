@@ -13,11 +13,11 @@ class Kadi < Padrino::Application
 
   enable :sessions
 
-  unless ENV["FACEBOOK_APP_ID"] && ENV["FACEBOOK_SECRET"]
-    if production?
-      abort("missing env vars: please set FACEBOOK_APP_ID and FACEBOOK_SECRET with your app credentials")
-    end
-  end
+  #unless ENV["FACEBOOK_APP_ID"] && ENV["FACEBOOK_SECRET"]
+  #  if production?
+  #    abort("missing env vars: please set FACEBOOK_APP_ID and FACEBOOK_SECRET with your app credentials")
+  #  end
+  #end
 
   Pusher.app_id = '26156';
   Pusher.key = '3b40830094bf454823f2'
@@ -90,6 +90,7 @@ class Kadi < Padrino::Application
   end
 
   get :play do
+    #TODO: Make this environment specific
     get_logged_in_user '/play'
     #@player = Player.first
     render :play
