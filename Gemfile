@@ -15,8 +15,10 @@ gem 'activerecord', :require => "active_record"
 gem 'pg'
 gem 'pry'
 gem 'pusher'
+gem 'httparty'
 
 # Test requirements
+gem 'rack-test', :git => "https://github.com/brynary/rack-test.git"
 
 # Padrino Stable Gem
 gem 'padrino', '0.10.7'
