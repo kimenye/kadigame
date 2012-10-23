@@ -134,7 +134,6 @@ window.kadi.game = (function(me, $, undefined){
 
     me.GameOptions = JS.Class({
         statics: {
-            MODE_LAST_PLAYER_STANDING: "last-player-standing",
             MODE_FIRST_TO_WIN: "first-to-win",
             MODE_ELIMINATION: "elimination",
             ONE_CARD_KADI: "one-card-kadi",
@@ -160,6 +159,9 @@ window.kadi.game = (function(me, $, undefined){
 
             if (this.mode == kadi.game.GameOptions.MODE_ELIMINATION)
                 this.eliminationScreen = new kadi.game.EliminationScreenUI();
+            else
+                this.gameOverScreen = new kadi.game.GameOverScreenUI(this.mode);
+
             this.cardless = 0;
         },
 

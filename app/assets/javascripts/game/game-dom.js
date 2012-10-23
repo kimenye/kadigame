@@ -498,12 +498,6 @@ window.kadi.game = (function(me, $, undefined){
                 }
             });
 
-            SHOTGUN.listen(kadi.game.Events.FINISH, function(player, action, playedCards, mode) {
-                if (mode == kadi.game.GameOptions.MODE_FIRST_TO_WIN) {
-                    self.showPlayAgain(player);
-                }
-            });
-
             SHOTGUN.listen(kadi.game.Events.UNHANDLED_ERROR, function(err) {
                 self.showError();
             });
@@ -540,44 +534,6 @@ window.kadi.game = (function(me, $, undefined){
             this.errorDialog.appendChild(refresh);
 
             this.div.appendChild(this.errorDialog);
-
-            $(this.div).removeClass('hidden');
-
-            $(this.div).transition({
-                top: 200 + "px"
-            }, 500, 'snap');
-        },
-
-        showPlayAgain: function(player) {
-            var self = this;
-            this.showOverlay();
-
-            player.kadi(false);
-
-            this.resetDialog(this.gameOverDialog);
-            this.gameOverDialog = kadi.createDiv('win_screen', 'gameOverDialog');
-
-            var title = document.createElement("h4");
-            title.innerHTML = player.name + " won!";
-            this.gameOverDialog.appendChild(title);
-
-            var avatar = document.createElement("IMG");
-            avatar.className = "img-polaroid img-rounded avatar";
-            avatar.src = player.avatar.src;
-            this.gameOverDialog.appendChild(avatar);
-
-            var playAgainButton = kadi.createButton("btn btn-large btn-success","Play Again!");
-            $(playAgainButton).click(function() {
-                SHOTGUN.fire(kadi.game.Events.RESTART_GAME, []);
-                $(self.div).addClass('hidden');
-                $(self.gameOverDialog).remove();
-                self.gameOverDialog = null;
-                self.hideOverlay();
-            });
-
-            this.gameOverDialog.appendChild(playAgainButton);
-
-            this.div.appendChild(this.gameOverDialog);
 
             $(this.div).removeClass('hidden');
 
@@ -730,6 +686,59 @@ window.kadi.game = (function(me, $, undefined){
             $(this.div).transition({
                 top: top + "px"
             }, 500, 'snap');
+        }
+    });
+
+    me.GameOverScreenUI = JS.Class({
+        construct: function(mode) {
+            this.mode = mode;
+            var self = this;
+            if (mode == kadi.game.GameOptions.MODE_FIRST_TO_WIN) {
+                SHOTGUN.listen(kadi.game.Events.FINISH, function(winner, action, playedCards, mode) {
+                    if (mode == kadi.game.GameOptions.MODE_FIRST_TO_WIN) {
+                        self.showPlayAgain(winner);
+                    }
+                });
+            }
+        },
+        showPlayAgain: function(winner) {
+            var self = this;
+            var dialog = kadi.createDiv('game-over-elimination', 'game_over');
+            var header = kadi.createDiv('page-header', 'game_over_header');
+            header.appendChild(kadi.createElement("h3", "", "", "Game Over"));
+            dialog.appendChild(header);
+
+            var winnerDiv = kadi.createElement('div', 'winner');
+
+            var avatar = kadi.createElement('img', 'opponent center');
+            avatar.src = winner.avatar.src;
+            winnerDiv.appendChild(avatar);
+
+            var win = kadi.createElement('p', "lead", "", winner.name + " wins!");
+            winnerDiv.appendChild(win);
+
+            dialog.appendChild(winnerDiv);
+
+            dialog.appendChild(kadi.createElement("hr"));
+            var btns = [];
+            btns.push({
+                "label" : "Re-match!",
+                "id": "btn-rematch",
+                "class" : "btn-primary",
+                "callback" : function() {
+                    self.rematch(winner);
+                }
+            });
+            bootbox.dialog($(dialog), btns);
+        },
+        rematch: function(winner) {
+            SHOTGUN.fire(kadi.game.Events.REINIT_GAME, [winner]);
+            this.hide(1000);
+        },
+        hide: function(delay) {
+            _.delay(function() {
+                bootbox.hideAll();
+            }, delay);
         }
     });
 
