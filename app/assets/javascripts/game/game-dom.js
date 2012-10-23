@@ -490,9 +490,9 @@ window.kadi.game = (function(me, $, undefined){
             this.overlay = kadi.createDiv('overlay hidden', 'notification_overlay');
             this.parentDiv.appendChild(this.overlay);
 
-            SHOTGUN.listen(kadi.game.Events.PLAYER_NOTIFICATION_UI, function(player, action, playedCards) {
+            SHOTGUN.listen(kadi.game.Events.PLAYER_NOTIFICATION_UI, function(player, action, playedCards, numToPick) {
                 if (action == kadi.game.RuleEngine.ACTION_PICK_OR_BLOCK) {
-                    self.showBlock(player, playedCards);
+                    self.showBlock(player, playedCards, numToPick);
                 } else if (action == kadi.game.RuleEngine.ACTION_PICK_SUITE) {
                     self.showSuitePicker(player);
                 }
@@ -606,11 +606,10 @@ window.kadi.game = (function(me, $, undefined){
             });
         },
 
-        showBlock: function(player, playedCards) {
+        showBlock: function(player, playedCards, numToPick) {
             var self = this;
             this.showOverlay();
             this.resetDialog(this.blockDialog);
-            var numToPick = kadi.game.RuleEngine.calculatePicking(playedCards);
 
             this.blockDialog = kadi.createDiv("pick_or_block btn-group button_holder", "pickOrBlockDialog");
 
@@ -843,6 +842,7 @@ window.kadi.game = (function(me, $, undefined){
             this.showSelector();
             this.elimination = false;
             this.kadiWithOnlyOneCard = false;
+            this.pickTopCardOnly = false;
             bootbox.setIcons({
                 "OK"      : "icon-ok icon-white",
                 "CANCEL"  : "icon-ban-circle",
@@ -890,7 +890,7 @@ window.kadi.game = (function(me, $, undefined){
 
             body.appendChild(kadi.createElement("legend",null,null, "Game Options"));
 
-            var lblMode = kadi.createElement("label", "checkbox");
+            var lblMode = kadi.createElement("label", "checkbox inline");
             var chkMode = document.createElement("input");
             chkMode.type = "checkbox";
             lblMode.appendChild(chkMode);
@@ -900,7 +900,7 @@ window.kadi.game = (function(me, $, undefined){
                 self.elimination = !self.elimination;
             });
 
-            var lblFinish = kadi.createElement("label", "checkbox");
+            var lblFinish = kadi.createElement("label", "checkbox inline");
             var chkFinish = document.createElement("input");
             chkFinish.type = "checkbox";
             lblFinish.appendChild(chkFinish);
@@ -910,8 +910,19 @@ window.kadi.game = (function(me, $, undefined){
                 self.kadiWithOnlyOneCard = !self.kadiWithOnlyOneCard;
             });
 
+            var lblPick = kadi.createElement("label", "checkbox inline");
+            var chkPick = document.createElement("input");
+            chkPick.type = "checkbox";
+            lblPick.appendChild(chkPick);
+            lblPick.appendChild(kadi.createElement("span","","","Only pick the top card"));
+
+            $(chkPick).click(function() {
+                self.pickTopCardOnly = !self.pickTopCardOnly;
+            });
+
             body.appendChild(lblMode);
             body.appendChild(lblFinish);
+            body.appendChild(lblPick);
 
             this.dialogDiv.appendChild(body);
             bootbox.dialog($(this.dialogDiv), {
@@ -922,7 +933,8 @@ window.kadi.game = (function(me, $, undefined){
                     var opponents = _.reject(self.availablePlayers, function(p) { return !p.selectedOpponent });
                     var mode = self.elimination? kadi.game.GameOptions.MODE_ELIMINATION : kadi.game.GameOptions.MODE_FIRST_TO_WIN;
                     var kadiMode = self.kadiWithOnlyOneCard ? kadi.game.GameOptions.ONE_CARD_KADI : kadi.game.GameOptions.ANY_CARDS_KADI;
-                    self.handler.callBack([opponents, mode, kadiMode]);
+                    var pickMode = self.pickTopCardOnly ? kadi.game.GameOptions.PICKING_MODE_TOP_ONLY : kadi.game.GameOptions.PICKING_MODE_ALL;
+                    self.handler.callBack([opponents, mode, kadiMode, pickMode]);
                 }
             });
         }
@@ -935,7 +947,7 @@ window.kadi.game = (function(me, $, undefined){
             ID: 'game',
             CONTAINER_ID: 'game-container'
         },
-        construct: function(player, vs, mode, kadiMode) {
+        construct: function(player, vs, mode, kadiMode, pickingMode) {
             this.id = me.GameUI.ID;
             this.me = player;
 
@@ -945,7 +957,7 @@ window.kadi.game = (function(me, $, undefined){
             },this);
             this.gameOverScreen = new kadi.game.GameOverScreenUI(mode);
             this.requestedSuiteDeck = new kadi.game.RequestedSuiteNotification();
-            this.game = new me.Game(this.me,this.opponents, mode, kadiMode);
+            this.game = new me.Game(this.me,this.opponents, mode, kadiMode, pickingMode);
         },
         display : function() {
             var self = this;
@@ -1001,13 +1013,13 @@ window.kadi.game = (function(me, $, undefined){
             var ops = [compB, compC, compD];
 
             var handler = new kadi.Handler(function(args) {
-                me.gameObject = new me.GameUI(livePlayer, args[0], args[1], args[2]);
+                me.gameObject = new me.GameUI(livePlayer, args[0], args[1], args[2], args[3]);
                 bootbox.hideAll();
                 me.gameObject.display();
             });
             var optionsDialog = new kadi.game.GameOptionsUI(ops, handler);
 
-//            handler.callBack([ops, kadi.game.GameOptions.MODE_FIRST_TO_WIN, kadi.game.GameOptions.ANY_CARDS_KADI]);
+//            handler.callBack([ops, kadi.game.GameOptions.MODE_FIRST_TO_WIN, kadi.game.GameOptions.ANY_CARDS_KADI, kadi.game.GameOptions.PICKING_MODE_TOP_ONLY]);
 //            handler.callBack([ops, kadi.game.GameOptions.MODE_ELIMINATION, kadi.game.GameOptions.ANY_CARDS_KADI]);
         }
         preload.loadFile('../images/woodback.jpg');

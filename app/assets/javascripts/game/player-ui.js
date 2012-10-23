@@ -243,7 +243,15 @@ window.kadi.game = (function(me, $, undefined){
                         move = _.first(moves);
                     }
                     console.log("Fired A: ", this, kadi.handToS(move), this.onKADI, new Date());
-                    SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, move, this.onKADI]);
+                    try
+                    {
+                        SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, move, this.onKADI]);
+                    }
+                    catch(ex) {
+                        var trace = printStackTrace();
+                        console.log("Trace: ", trace);
+                        throw ex;
+                    }
                 }
 
             } else {

@@ -137,16 +137,19 @@ window.kadi.game = (function(me, $, undefined){
             MODE_FIRST_TO_WIN: "first-to-win",
             MODE_ELIMINATION: "elimination",
             ONE_CARD_KADI: "one-card-kadi",
-            ANY_CARDS_KADI: "any-cards-kadi"
+            ANY_CARDS_KADI: "any-cards-kadi",
+            PICKING_MODE_TOP_ONLY: "only-pick-the-top-card",
+            PICKING_MODE_ALL : "pick-all-the-cards"
         }
     });
 
     me.Game = JS.Class({
-        construct: function(player, opponents, mode, kadiMode) {
+        construct: function(player, opponents, mode, kadiMode, pickingMode) {
             this.me = player;
             this.mode = mode;
             this.kadiMode = kadiMode;
             this.opponents = opponents;
+            this.pickingMode = pickingMode;
             this.players = this.opponents;
             this.original = this.players;
             if (kadi.isSomethingMeaningful(this.me))
@@ -235,7 +238,7 @@ window.kadi.game = (function(me, $, undefined){
             SHOTGUN.listen(kadi.game.Events.ACCEPT_PICKING, function(player, pickingCards) {
                 self.order.next();
                 var next = self.order.current();
-                var num = kadi.game.RuleEngine.calculatePicking(pickingCards);
+                var num = kadi.game.RuleEngine.calculatePicking(pickingCards, self.pickTopOnly());
 
                 SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ player.name + " to pick " + num ]);
                 SHOTGUN.fire(kadi.game.Events.PICK_CARD, [player,num]);
@@ -356,11 +359,11 @@ window.kadi.game = (function(me, $, undefined){
                     self.order.next();
                     var nextPlayer = self.order.current();
                     var canBlock = nextPlayer.canBlock();
+                    var num = kadi.game.RuleEngine.calculatePicking(playedCards, self.pickTopOnly());
 
                     if (!canBlock) {
                         self.order.next();
                         var next = self.order.current();
-                        var num = kadi.game.RuleEngine.calculatePicking(playedCards);
 
                         if(!test) {
                             SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ nextPlayer.name + " to pick " + num ]);
@@ -378,7 +381,7 @@ window.kadi.game = (function(me, $, undefined){
                         }
                         else {
                             if(!test) {
-                                SHOTGUN.fire(kadi.game.Events.PLAYER_NOTIFICATION_UI, [nextPlayer, action, playedCards]);
+                                SHOTGUN.fire(kadi.game.Events.PLAYER_NOTIFICATION_UI, [nextPlayer, action, playedCards, num]);
                             }
                         }
                     }
@@ -477,6 +480,10 @@ window.kadi.game = (function(me, $, undefined){
                 var card = this.pickingDeck.deal();
                 to.addCard(card, true);
             },this);
+        },
+
+        pickTopOnly: function() {
+            return this.pickingMode == kadi.game.GameOptions.PICKING_MODE_TOP_ONLY;
         },
 
         dealCards: function() {
