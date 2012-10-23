@@ -14,8 +14,8 @@ class ScoreService
     @options = {:api_key => API_KEY, :game_id => GAME_ID, :response => "json" }
   end
 
-  def get_user_by_id (id=TEST_PLAYER_ID)
-    opts = { :id => id }
+  def get_user (username="test")
+    opts = { :username => username }
     opts.merge!(@options)
 
     resp = self.class.post('/getPlayer', { :body => opts })
@@ -37,6 +37,26 @@ class ScoreService
     else
       return result.collect { |p| p["Player"]}
     end
+  end
+
+  def create_user(username)
+    opts = { :username => username }
+    opts.merge!(@options)
+    resp = self.class.post('/createPlayer', { :body => opts})
+    result = JSON.parse(resp)
+    is_success(result)
+  end
+
+  def delete_user(username)
+    opts = { :username => username }
+    opts.merge!(@options)
+    resp = self.class.post('/deletePlayer', { :body => opts})
+    result = JSON.parse(resp)
+    is_success(result)
+  end
+
+  def is_success(rsp)
+    return !is_error(rsp) && rsp.has_key?('success')
   end
 
   def is_error(rsp)
