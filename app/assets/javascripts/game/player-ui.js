@@ -333,9 +333,9 @@ window.kadi.game = (function(me, $, undefined){
         activateForBlocking: function(pickingCards) {
             if (this.live) {
                 var hasOnlyOneCardToBlock = kadi.game.RuleEngine.countBlockingCards(this.cards()) == 1;
-
+                this.cardsToPick = pickingCards;
+                this.blockMode = true;
                 if (hasOnlyOneCardToBlock) {
-                    this.blockMode = true;
                     var blockingCard = _.detect(this.cards(), function(c) { return c.isBlockingCard() });
                     blockingCard.select();
                     this.move();
@@ -345,10 +345,7 @@ window.kadi.game = (function(me, $, undefined){
                     $('.btn-move').attr('disabled', false);
                     $('.btn-move').removeClass('disabled');
                     $('.btn-move').html('Block :-)');
-
                     this.deck.activatePickingCards();
-                    this.blockMode = true;
-                    this.cardsToPick = pickingCards;
                 }
             }
         },
