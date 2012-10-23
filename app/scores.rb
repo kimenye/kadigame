@@ -15,10 +15,31 @@ class ScoreService
   end
 
   def get_user_by_id (id=TEST_PLAYER_ID)
-    opts = { :id => TEST_PLAYER_ID }
+    opts = { :id => id }
     opts.merge!(@options)
 
     resp = self.class.post('/getPlayer', { :body => opts })
-    JSON.parse(resp)[0]["Player"]
+    result = JSON.parse(resp)
+
+    if is_error(result)
+      return nil
+    else
+      return result[0]["Player"]
+    end
+  end
+
+  def get_users
+    resp = self.class.post('/getPlayers', { :body => @options })
+    result = JSON.parse(resp)
+
+    if is_error(result)
+      return nil
+    else
+      return result.collect { |p| p["Player"]}
+    end
+  end
+
+  def is_error(rsp)
+    return !rsp.kind_of?(Array) && rsp.has_key?('error')
   end
 end
