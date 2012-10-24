@@ -4,7 +4,7 @@ require_relative '../app/scores'
 
 describe 'Scores API' do
 
-  let(:service) { ScoreService.new }
+  let(:service) { ScoreService.new("c4416a7f3717a7787e6cb7c291b5d6f5977146ab", "GpSVZEbhd") }
 
   before(:all) do
     service.delete_user("test")
@@ -32,8 +32,26 @@ describe 'Scores API' do
     test_users.length.should > 0
   end
 
+  it "creates a score for a user" do
+    result = service.create_score("test", 5);
+    result.should == true
 
-  it "doest not delete a user that exists" do
+    result = service.create_score("test", -2);
+    result.should == true
+  end
+
+  it "calculates the correct score for a user" do
+    user = service.create_user(username="test2")
+    service.create_score("test2", 10)
+    service.create_score("test2", -5)
+
+    score = service.calculate_score("test2")
+    score.should == 5
+
+    service.delete_user(username="test2")
+  end
+
+  it "does not delete a user that exists" do
     result = service.delete_user(username="does not exist")
     result.should == false
   end
