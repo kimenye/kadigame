@@ -75,6 +75,57 @@ class ScoreService
     end
   end
 
+  def get_player_field(username, field)
+    opts = { :username => username, :field => field }
+    opts.merge!(@options)
+    resp = self.class.post('/getPlayerField', { :body => opts})
+    result = JSON.parse(resp)
+
+    if (result.has_key?(field))
+      return result[field]
+    else
+      return nil
+    end
+  end
+
+  def update_player_field(username, field, value)
+    opts = { :username => username, :field => field, :value => value }
+    opts.merge!(@options)
+    resp = self.class.post('/updatePlayerField', { :body => opts})
+    result = JSON.parse(resp)
+    return is_success(result)
+  end
+
+  def get_time_played(username)
+    val = get_player_field(username, "time_played")
+    if (val.nil?)
+      return 0
+    else
+      return val.to_i
+    end
+  end
+
+  def record_win (username)
+    old = get_wins(username)
+    new = old + 1
+    return update_player_field(username, "kills", new)
+  end
+
+  def get_wins (username)
+    val = get_player_field(username, "kills")
+    if (val.nil?)
+      return 0
+    else
+      return val.to_i
+    end
+  end
+
+  def record_time_played(username, times=1)
+    old = get_time_played(username)
+    new = old + times
+    return update_player_field(username, "time_played", new)
+  end
+
   def is_success(rsp)
     return !is_error(rsp) && rsp.has_key?('success')
   end
