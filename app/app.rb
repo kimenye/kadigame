@@ -36,8 +36,11 @@ class Kadi < Padrino::Application
     end
 
     def service
-      #TODO: Change game id for production
-      @score_service ||= ScoreService.new("c4416a7f3717a7787e6cb7c291b5d6f5977146ab", "GpSVZEbhd")
+      game_id = "GpSVZEbhd"
+      #if production?
+      #  game_id = "ELb9ozqX5"
+      #end
+      @score_service ||= ScoreService.new("c4416a7f3717a7787e6cb7c291b5d6f5977146ab", game_id)
     end
 
     def url_no_scheme(path = '')
@@ -132,11 +135,16 @@ class Kadi < Padrino::Application
   end
 
   get '/auth/facebook/callback' do
-    session[:access_token] = authenticator.get_access_token(params[:code])
-    if session[:redirect_to].nil?
+    if params[:error] == "access_denied"
+      flash[:notice] = "<p class='notification'>:-(. Didn't give us permissions. We won't post on your wall without your consent.</p>"
       redirect '/'
     else
-      redirect session[:redirect_to]
+      session[:access_token] = authenticator.get_access_token(params[:code])
+      if session[:redirect_to].nil?
+        redirect '/'
+      else
+        redirect session[:redirect_to]
+      end
     end
   end
 
