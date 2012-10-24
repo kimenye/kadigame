@@ -10,6 +10,10 @@ describe 'Scores API' do
     service.delete_user("test")
   end
 
+  after(:all) do
+    service.delete_user("test")
+  end
+
   it "creates a user that does not exist" do
     result = service.create_user(username="test")
     result.should == true
@@ -49,6 +53,14 @@ describe 'Scores API' do
     score.should == 5
 
     service.delete_user(username="test2")
+  end
+
+  it "calculates the score for a user with no scores as zero" do
+    user = service.create_user(username="test3")
+    score = service.calculate_score("test3")
+    score.should == 0
+
+    service.delete_user(username="test3")
   end
 
   it "does not delete a user that exists" do

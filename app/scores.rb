@@ -70,6 +70,8 @@ class ScoreService
       scores = result.map { |s| s['Score']['score'].to_i }
       scores.each { |s| total += s }
       return total
+    else
+      return 0
     end
   end
 
