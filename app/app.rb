@@ -1,6 +1,7 @@
 require 'koala'
 require 'pusher'
 require 'sprockets'
+require_relative 'scores'
 
 class Kadi < Padrino::Application
   use ActiveRecord::ConnectionAdapters::ConnectionManagement
@@ -34,6 +35,11 @@ class Kadi < Padrino::Application
       request.scheme
     end
 
+    def service
+      #TODO: Change game id for production
+      @score_service ||= ScoreService.new("c4416a7f3717a7787e6cb7c291b5d6f5977146ab", "GpSVZEbhd")
+    end
+
     def url_no_scheme(path = '')
       "//#{host}#{path}"
     end
@@ -50,6 +56,14 @@ class Kadi < Padrino::Application
       return !session[:player].nil?
     end
 
+    def get_profile(id)
+      service.get_user(id)
+    end
+
+    def create_profile(id)
+      service.create_user(id)
+    end
+
     def get_logged_in_user(redirect_to='/')
       @graph  = Koala::Facebook::API.new(session[:access_token])
       @token = session[:access_token]
@@ -60,6 +74,7 @@ class Kadi < Padrino::Application
         @player = Player.find_by_fb_id(fb_id)
         if @player.nil?
           @player = Player.new({:fb_id => fb_id, :name => name})
+          #create_profile(fb_id)
           @player.save
         end
         session[:player] = @player
@@ -96,6 +111,11 @@ class Kadi < Padrino::Application
       @player = Player.first
     else
       get_logged_in_user '/play'
+    end
+    @profile = get_profile(@player.fb_id)
+    if @profile.nil?
+      create_profile(@player.fb_id)
+      @profile = get_profile(@player.fb_id)
     end
     render :play
   end
