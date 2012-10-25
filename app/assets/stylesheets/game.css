@@ -40,6 +40,28 @@
     max-height: inherit;
 }
 
+.social {
+    position: absolute;
+    left: 334px;
+    width: 179px;
+    top: 80px;
+    height: 49px;
+}
+
+.social .dashboard {
+    width: 90px;
+}
+
+.social .share {
+    position: absolute;
+    top: 25px;
+    left: 80px;
+}
+
+.social p {
+    text-align: left;
+}
+
 .options .page-header, .game-over-elimination .page-header {
     margin: 0px 0px 10px 0px;
 }

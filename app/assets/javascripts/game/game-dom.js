@@ -716,14 +716,26 @@ window.kadi.game = (function(me, $, undefined){
             avatar.src = winner.avatar.src;
             winnerDiv.appendChild(avatar);
 
-            var twitter_btn = kadi.createElement('a', 'twitter-mention-button btn btn-success', '', 'Brag');
-            twitter_btn.href = "https://twitter.com/intent/tweet?screen_name=kadigame&text=I%20won";
-            
+            if(winner.live) {
+                var social = kadi.createElement('div', 'social');
+                var twitter_btn = kadi.createElement('a', 'twitter-mention-button btn btn-small btn-primary', '', 'Brag');
+                twitter_btn.href = "https://twitter.com/intent/tweet?screen_name=kadigame&text=I won!! I won!!";
+
+                var dash = kadi.createElement('div', 'dashboard');
+
+                dash.appendChild(kadi.createElement("p", 'muted', null, "Played: " + "<small> 10 </small>"));
+                dash.appendChild(kadi.createElement("p", 'muted', null, "Won: " + "<small> 10 </small>"));
+                social.appendChild(dash);
+
+                var share = kadi.createElement('div', 'share');
+                share.appendChild(twitter_btn);
+                social.appendChild(share);
+
+                winnerDiv.appendChild(social);
+            }
+
             var win = kadi.createElement('p', "lead", "", winner.name + " wins!");
             winnerDiv.appendChild(win);
-            if(winner.live) {
-                winnerDiv.appendChild(twitter_btn);
-            }
 
             dialog.appendChild(winnerDiv);
             dialog.appendChild(kadi.createElement("hr"));
