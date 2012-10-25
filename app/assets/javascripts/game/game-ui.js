@@ -163,8 +163,15 @@ window.kadi.game = (function(me, $, undefined){
 
         startGame: function() {
             var self = this;
+            
+            $.post('/record_times_played', { fb_id: self.me.id }, function(data) {
+                
+            })
+            .success(function() {  })
+            .error(function() {  });
+            
             var starterIdx = kadi.coinToss(this.players);
-//            starterIdx = this.players.length - 1;
+            //starterIdx = this.players.length - 1;
             var starter = this.players[starterIdx];
 
             _.each(this.players, function(p) {
@@ -249,6 +256,14 @@ window.kadi.game = (function(me, $, undefined){
                 },1000);
             });
             SHOTGUN.listen(kadi.game.Events.FINISH, function(player, action, playedCards, mode) {
+                if(player.live) {
+                    $.post('/record_win', { fb_id: player.id }, function(data) {
+                        
+                    })
+                    .success(function() {  })
+                    .error(function() {  });
+                }
+                
                 if (mode == kadi.game.GameOptions.MODE_FIRST_TO_WIN) {
                     self.order.end();
                 } else if (mode == kadi.game.GameOptions.MODE_ELIMINATION) {
@@ -275,6 +290,13 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.game.Events.RESTART_GAME, function(winner) {
+                
+                $.post('/record_times_played', { fb_id: self.me.id }, function(data) {
+                    
+                })
+                .success(function() {  })
+                .error(function() {  });
+                
                 _.each(self.players, function(p) {
                     p.reset();
                 });
@@ -311,10 +333,10 @@ window.kadi.game = (function(me, $, undefined){
                 self.cardless--;
             });
 
-//            _.delay(function() {
-//                starter.returnCards();
-//                SHOTGUN.fire(kadi.game.Events.FINISH, [starter, kadi.game.RuleEngine.ACTION_NONE, [], self.mode]);
-//            }, 0);
+            //_.delay(function() {
+            //    starter.returnCards();
+            //    SHOTGUN.fire(kadi.game.Events.FINISH, [starter, kadi.game.RuleEngine.ACTION_NONE, [], self.mode]);
+            //}, 0);
         },
 
         progressPlay: function(player, action, playedCards, test) {

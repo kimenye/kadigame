@@ -1,6 +1,7 @@
 require 'koala'
 require 'pusher'
 require 'sprockets'
+require_relative 'scores'
 
 class Kadi < Padrino::Application
   use ActiveRecord::ConnectionAdapters::ConnectionManagement
@@ -70,6 +71,54 @@ class Kadi < Padrino::Application
       end
     end
   end
+  
+  def get_user_stats
+    service = ScoreService.new("c4416a7f3717a7787e6cb7c291b5d6f5977146ab", "GpSVZEbhd")
+    user = service.get_user(username = @player.fb_id)
+    if user.nil?
+      service.create_user(username = @player.fb_id)
+      stats = {
+        "current_score" => 0,
+        "number_of_times_played" => 0,
+        "number_of_times_won" => 0
+      }
+    else
+      stats = {
+        "current_score" => service.calculate_score(@player.fb_id),
+        "number_of_times_played" => service.get_time_played(@player.fb_id),
+        "number_of_times_won" => service.get_wins(@player.fb_id)
+      }
+    end
+    return stats
+  end
+  
+  post '/record_times_played', :provides => [:json] do
+    service = ScoreService.new("c4416a7f3717a7787e6cb7c291b5d6f5977146ab", "GpSVZEbhd")
+    result = service.record_time_played(params[:fb_id])
+    
+    if result == true
+      status 200
+      body({:success => true}.to_json)
+    else
+      status 500
+      body({:success => false}.to_json)
+    end
+    
+  end
+  
+  post '/record_win', :provides => [:json] do
+    service = ScoreService.new("c4416a7f3717a7787e6cb7c291b5d6f5977146ab", "GpSVZEbhd")
+    result1 = service.create_score(params[:fb_id], 5)
+    result2 = service.record_win(params[:fb_id])
+    
+    if result1 == true && result2 == true
+      status 200
+      body({:success => true}.to_json)
+    else
+      status 500
+      body({:success => false}.to_json)
+    end
+  end
 
   get :index do
     render :index, :layout => :home
@@ -97,6 +146,7 @@ class Kadi < Padrino::Application
     else
       get_logged_in_user '/play'
     end
+    @user_stats = get_user_stats
     render :play
   end
 

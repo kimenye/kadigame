@@ -1,11 +1,14 @@
 window.kadi.game = (function(me, $, undefined){
     me.Player = JS.Class({
-        construct : function(id, name,live) {
+        construct : function(id, name, live, currentScore, numberOfTimesPlayed, numberOfTimesWon) {
             this.id = id;
             this.name = name;
             this.live = live;
             this.onKADI = false;
             this.selectedOpponent = true;
+            this.currentScore = currentScore;
+            this.numberOfTimesPlayed = numberOfTimesPlayed;
+            this.numberOfTimesWon = numberOfTimesWon;
         },
 
         eq: function(other) {
