@@ -259,8 +259,8 @@ window.kadi.game = (function(me, $, undefined){
             });
             SHOTGUN.listen(kadi.game.Events.FINISH, function(player, action, playedCards, mode) {
                 if(player.live) {
+                    player.numberOfTimesWon++;
                     $.post('/record_win', { fb_id: player.id }, function(data) {
-                        player.numberOfTimesWon++;
                     });
                 }
                 

@@ -1,7 +1,6 @@
 require 'koala'
 require 'pusher'
 require 'sprockets'
-require_relative 'scores'
 
 class Kadi < Padrino::Application
   use ActiveRecord::ConnectionAdapters::ConnectionManagement
@@ -35,14 +34,6 @@ class Kadi < Padrino::Application
       request.scheme
     end
 
-    def service
-      game_id = "GpSVZEbhd"
-      #if production?
-      #  game_id = "ELb9ozqX5"
-      #end
-      @score_service ||= ScoreService.new("c4416a7f3717a7787e6cb7c291b5d6f5977146ab", game_id)
-    end
-
     def url_no_scheme(path = '')
       "//#{host}#{path}"
     end
@@ -59,14 +50,6 @@ class Kadi < Padrino::Application
       return !session[:player].nil?
     end
 
-    def get_profile(id)
-      service.get_user(id)
-    end
-
-    def create_profile(id)
-      service.create_user(id)
-    end
-
     def get_logged_in_user(redirect_to='/')
       @graph  = Koala::Facebook::API.new(session[:access_token])
       @token = session[:access_token]
@@ -79,8 +62,7 @@ class Kadi < Padrino::Application
         @friends_using_app = @app_friends.collect { |f| Player.find_by_fb_id(f['id']) }
 
         if @player.nil?
-          @player = Player.new({:fb_id => fb_id, :name => name})
-          create_profile(fb_id)
+          @player = Player.new({:fb_id => fb_id, :name => name, :times_played => 0, :games_won => 0})
           @player.save
         end
         session[:player] = @player
@@ -92,29 +74,12 @@ class Kadi < Padrino::Application
       end
     end
   end
-  
-  def get_user_stats
-    user = service.get_user(username = @player.fb_id)
-    if user.nil?
-      service.create_user(username = @player.fb_id)
-      stats = {
-        "current_score" => 0,
-        "number_of_times_played" => 0,
-        "number_of_times_won" => 0
-      }
-    else
-      stats = {
-        "current_score" => service.calculate_score(@player.fb_id),
-        "number_of_times_played" => user['time_played'].to_i,
-        "number_of_times_won" => user['kills'].to_i
-      }
-    end
-    return stats
-  end
-  
+
   post '/record_times_played', :provides => [:json] do
-    result = service.record_time_played(params[:fb_id])
-    
+    @player = Player.find_by_fb_id(params[:fb_id])
+    @player.times_played += 1
+    @player.save!
+    result = true
     if result == true
       status 200
       body({:success => true}.to_json)
@@ -126,9 +91,11 @@ class Kadi < Padrino::Application
   end
   
   post '/record_win', :provides => [:json] do
-    result_score = service.create_score(params[:fb_id], 5)
-    result_win = service.record_win(params[:fb_id])
-    
+    @player = Player.find_by_fb_id(params[:fb_id])
+    @player = session[:player]
+    @player.games_won += 1
+    @player.save!
+    result_win = result_score = true
     if result_score == true && result_win == true
       status 200
       body({:success => true}.to_json)
@@ -151,25 +118,33 @@ class Kadi < Padrino::Application
 
   get :social, :provides => [:json]  do
     result = { :success => false }
-    if !session[:player].nil? and !session[:friends_with_app].nil?
-      friends = session[:friends_with_app].collect { |f|
-        profile = service.get_user(f.fb_id)
-        {
-            :id => f.fb_id,
-            :name => f.name,
-            :score => !profile.nil? ? service.calculate_score(f.fb_id) : 0,
-            :times_played => !profile.nil? ? profile['time_played'].to_i : 0,
-            :wins => !profile.nil? ? profile['kills'].to_i : 0
-        }
-      }
-      result = { :success => true, :friends => friends }
-    end
+    #if !session[:player].nil? and !session[:friends_with_app].nil?
+    #  friends = session[:friends_with_app].collect { |f|
+    #    profile = service.get_user(f.fb_id)
+    #    {
+    #        :id => f.fb_id,
+    #        :name => f.name,
+    #        :score => !profile.nil? ? service.calculate_score(f.fb_id) : 0,
+    #        :times_played => !profile.nil? ? profile['time_played'].to_i : 0,
+    #        :wins => !profile.nil? ? profile['kills'].to_i : 0
+    #    }
+    #  }
+    #  result = { :success => true, :friends => friends }
+    #end
     result.to_json
   end
 
   get :play do
     if development?
       @player = Player.first
+      if @player.games_won.nil?
+        @player.games_won = 0
+      end
+
+      if @player.times_played.nil?
+        @player.times_played = 0
+      end
+      @player.save!
       @friends_using_app = Player.all
       @friends_using_app.reject! { |p| p == @player }
 
@@ -177,12 +152,6 @@ class Kadi < Padrino::Application
       session[:friends_with_app] = @friends_using_app
     else
       get_logged_in_user '/play'
-    end
-    if session[:user_stats].nil?
-      @user_stats = get_user_stats
-      session[:user_stats] = @user_stats
-    else
-      @user_stats = session[:user_stats]
     end
     render :play
   end
