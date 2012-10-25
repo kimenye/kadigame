@@ -694,6 +694,7 @@ window.kadi.game = (function(me, $, undefined){
             var self = this;
             if (mode == kadi.game.GameOptions.MODE_FIRST_TO_WIN) {
                 SHOTGUN.listen(kadi.game.Events.FINISH, function(winner, action, playedCards, mode) {
+                    
                     if (mode == kadi.game.GameOptions.MODE_FIRST_TO_WIN) {
                         self.showPlayAgain(winner);
                     }
