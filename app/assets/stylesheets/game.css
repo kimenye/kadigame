@@ -18,6 +18,11 @@
     overflow: hidden;
 }
 
+.spinner {
+    margin: auto;
+    top: 15px;
+}
+
 .play .modal-backdrop {
     z-index: 8000;
 }

@@ -75,12 +75,16 @@ class Kadi < Padrino::Application
         fb_id = @user['id']
         name = @user['name']
         @player = Player.find_by_fb_id(fb_id)
+        @app_friends = @graph.fql_query("SELECT uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1")
+        @friends_using_app = @app_friends.collect { |f| Player.find_by_fb_id(f['id']) }
+
         if @player.nil?
           @player = Player.new({:fb_id => fb_id, :name => name})
-          #create_profile(fb_id)
+          create_profile(fb_id)
           @player.save
         end
         session[:player] = @player
+        session[:friends_with_app] = @friends_using_app
       rescue Koala::Facebook::APIError
         session[:access_token] = nil
         session[:redirect_to] = redirect_to
@@ -100,25 +104,43 @@ class Kadi < Padrino::Application
           }.to_json)
   end
 
-  post '/player/sync', :provides => [:json] do
-    @player = Player.find_by_fb_id(params[:fb_id])
-
-    if !@player.nil?
-      result = @player.update_attributes({ :roar_id => params[:roar_id], :last_logged_in => Time.now })
-      {:success => result}.to_json
+  get :social, :provides => [:json]  do
+    result = { :success => false }
+    if !session[:player].nil? and !session[:friends_with_app].nil?
+      friends = session[:friends_with_app].collect { |f|
+        profile = service.get_user(f.fb_id)
+        {
+            :id => f.fb_id,
+            :name => f.name,
+            :score => !profile.nil? ? service.calculate_score(f.fb_id) : 0,
+            :times_played => !profile.nil? ? profile['time_played'].to_i : 0,
+            :wins => !profile.nil? ? profile['kills'].to_i : 0
+        }
+      }
+      result = { :success => true, :friends => friends }
     end
+    result.to_json
   end
 
   get :play do
     if development?
       @player = Player.first
+      @friends_using_app = Player.all
+      @friends_using_app.reject! { |p| p == @player }
+
+      session[:player] = @player
+      session[:friends_with_app] = @friends_using_app
     else
       get_logged_in_user '/play'
     end
-    @profile = get_profile(@player.fb_id)
-    if @profile.nil?
-      create_profile(@player.fb_id)
+
+    if session[:profile].nil?
       @profile = get_profile(@player.fb_id)
+      if @profile.nil?
+        create_profile(@player.fb_id)
+        @profile = get_profile(@player.fb_id)
+      end
+      session[:profile] = @profile
     end
     render :play
   end
