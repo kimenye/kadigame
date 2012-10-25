@@ -163,9 +163,8 @@ window.kadi.game = (function(me, $, undefined){
 
         startGame: function() {
             var self = this;
-            
             $.post('/record_times_played', { fb_id: self.me.id }, function(data) {
-                
+                self.me.numberOfTimesPlayed++;
             });
             
             var starterIdx = kadi.coinToss(this.players);
@@ -261,7 +260,7 @@ window.kadi.game = (function(me, $, undefined){
             SHOTGUN.listen(kadi.game.Events.FINISH, function(player, action, playedCards, mode) {
                 if(player.live) {
                     $.post('/record_win', { fb_id: player.id }, function(data) {
-                        
+                        player.numberOfTimesWon++;
                     });
                 }
                 
@@ -486,7 +485,7 @@ window.kadi.game = (function(me, $, undefined){
                 if (!wasOnKADI)
                     player.endTurn(action,cards);
                 else {
-                    console.log("%s has finished the game with hand %s", player.name, kadi.handToS(cards));
+                    console.log("%s has finished the game with hand %s, cardless: %s", player.name, kadi.handToS(cards), self.cardless);
                     _.delay(function() {
                         SHOTGUN.fire(kadi.game.Events.FINISH, [player, action, cards, self.mode]);
                     }, 2000);
