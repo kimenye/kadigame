@@ -166,9 +166,7 @@ window.kadi.game = (function(me, $, undefined){
             
             $.post('/record_times_played', { fb_id: self.me.id }, function(data) {
                 
-            })
-            .success(function() {  })
-            .error(function() {  });
+            });
             
             var starterIdx = kadi.coinToss(this.players);
             //starterIdx = this.players.length - 1;
@@ -259,9 +257,7 @@ window.kadi.game = (function(me, $, undefined){
                 if(player.live) {
                     $.post('/record_win', { fb_id: player.id }, function(data) {
                         
-                    })
-                    .success(function() {  })
-                    .error(function() {  });
+                    });
                 }
                 
                 if (mode == kadi.game.GameOptions.MODE_FIRST_TO_WIN) {
@@ -293,9 +289,7 @@ window.kadi.game = (function(me, $, undefined){
                 
                 $.post('/record_times_played', { fb_id: self.me.id }, function(data) {
                     
-                })
-                .success(function() {  })
-                .error(function() {  });
+                });
                 
                 _.each(self.players, function(p) {
                     p.reset();

@@ -151,6 +151,11 @@ window.kadi.game = (function(me, $, undefined){
                 var firstCard = _.first(hand);
                 return kadi.game.RuleEngine.cardCanFollowRequestedSuite(firstCard,suite);
             },
+            
+            canJump: function(hand) {
+                return kadi.countNumberOfCardsOfRank(hand, "J") > 0;
+                //return kadi.game.RuleEngine.countJumpingCards(hand) > 0;
+            },
 
             canPlay : function(hand, topCard) {
                 if (hand.length > 1) {

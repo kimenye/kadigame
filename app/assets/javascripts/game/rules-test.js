@@ -655,6 +655,10 @@ describe("Game mechanics:", function() {
         var action = kadi.game.RuleEngine.actionRequired(h);
         expect(action == kadi.game.RuleEngine.ACTION_SKIP).toBe(true);
     });
+    
+    it("A Jack can block a skip", function() {
+        
+    })
 });
 
 describe("Utilities:", function() {
