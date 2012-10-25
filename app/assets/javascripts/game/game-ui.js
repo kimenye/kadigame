@@ -179,6 +179,11 @@ window.kadi.game = (function(me, $, undefined){
 
             this.order = new me.PlayingOrder(this.players, starterIdx);
             this.dealCards();
+            //TODO: How to give specific players certain cards
+//            var playerOneCards = [kadi.spades("J"), kadi.diamonds("2")];
+//            var playerTwoCards = [kadi.diamonds("J"), kadi.clubs("J")];
+
+//            this.dealSpecificCards([playerOneCards, playerTwoCards]);
 
             SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ this.order.current().name + " to start. " ]);
             SHOTGUN.listen(kadi.game.Events.PICK_CARD, function(player, num) {
@@ -500,6 +505,34 @@ window.kadi.game = (function(me, $, undefined){
 
         pickTopOnly: function() {
             return this.pickingMode == kadi.game.GameOptions.PICKING_MODE_TOP_ONLY;
+        },
+
+        dealSpecificCards: function(playerCards) {
+            _.each(playerCards, function(cards, idx) {
+                var player = this.players[idx];
+
+                _.each(cards, function(card) {
+                    var cardUi = _.find(this.pickingDeck.deck, function(c) {
+                        return c.eq(card);
+                    }, this);
+
+                    player.addCard(cardUi);
+
+                    //remove the card from the deck
+                    this.pickingDeck.deck = _.reject(this.pickingDeck.deck, function(c) {
+                        return c.eq(cardUi);
+                    });
+                }, this);
+
+            }, this);
+
+            var card = this.pickingDeck.cut();
+            this.tableDeck.addCard(card, true);
+
+            SHOTGUN.fire(kadi.game.Events.CARDS_DEALT,[]);
+            var starter = this.order.current();
+            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[this.tableDeck.topCard(),null,null,this.cardlessPlayerExists()],starter.id);
+            SHOTGUN.fire(kadi.game.Events.RECEIVE_TURN,[starter], 'deck');
         },
 
         dealCards: function() {
