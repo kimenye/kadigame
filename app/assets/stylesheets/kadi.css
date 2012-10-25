@@ -118,7 +118,7 @@ body {
     height: 621px;
 }
 
-.notification {
+.notice .notification {
     position: relative;
     color: white;
     font-family: MuseoSans-500;

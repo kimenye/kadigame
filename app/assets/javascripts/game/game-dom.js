@@ -844,10 +844,24 @@ window.kadi.game = (function(me, $, undefined){
             this.pickTopCardOnly = false;
         },
 
+        updateFriends: function(friends) {
+            var list = kadi.createElement("ul", "thumbnails");
+            _.each(friends, function(p) {
+                var li = kadi.createElement("li", "thumbnail span1");
+                var img = kadi.createElement("img", "opponent");
+                img.src = kadi.getProfileUrl(p.id, false);
+                li.appendChild(img);
+
+                var caption = kadi.createElement("div", "caption", "", "<small class='muted'>" + p.name + "</small>");
+                li.appendChild(caption);
+                list.appendChild(li);
+            });
+            this.content.find('.body.loading').replaceWith($(list));
+        },
+
         showProfile: function() {
             var self = this;
             this.profileDiv = kadi.createDiv('options', 'profile_div');
-
             var header = kadi.createDiv('page-header', 'options_header');
             header.appendChild(kadi.createElement("h3", "", "", "KADI <small>Welcome " + this.me.name + "</small>"));
             this.profileDiv.appendChild(header);
@@ -860,13 +874,15 @@ window.kadi.game = (function(me, $, undefined){
                 color: "#fff",
                 shadow: true
             }).spin();
-            var body  = kadi.createDiv('body');
-            body.appendChild(kadi.createElement('p', "lead", "", "Loading..."));
-            body.appendChild(spinner.el);
 
-            this.profileDiv.appendChild(body);
+            this.body = kadi.createDiv('body loading');
+            this.body.appendChild(kadi.createElement('p', "lead", "", "Looking for your friends on Facebook..."));
+            this.body.appendChild(spinner.el);
 
-            bootbox.dialog($(this.profileDiv), {
+            this.profileDiv.appendChild(this.body);
+            this.content = $(this.profileDiv);
+
+            bootbox.dialog(this.content, {
                 "label" : "Play!",
                 "id": "btn-play",
                 "class" : "btn-primary"
@@ -973,6 +989,7 @@ window.kadi.game = (function(me, $, undefined){
         construct: function(player, vs, mode, kadiMode, pickingMode) {
             this.id = me.GameUI.ID;
             this.me = player;
+            this.socialDashboard = new kadi.game.SocialDashboard();
 
             this.opponents = [];
             _.each(vs, function(opponent, idx) {
@@ -1033,7 +1050,7 @@ window.kadi.game = (function(me, $, undefined){
             var compB = new kadi.game.Player('FD03', 'Karucy',false);
             var compC = new kadi.game.Player('O03', 'Makmende',false);
             var compD = new kadi.game.Player('O02', 'Prezzo',false);
-            var ops = [compB, compC, compD];
+            var ops = _.shuffle([compB, compC, compD]);
 
             var handler = new kadi.Handler(function(args) {
                 me.gameObject = new me.GameUI(livePlayer, args[0], args[1], args[2], args[3]);
@@ -1041,14 +1058,8 @@ window.kadi.game = (function(me, $, undefined){
                 me.gameObject.display();
             });
             var optionsDialog = new kadi.game.GameOptionsUI(ops, handler, livePlayer);
-
-            var friendsHandler = new kadi.Handler(function(args) {
-
-            });
-            var dash = new kadi.game.SocialDashboard(friendsHandler);
-
 //            handler.callBack([ops, kadi.game.GameOptions.MODE_FIRST_TO_WIN, kadi.game.GameOptions.ANY_CARDS_KADI, kadi.game.GameOptions.PICKING_MODE_TOP_ONLY]);
-//            handler.callBack([ops, kadi.game.GameOptions.MODE_ELIMINATION, kadi.game.GameOptions.ANY_CARDS_KADI]);
+//            handler.callBack([ops, kadi.game.GameOptions.MODE_ELIMINATION, kadi.game.GameOptions.ANY_CARDS_KADI, kadi.game.GameOptions.PICKING_MODE_TOP_ONLY]);
         }
         preload.loadFile('../images/woodback.jpg');
         preload.loadFile('../images/card_back_generic.png');

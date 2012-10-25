@@ -39,7 +39,8 @@ window.kadi.game = (function(me, $, undefined){
                 if (data.success) {
                     self.friends = data.friends;
                     self.loaded = true;
-                    handler.callBack([self.friends]);
+                    if (kadi.isSomethingMeaningful(self.handler))
+                        handler.callBack([self.friends]);
                 }
             });
         }
