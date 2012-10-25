@@ -716,8 +716,14 @@ window.kadi.game = (function(me, $, undefined){
             avatar.src = winner.avatar.src;
             winnerDiv.appendChild(avatar);
 
+            var twitter_btn = kadi.createElement('a', 'twitter-mention-button btn btn-success', '', 'Brag');
+            twitter_btn.href = "https://twitter.com/intent/tweet?screen_name=kadigame&text=I%20won";
+            
             var win = kadi.createElement('p', "lead", "", winner.name + " wins!");
             winnerDiv.appendChild(win);
+            if(winner.live) {
+                winnerDiv.appendChild(twitter_btn);
+            }
 
             dialog.appendChild(winnerDiv);
             dialog.appendChild(kadi.createElement("hr"));
