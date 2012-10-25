@@ -31,6 +31,23 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
+    me.SocialDashboard = JS.Class({
+        construct: function(handler) {
+            this.friends = [];
+            this.loaded = false;
+            this.handler = handler;
+            var self = this;
+            var url = "/social";
+            $.getJSON(url, function(data) {
+                if (data.success) {
+                    self.friends = data.friends;
+                    self.loaded = true;
+                    handler.callBack([self.friends]);
+                }
+            });
+        }
+    });
+
     me.GamePlayerUI = me.Player.extend({
         statics: {
             BOT_DELAY: 2500

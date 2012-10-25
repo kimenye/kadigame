@@ -831,29 +831,46 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
-    me.GameOptionsUI = me.Box.extend({
-        construct: function(availablePlayers, handler) {
-            this.parent.construct.apply(this, ['game', 'options', 'options-dialog hidden']);
+    me.GameOptionsUI = JS.Class({
+        construct: function(availablePlayers, handler, me) {
             kadi.ui.disableLoading('game');
-            this.display();
+            this.me = me;
 
             this.availablePlayers = availablePlayers;
             this.handler = handler;
-            $(this.div).css('left', kadi.centerInFrame(800, 400));
-            $(this.div).css('top', 600);
-
-            $(this.div).css('z-index',8001);
-            this.overlay = kadi.createDiv('overlay hidden', 'options_overlay');
-
-            this.parentDiv.appendChild(this.overlay);
             this.showSelector();
+//            this.showProfile();
             this.elimination = false;
             this.kadiWithOnlyOneCard = false;
             this.pickTopCardOnly = false;
-            bootbox.setIcons({
-                "OK"      : "icon-ok icon-white",
-                "CANCEL"  : "icon-ban-circle",
-                "CONFIRM" : "icon-ok-sign icon-white"
+        },
+
+        showProfile: function() {
+            var self = this;
+            this.profileDiv = kadi.createDiv('options', 'profile_div');
+
+            var header = kadi.createDiv('page-header', 'options_header');
+            header.appendChild(kadi.createElement("h3", "", "", "KADI <small>Welcome " + this.me.name + "</small>"));
+            this.profileDiv.appendChild(header);
+
+            var spinner = new Spinner({
+                lines: 13,
+                width: 4,
+                radius: 8,
+                corners: 1,
+                color: "#fff",
+                shadow: true
+            }).spin();
+            var body  = kadi.createDiv('body');
+            body.appendChild(kadi.createElement('p', "lead", "", "Loading..."));
+            body.appendChild(spinner.el);
+
+            this.profileDiv.appendChild(body);
+
+            bootbox.dialog($(this.profileDiv), {
+                "label" : "Play!",
+                "id": "btn-play",
+                "class" : "btn-primary"
             });
         },
 
@@ -1024,7 +1041,12 @@ window.kadi.game = (function(me, $, undefined){
                 bootbox.hideAll();
                 me.gameObject.display();
             });
-            var optionsDialog = new kadi.game.GameOptionsUI(ops, handler);
+            var optionsDialog = new kadi.game.GameOptionsUI(ops, handler, livePlayer);
+
+            var friendsHandler = new kadi.Handler(function(args) {
+
+            });
+            var dash = new kadi.game.SocialDashboard(friendsHandler);
 
 //            handler.callBack([ops, kadi.game.GameOptions.MODE_FIRST_TO_WIN, kadi.game.GameOptions.ANY_CARDS_KADI, kadi.game.GameOptions.PICKING_MODE_TOP_ONLY]);
 //            handler.callBack([ops, kadi.game.GameOptions.MODE_ELIMINATION, kadi.game.GameOptions.ANY_CARDS_KADI]);

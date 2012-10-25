@@ -35,6 +35,14 @@ class Kadi < Padrino::Application
       request.scheme
     end
 
+    def service
+      game_id = "GpSVZEbhd"
+      #if production?
+      #  game_id = "ELb9ozqX5"
+      #end
+      @score_service ||= ScoreService.new("c4416a7f3717a7787e6cb7c291b5d6f5977146ab", game_id)
+    end
+
     def url_no_scheme(path = '')
       "//#{host}#{path}"
     end
@@ -51,6 +59,14 @@ class Kadi < Padrino::Application
       return !session[:player].nil?
     end
 
+    def get_profile(id)
+      service.get_user(id)
+    end
+
+    def create_profile(id)
+      service.create_user(id)
+    end
+
     def get_logged_in_user(redirect_to='/')
       @graph  = Koala::Facebook::API.new(session[:access_token])
       @token = session[:access_token]
@@ -59,11 +75,16 @@ class Kadi < Padrino::Application
         fb_id = @user['id']
         name = @user['name']
         @player = Player.find_by_fb_id(fb_id)
+        @app_friends = @graph.fql_query("SELECT uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1")
+        @friends_using_app = @app_friends.collect { |f| Player.find_by_fb_id(f['id']) }
+
         if @player.nil?
           @player = Player.new({:fb_id => fb_id, :name => name})
+          create_profile(fb_id)
           @player.save
         end
         session[:player] = @player
+        session[:friends_with_app] = @friends_using_app
       rescue Koala::Facebook::APIError
         session[:access_token] = nil
         session[:redirect_to] = redirect_to
@@ -131,22 +152,45 @@ class Kadi < Padrino::Application
           }.to_json)
   end
 
-  post '/player/sync', :provides => [:json] do
-    @player = Player.find_by_fb_id(params[:fb_id])
-
-    if !@player.nil?
-      result = @player.update_attributes({ :roar_id => params[:roar_id], :last_logged_in => Time.now })
-      {:success => result}.to_json
+  get :social, :provides => [:json]  do
+    result = { :success => false }
+    if !session[:player].nil? and !session[:friends_with_app].nil?
+      friends = session[:friends_with_app].collect { |f|
+        profile = service.get_user(f.fb_id)
+        {
+            :id => f.fb_id,
+            :name => f.name,
+            :score => !profile.nil? ? service.calculate_score(f.fb_id) : 0,
+            :times_played => !profile.nil? ? profile['time_played'].to_i : 0,
+            :wins => !profile.nil? ? profile['kills'].to_i : 0
+        }
+      }
+      result = { :success => true, :friends => friends }
     end
+    result.to_json
   end
 
   get :play do
     if development?
       @player = Player.first
+      @friends_using_app = Player.all
+      @friends_using_app.reject! { |p| p == @player }
+
+      session[:player] = @player
+      session[:friends_with_app] = @friends_using_app
     else
       get_logged_in_user '/play'
     end
     @user_stats = get_user_stats
+
+    if session[:profile].nil?
+      @profile = get_profile(@player.fb_id)
+      if @profile.nil?
+        create_profile(@player.fb_id)
+        @profile = get_profile(@player.fb_id)
+      end
+      session[:profile] = @profile
+    end
     render :play
   end
 
@@ -162,11 +206,16 @@ class Kadi < Padrino::Application
   end
 
   get '/auth/facebook/callback' do
-    session[:access_token] = authenticator.get_access_token(params[:code])
-    if session[:redirect_to].nil?
+    if params[:error] == "access_denied"
+      flash[:notice] = "<p class='notification'>:-(. Didn't give us permissions. We won't post on your wall without your consent.</p>"
       redirect '/'
     else
-      redirect session[:redirect_to]
+      session[:access_token] = authenticator.get_access_token(params[:code])
+      if session[:redirect_to].nil?
+        redirect '/'
+      else
+        redirect session[:redirect_to]
+      end
     end
   end
 

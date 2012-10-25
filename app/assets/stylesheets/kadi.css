@@ -117,3 +117,20 @@ body {
     width: 960px;
     height: 621px;
 }
+
+.notification {
+    position: relative;
+    color: white;
+    font-family: MuseoSans-500;
+    font-size: 15px;
+    z-index: 2;
+    top: -260px;
+}
+
+.notice {
+    position: absolute;
+    top: 720px;
+    display: block;
+    width: 550px;
+    left: 545px;
+}
