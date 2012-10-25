@@ -14,7 +14,7 @@ class Kadi < Padrino::Application
 
   enable :sessions
 
-  Pusher.app_id = '26156';
+  Pusher.app_id = '26156'
   Pusher.key = '3b40830094bf454823f2'
   Pusher.secret = '4700f33ab2ce0a58b39d'
 
@@ -94,7 +94,6 @@ class Kadi < Padrino::Application
   end
   
   def get_user_stats
-    service = ScoreService.new("c4416a7f3717a7787e6cb7c291b5d6f5977146ab", "GpSVZEbhd")
     user = service.get_user(username = @player.fb_id)
     if user.nil?
       service.create_user(username = @player.fb_id)
@@ -106,15 +105,14 @@ class Kadi < Padrino::Application
     else
       stats = {
         "current_score" => service.calculate_score(@player.fb_id),
-        "number_of_times_played" => service.get_time_played(@player.fb_id),
-        "number_of_times_won" => service.get_wins(@player.fb_id)
+        "number_of_times_played" => user['time_played'].to_i,
+        "number_of_times_won" => user['kills'].to_i
       }
     end
     return stats
   end
   
   post '/record_times_played', :provides => [:json] do
-    service = ScoreService.new("c4416a7f3717a7787e6cb7c291b5d6f5977146ab", "GpSVZEbhd")
     result = service.record_time_played(params[:fb_id])
     
     if result == true
@@ -128,11 +126,10 @@ class Kadi < Padrino::Application
   end
   
   post '/record_win', :provides => [:json] do
-    service = ScoreService.new("c4416a7f3717a7787e6cb7c291b5d6f5977146ab", "GpSVZEbhd")
-    result1 = service.create_score(params[:fb_id], 5)
-    result2 = service.record_win(params[:fb_id])
+    result_score = service.create_score(params[:fb_id], 5)
+    result_win = service.record_win(params[:fb_id])
     
-    if result1 == true && result2 == true
+    if result_score == true && result_win == true
       status 200
       body({:success => true}.to_json)
     else
@@ -181,15 +178,11 @@ class Kadi < Padrino::Application
     else
       get_logged_in_user '/play'
     end
-    @user_stats = get_user_stats
-
-    if session[:profile].nil?
-      @profile = get_profile(@player.fb_id)
-      if @profile.nil?
-        create_profile(@player.fb_id)
-        @profile = get_profile(@player.fb_id)
-      end
-      session[:profile] = @profile
+    if session[:user_stats].nil?
+      @user_stats = get_user_stats
+      session[:user_stats] = @user_stats
+    else
+      @user_stats = session[:user_stats]
     end
     render :play
   end

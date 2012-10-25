@@ -724,8 +724,8 @@ window.kadi.game = (function(me, $, undefined){
 
                 var dash = kadi.createElement('div', 'dashboard');
 
-                dash.appendChild(kadi.createElement("p", 'muted', null, "Played: " + "<small> 10 </small>"));
-                dash.appendChild(kadi.createElement("p", 'muted', null, "Won: " + "<small> 10 </small>"));
+                dash.appendChild(kadi.createElement("p", 'muted', null, "Played: " + "<small> " + winner.currentScore + " </small>"));
+                dash.appendChild(kadi.createElement("p", 'muted', null, "Won: " + "<small> " + winner.numberOfTimesWon + " </small>"));
                 social.appendChild(dash);
 
                 var share = kadi.createElement('div', 'share');

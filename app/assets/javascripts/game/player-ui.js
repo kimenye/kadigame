@@ -54,7 +54,7 @@ window.kadi.game = (function(me, $, undefined){
             BOT_DELAY: 2500
         },
         construct : function(player, deck, prepare) {
-            this.parent.construct.apply(this, [player.id,player.name,player.live]);
+            this.parent.construct.apply(this, [player.id,player.name,player.live, player.currentScore, player.numberOfTimesPlayed, player.numberOfTimesWon]);
             this.deck = deck;
             this.topCard = null;
             this.requestedSuite = null;
@@ -271,7 +271,7 @@ window.kadi.game = (function(me, $, undefined){
                     catch(ex) {
                         var trace = printStackTrace();
                         console.log("Trace: ", trace);
-                        throw ex;
+                        this.pick();
                     }
                 }
 

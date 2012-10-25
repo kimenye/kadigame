@@ -52,19 +52,24 @@ class ScoreService
   end
 
   def create_score(username, points)
+    st = Time.now
     opts = { :username => username, :score => points }
     opts.merge!(@options)
     resp = self.class.post('/createScore', { :body => opts})
+    et = Time.now
+    puts "/createScore: #{et - st}"
     result = JSON.parse(resp)
     is_success(result)
   end
 
   def calculate_score(username)
+    st = Time.now
     opts = { :username => username }
     opts.merge!(@options)
     resp = self.class.post('/getPlayerScores', { :body => opts})
     result = JSON.parse(resp)
-
+    et = Time.now
+    puts "/getPlayerScores: #{et - st}"
     if !is_error(result)
       total = 0
       scores = result.map { |s| s['Score']['score'].to_i }
@@ -77,10 +82,12 @@ class ScoreService
 
   def get_player_field(username, field)
     opts = { :username => username, :field => field }
+    st = Time.now
     opts.merge!(@options)
     resp = self.class.post('/getPlayerField', { :body => opts})
     result = JSON.parse(resp)
-
+    et = Time.now
+    puts "/getPlayerField: #{et - st} s"
     if (result.has_key?(field))
       return result[field]
     else
@@ -89,9 +96,12 @@ class ScoreService
   end
 
   def update_player_field(username, field, value)
+    st = Time.now
     opts = { :username => username, :field => field, :value => value }
     opts.merge!(@options)
     resp = self.class.post('/updatePlayerField', { :body => opts})
+    et = Time.now
+    puts "/updatePlayerField: #{et - st} s"
     result = JSON.parse(resp)
     return is_success(result)
   end

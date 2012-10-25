@@ -75,7 +75,7 @@ window.kadi.game = (function(me, $, undefined){
             getDeckOfCards: function() {
                 var suites = [kadi.game.Suite.CLUBS,kadi.game.Suite.HEARTS,
                     kadi.game.Suite.DIAMONDS,kadi.game.Suite.SPADES];
-
+//                suites = [kadi.game.Suite.CLUBS];
                 var ranks = [kadi.game.Card.ACE,kadi.game.Card.TWO,kadi.game.Card.THREE,kadi.game.Card.FOUR,
                     kadi.game.Card.FIVE,kadi.game.Card.SIX,kadi.game.Card.SEVEN,kadi.game.Card.EIGHT,
                     kadi.game.Card.NINE,kadi.game.Card.TEN,kadi.game.Card.JACK,kadi.game.Card.QUEEN,

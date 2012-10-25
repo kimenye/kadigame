@@ -174,7 +174,7 @@ window.kadi.game = (function(me, $, undefined){
 
             _.each(this.players, function(p) {
                 p.initHandlers();
-                p.kadiMode = self.kadiMode;
+                p.kadiMode = self.kadiMode == kadi.game.GameOptions.ONE_CARD_KADI;
             });
 
             this.order = new me.PlayingOrder(this.players, starterIdx);
@@ -499,7 +499,8 @@ window.kadi.game = (function(me, $, undefined){
         giveCard: function(to,qty) {
             _.each(_.range(qty),function(){
                 var card = this.pickingDeck.deal();
-                to.addCard(card, true);
+                if (kadi.isSomethingMeaningful(card))
+                    to.addCard(card, true);
             },this);
         },
 
