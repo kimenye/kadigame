@@ -75,6 +75,14 @@ class Kadi < Padrino::Application
     end
   end
 
+  post '/stats', :provides => [:json] do
+    @player = Player.find_by_fb_id(params[:fb_id])
+    stat = GameStats.new({:player_id => @player.id, :start_time => params[:start_time], :end_time => params[:end_time], :elimination => params[:elimination], :one_card => params[:one_card], :pick_top_card => params[:pick_top_card] })
+    stat.save!
+    status 200
+    body({:success => true}.to_json)
+  end
+
   post '/record_times_played', :provides => [:json] do
     @player = Player.find_by_fb_id(params[:fb_id])
     @player.times_played += 1
