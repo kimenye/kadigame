@@ -275,6 +275,19 @@ window.kadi.game = (function(me, $, undefined){
             this.x = -1;
             this.y = -1;
             this.rotate = null;
+            this.activeForBlock = false;
+            this.clickHandler = null;
+        },
+        
+        moveCardUp : function() {
+            this.container().css( 'cursor', 'pointer' );
+            var top = Math.max(kadi.game.PlayerDeck.Y_A - 20, this.container().position().top - 20);
+            this.moveTo(null,top,null);
+        },
+        
+        moveCardDown : function() {
+            this.container().css( 'cursor', 'default' );
+            this.reset();
         },
 
         buildNode: function() {
@@ -289,9 +302,7 @@ window.kadi.game = (function(me, $, undefined){
             });
             this.container().hover(function() {
                 if (self.active) {
-                    self.container().css( 'cursor', 'pointer' );
-                    var top = Math.max(kadi.game.PlayerDeck.Y_A - 20, self.container().position().top - 20);
-                    self.moveTo(null,top,null);
+                    self.moveCardUp();
                 }
             }, function() {
                 if (self.active && !self.selected) {
@@ -378,6 +389,9 @@ window.kadi.game = (function(me, $, undefined){
         handleClick: function() {
             if (this.active) {
                 this.select();
+            }
+            else if(this.activeForBlock) {
+                this.clickHandler.callBack([this]);
             }
         },
 

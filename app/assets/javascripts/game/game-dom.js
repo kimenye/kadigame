@@ -1111,9 +1111,10 @@ window.kadi.game = (function(me, $, undefined){
                 bootbox.hideAll();
                 me.gameObject.display();
             });
+
             var optionsDialog = new kadi.game.GameOptionsUI(ops, handler, livePlayer, false, false, false);
 //            handler.callBack([ops, kadi.game.GameOptions.MODE_FIRST_TO_WIN, kadi.game.GameOptions.ONE_CARD_KADI, kadi.game.GameOptions.PICKING_MODE_TOP_ONLY]);
-//            handler.callBack([ops, kadi.game.GameOptions.MODE_ELIMINATION, kadi.game.GameOptions.ANY_CARDS_KADI, kadi.game.GameOptions.PICKING_MODE_TOP_ONLY]);
+//            handler.callBack([ops, kadi.game.GameOptions.MODE_FIRST_TO_WIN, kadi.game.GameOptions.ANY_CARDS_KADI, kadi.game.GameOptions.PICKING_MODE_TOP_ONLY]);
         }
         preload.loadFile('../images/woodback.jpg');
         preload.loadFile('../images/card_back_generic.png');

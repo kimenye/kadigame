@@ -180,6 +180,27 @@ window.kadi.game = (function(me, $, undefined){
                     if (kadi.isEnabled(this))
                         self.kadi(true);
                 });
+                
+                SHOTGUN.listen(kadi.game.Events.BLOCK_SKIP, function() {
+                
+                    var clickHandler = new kadi.Handler(function(args) {
+                        var cardToBlock = args[0];
+                        cardToBlock.clickHandler = null;
+                        cardToBlock.activeForBlock = false;
+                        SHOTGUN.fire(kadi.game.Events.INCREMENT_SKIP, [self, cardToBlock]);
+                    });
+                    self.activateForSkipping(clickHandler);
+                }, this.id);
+                
+                SHOTGUN.listen(kadi.game.Events.RESET_PLAYER_CARDS, function() {
+                    
+                    var jacks = _.filter(self.cards(), function(card) { return card.isJack() });
+                    _.each(jacks, function(jack){
+                        jack.activeForBlock = false;
+                        jack.moveCardDown();
+                    });
+                    
+                }, this.id);
             }
 
             SHOTGUN.listen(kadi.game.Events.CARDS_DEALT, function() {
@@ -205,6 +226,7 @@ window.kadi.game = (function(me, $, undefined){
                 if(!self.onKADI)
                     $(self.avatar).wiggle('start', { limit: 5 });
             }, this.id);
+            
         },
         endTurn: function(action,playedCards) {
             SHOTGUN.fire(kadi.game.Events.END_TURN, [this, action, playedCards]);
@@ -321,6 +343,11 @@ window.kadi.game = (function(me, $, undefined){
         canDeclareKADI: function() {
             return this.cards().length > 0 && kadi.game.RuleEngine.canDeclareKADI(this.cards(), this.kadiMode);
         },
+        
+        canJump: function() {
+            return kadi.game.RuleEngine.canJump(this.deck.cards);
+        },
+        
         pick: function() {
             SHOTGUN.fire(kadi.game.Events.PICK_CARD, [this, 1]);
             this.endTurn(kadi.game.RuleEngine.ACTION_NONE, []);
@@ -378,6 +405,17 @@ window.kadi.game = (function(me, $, undefined){
                 }
             }
         },
+        
+        activateForSkipping: function(clickHandler) {
+            var jacks = _.filter(this.cards(), function(card) { return card.isJack() });
+            _.each(jacks, function(jack){
+                jack.activeForBlock = true;
+                jack.clickHandler = clickHandler;
+                jack.moveCardUp();
+            });
+            
+        },
+        
         activate: function(status) {
             if (this.live) {
                 this.deck.activateCards(status);
