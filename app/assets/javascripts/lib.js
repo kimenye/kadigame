@@ -8,7 +8,7 @@
 //= require jquery.transit
 //= require jquery.wiggle
 //= require jsclass.min
-//= require shotgun.min
+//= require shotgun
 //= require underscore-min
 //= require stacktrace-min-0.4
 //= require browser
