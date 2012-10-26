@@ -220,7 +220,7 @@
         var events = evDir._dirEvents;
 
         // If we have a key, only call the function associated with that key and end.
-        if (key) {
+        if (key && events[key]) {
             events[key].apply(null, args);
             return true;
         }

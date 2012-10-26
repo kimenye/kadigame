@@ -32,7 +32,8 @@ window.kadi.game = (function(me, $, undefined){
             DECREMENT_CARDLESS_COUNTER: "decrement-cardless-counter",
             ELIMINATION_GAME_OVER: "elimination-game-over",
             ELIMINATE_PLAYER: "eliminate-player",
-            REINIT_GAME: "re-init-game"
+            REINIT_GAME: "re-init-game",
+            SHOW_OPTIONS: "show-options"
         }
     });
 
@@ -297,10 +298,7 @@ window.kadi.game = (function(me, $, undefined){
 
             SHOTGUN.listen(kadi.game.Events.RESTART_GAME, function(winner) {
                 self.startTime = new Date();
-                $.post('/record_times_played', { fb_id: self.me.id }, function(data) {
-                    
-                });
-                
+                $.post('/record_times_played', { fb_id: self.me.id });
                 _.each(self.players, function(p) {
                     p.reset();
                 });
@@ -310,10 +308,11 @@ window.kadi.game = (function(me, $, undefined){
 
                 var starterIdx = kadi.coinToss(self.players);
                 if (kadi.isSomethingMeaningful(winner)) {
-                    var p = _.indexOf(self.players, function(p) { return p.eq(winner); });
-                    if (p >= 0) {
-                        starterIdx = p;
-                    }
+                    _.find(self.players, function(p, idx) {
+                        var eq = p.eq(winner);
+                        if (eq) starterIdx = idx;
+                        return eq;
+                    });
                 }
 
                 self.order = new me.PlayingOrder(self.players, starterIdx);
@@ -509,8 +508,16 @@ window.kadi.game = (function(me, $, undefined){
             },this);
         },
 
+        singleCardKadi: function() {
+            return this.kadiMode == kadi.game.GameOptions.ONE_CARD_KADI;
+        },
+
         pickTopOnly: function() {
             return this.pickingMode == kadi.game.GameOptions.PICKING_MODE_TOP_ONLY;
+        },
+
+        eliminationMode: function() {
+            return this.mode == kadi.game.GameOptions.MODE_ELIMINATION;
         },
 
         dealSpecificCards: function(playerCards) {

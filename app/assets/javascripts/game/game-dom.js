@@ -746,15 +746,30 @@ window.kadi.game = (function(me, $, undefined){
             var self = this;
             var dialog =  this.buildHeader(winner);
             var btns = [];
-            btns.push({
-                "label" : "Re-match!",
-                "id": "btn-rematch",
-                "class" : "btn-primary",
-                "callback" : function() {
-                    self.rematch(winner);
+            btns.push(
+                {
+                    "label" : "Re-match!",
+                    "id": "btn-rematch",
+                    "class" : "btn-primary",
+                    "callback" : function() {
+                        self.rematch(winner);
+                    }
+                },
+                {
+                    "label" : "Options",
+                    "id" : "btn-options",
+                    "class" : "btn",
+                    "icon"  : "icon-wrench icon-black",
+                    "callback" : function() {
+                        self.showOptions(winner);
+                    }
                 }
-            });
+            );
             bootbox.dialog($(dialog), btns);
+        },
+        showOptions: function(winner) {
+            bootbox.hideAll();
+            SHOTGUN.fire(kadi.game.Events.SHOW_OPTIONS, [winner]);
         },
         showGameOverScreen: function(players, winner) {
             var self = this;
@@ -844,17 +859,16 @@ window.kadi.game = (function(me, $, undefined){
     });
 
     me.GameOptionsUI = JS.Class({
-        construct: function(availablePlayers, handler, me) {
+        construct: function(availablePlayers, handler, me, eliminationMode, kadiMode, pickTopCard) {
             kadi.ui.disableLoading('game');
             this.me = me;
 
             this.availablePlayers = availablePlayers;
             this.handler = handler;
+            this.elimination = kadi.getVal(eliminationMode);
+            this.kadiWithOnlyOneCard = kadi.getVal(kadiMode);
+            this.pickTopCardOnly = kadi.getVal(pickTopCard);
             this.showSelector();
-//            this.showProfile();
-            this.elimination = false;
-            this.kadiWithOnlyOneCard = false;
-            this.pickTopCardOnly = false;
         },
 
         updateFriends: function(friends) {
@@ -943,7 +957,7 @@ window.kadi.game = (function(me, $, undefined){
             body.appendChild(kadi.createElement("legend",null,null, "Game Options"));
 
             var lblMode = kadi.createElement("label", "checkbox inline");
-            var chkMode = document.createElement("input");
+            var chkMode = kadi.createElement("input", "chk_elimination");
             chkMode.type = "checkbox";
             lblMode.appendChild(chkMode);
             lblMode.appendChild(kadi.createElement("span","","","Elimination"));
@@ -953,7 +967,7 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             var lblFinish = kadi.createElement("label", "checkbox inline");
-            var chkFinish = document.createElement("input");
+            var chkFinish = kadi.createElement("input", 'chk_finish');
             chkFinish.type = "checkbox";
             lblFinish.appendChild(chkFinish);
             lblFinish.appendChild(kadi.createElement("span","","","Only finish with one card"));
@@ -963,7 +977,7 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             var lblPick = kadi.createElement("label", "checkbox inline");
-            var chkPick = document.createElement("input");
+            var chkPick = kadi.createElement("input", 'chk_kadi');
             chkPick.type = "checkbox";
             lblPick.appendChild(chkPick);
             lblPick.appendChild(kadi.createElement("span","","","Only pick the top card"));
@@ -989,6 +1003,18 @@ window.kadi.game = (function(me, $, undefined){
                     self.handler.callBack([opponents, mode, kadiMode, pickMode]);
                 }
             });
+
+            if (this.elimination) {
+                $('.chk_elimination').attr('checked', 'checked');
+            }
+
+            if (this.pickTopCardOnly) {
+                $('.chk_finish').attr('checked', 'checked');
+            }
+
+            if (this.kadiWithOnlyOneCard) {
+                $('.chk_kadi').attr('checked', 'checked');
+            }
         }
     });
 
@@ -1011,6 +1037,21 @@ window.kadi.game = (function(me, $, undefined){
             this.gameOverScreen = new kadi.game.GameOverScreenUI(mode);
             this.requestedSuiteDeck = new kadi.game.RequestedSuiteNotification();
             this.game = new me.Game(this.me,this.opponents, mode, kadiMode, pickingMode);
+
+            var self = this;
+            SHOTGUN.listen(kadi.game.Events.SHOW_OPTIONS, function(winner)  {
+
+                var handler = new kadi.Handler(function(args) {
+                    self.game.mode = args[1];
+                    self.game.kadiMode = args[2];
+                    self.game.pickingMode = args[3];
+                    bootbox.hideAll();
+                    SHOTGUN.fire(kadi.game.Events.RESTART_GAME, [winner]);
+                });
+
+                var optionsDialog = new kadi.game.GameOptionsUI(vs, handler,
+                    player, self.game.eliminationMode(), self.game.singleCardKadi(), self.game.pickTopOnly());
+            });
         },
         display : function() {
             var self = this;
@@ -1070,8 +1111,8 @@ window.kadi.game = (function(me, $, undefined){
                 bootbox.hideAll();
                 me.gameObject.display();
             });
-            var optionsDialog = new kadi.game.GameOptionsUI(ops, handler, livePlayer);
-//            handler.callBack([ops, kadi.game.GameOptions.MODE_FIRST_TO_WIN, kadi.game.GameOptions.ANY_CARDS_KADI, kadi.game.GameOptions.PICKING_MODE_TOP_ONLY]);
+            var optionsDialog = new kadi.game.GameOptionsUI(ops, handler, livePlayer, false, false, false);
+//            handler.callBack([ops, kadi.game.GameOptions.MODE_FIRST_TO_WIN, kadi.game.GameOptions.ONE_CARD_KADI, kadi.game.GameOptions.PICKING_MODE_TOP_ONLY]);
 //            handler.callBack([ops, kadi.game.GameOptions.MODE_ELIMINATION, kadi.game.GameOptions.ANY_CARDS_KADI, kadi.game.GameOptions.PICKING_MODE_TOP_ONLY]);
         }
         preload.loadFile('../images/woodback.jpg');
