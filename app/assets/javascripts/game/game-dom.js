@@ -1063,7 +1063,7 @@ window.kadi.game = (function(me, $, undefined){
             var compB = new kadi.game.Player('FD03', 'Karucy',false);
             var compC = new kadi.game.Player('O03', 'Makmende',false);
             var compD = new kadi.game.Player('O02', 'Prezzo',false);
-            var ops = _.shuffle([compB, compC, compD]);
+            var ops = _.shuffle([compB]);
 
             var handler = new kadi.Handler(function(args) {
                 me.gameObject = new me.GameUI(livePlayer, args[0], args[1], args[2], args[3]);
