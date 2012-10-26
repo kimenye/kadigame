@@ -196,7 +196,7 @@ window.kadi.game = (function(me, $, undefined){
                 var otherIsJoker = other.isJoker();
 
                 if (card.isQueen() || card.isEight() )
-                    return follow && (sameSuite || sameRank) || otherIsAce;
+                    return follow && (sameSuite || sameRank) || otherIsAce || otherIsJoker;
                 else if (card.isKing() && kadi.isSomethingMeaningful(previousCards) && kadi.countNumberOfCardsOfRank(previousCards, "K") % 2 != 0 ) {
                     return follow && (sameSuite || sameRank || otherIsJoker);
                 }

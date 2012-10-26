@@ -113,6 +113,11 @@ describe("Card rules:", function() {
         hand = [kadi.spades("2"),kadi.joker("0")];
         expect(kadi.game.RuleEngine.isValidMove(hand, kadi.diamonds("6"))).toBe(false);
     });
+
+    it("Checks for valid moves", function() {
+        var hand = [kadi.spades("Q"), kadi.joker("0")];
+        expect(kadi.game.RuleEngine.isValidMove(hand, kadi.spades("5"))).toBe(true);
+    });
     
     it("A Queen can follow a King if the previous number of kings after the first king is odd", function() {
         //K,Q

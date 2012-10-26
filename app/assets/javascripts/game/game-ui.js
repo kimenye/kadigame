@@ -165,9 +165,8 @@ window.kadi.game = (function(me, $, undefined){
         startGame: function() {
             var self = this;
             this.startTime = new Date();
-            $.post('/record_times_played', { fb_id: self.me.id }, function(data) {
-                self.me.numberOfTimesPlayed++;
-            });
+            self.me.numberOfTimesPlayed++;
+            $.post('/record_times_played', { fb_id: self.me.id }, function(data) { });
             
             var starterIdx = kadi.coinToss(this.players);
             //starterIdx = this.players.length - 1;
@@ -260,17 +259,17 @@ window.kadi.game = (function(me, $, undefined){
                 },1000);
             });
             SHOTGUN.listen(kadi.game.Events.FINISH, function(player, action, playedCards, mode) {
-                $.post('/stats', { fb_id: self.me.id, start_time: self.startTime, end_time: new Date(),
-                    elimination: mode == kadi.game.GameOptions.MODE_ELIMINATION,
-                    one_card: self.kadiMode == kadi.game.GameOptions.ONE_CARD_KADI,
-                    pick_top_card: self.pickTopOnly() }, function(data) {
-                });
-
                 if(player.live) {
                     player.numberOfTimesWon++;
                     $.post('/record_win', { fb_id: player.id }, function(data) {
                     });
                 }
+
+                $.post('/stats', { fb_id: self.me.id, start_time: self.startTime, end_time: new Date(),
+                    elimination: mode == kadi.game.GameOptions.MODE_ELIMINATION,
+                    one_card: self.kadiMode == kadi.game.GameOptions.ONE_CARD_KADI,
+                    pick_top_card: self.pickTopOnly() }, function(data) {
+                });
                 
                 if (mode == kadi.game.GameOptions.MODE_FIRST_TO_WIN) {
                     self.order.end();
