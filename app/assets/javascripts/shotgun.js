@@ -219,10 +219,14 @@
     function invokeEvents(evDir, key, args, beRecursive) {
         var events = evDir._dirEvents;
 
+        
         // If we have a key, only call the function associated with that key and end.
         if (key) {
-            events[key].apply(null, args);
-            return true;
+            if (events[key]) {
+                events[key].apply(null, args);
+                return true;    
+            }
+            
         }
 
         // If we don't have a key, call all the functions in the evdir.

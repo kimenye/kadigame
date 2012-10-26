@@ -1070,8 +1070,8 @@ window.kadi.game = (function(me, $, undefined){
                 bootbox.hideAll();
                 me.gameObject.display();
             });
-            var optionsDialog = new kadi.game.GameOptionsUI(ops, handler, livePlayer);
-//            handler.callBack([ops, kadi.game.GameOptions.MODE_FIRST_TO_WIN, kadi.game.GameOptions.ANY_CARDS_KADI, kadi.game.GameOptions.PICKING_MODE_TOP_ONLY]);
+            //var optionsDialog = new kadi.game.GameOptionsUI(ops, handler, livePlayer);
+            handler.callBack([ops, kadi.game.GameOptions.MODE_FIRST_TO_WIN, kadi.game.GameOptions.ANY_CARDS_KADI, kadi.game.GameOptions.PICKING_MODE_TOP_ONLY]);
 //            handler.callBack([ops, kadi.game.GameOptions.MODE_ELIMINATION, kadi.game.GameOptions.ANY_CARDS_KADI, kadi.game.GameOptions.PICKING_MODE_TOP_ONLY]);
         }
         preload.loadFile('../images/woodback.jpg');
