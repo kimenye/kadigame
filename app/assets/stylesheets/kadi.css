@@ -30,6 +30,54 @@ body {
     display: none;
 }
 
+.mailingList {
+    height: 54px;
+    margin: 60px auto 100px auto;
+    position: relative;
+    top: -385px;
+    left: 0px;
+}
+
+.mailingList p {
+    left: 407px;
+    display: block;
+    position: relative;
+    color:white;
+    width: 495px;
+    font-size: 15px;
+}
+
+.big-input {
+    z-index: 2;
+    position: relative;
+    left: 407px;
+    width: 480px;
+    height: 25px !important;
+    border-radius: 5px;
+    font-family: MuseoSans-500 !important;
+    border: 1px solid grey !important;
+    color: grey !important;
+    font-size: 20px !important;
+}
+
+.btn-submit {
+    position: relative;
+    height: 30px !important;
+    top: -4px;
+    width: 150px !important;
+    left: 250px;
+    z-index: 3;
+    background-color: #40A1C6;
+    border: 1px solid gray;
+    border-radius: 2px;
+    color: white;
+    font-family: MuseoSans-500;
+    text-transform: uppercase;
+    font-size: 14px;
+    padding-top: 6px;
+}
+
+
 #largeFbButtonWrap {
     text-align: center;
     height: 54px;
@@ -81,7 +129,7 @@ body {
     left: 140px;
     width: 800px;
     height: 90px;
-    top: -308px;
+    top: -330px;
 }
 
 .sprout_logo {
@@ -124,13 +172,13 @@ body {
     font-family: MuseoSans-500;
     font-size: 15px;
     z-index: 2;
-    top: -260px;
 }
 
 .notice {
-    position: absolute;
-    top: 720px;
+    position: relative;
+    top: -465px;
+    height: 20px;
     display: block;
     width: 550px;
-    left: 545px;
+    left: 406px;
 }

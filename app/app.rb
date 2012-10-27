@@ -1,6 +1,8 @@
 require 'koala'
 require 'pusher'
 require 'sprockets'
+require 'httparty'
+require 'json'
 
 class Kadi < Padrino::Application
   use ActiveRecord::ConnectionAdapters::ConnectionManagement
@@ -161,7 +163,12 @@ class Kadi < Padrino::Application
     else
       get_logged_in_user '/play'
     end
-    render :play
+  end
+
+  post '/mailing-list', :provides => [:json] do
+    resp = HTTParty.post('http://www.kadi.co.ke/subscribers', {:body =>  {:email => params[:email] }.to_json })
+    result = JSON.parse(resp)['success']
+    {:success => result}.to_json
   end
 
   if development?

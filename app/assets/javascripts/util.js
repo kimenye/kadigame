@@ -476,6 +476,11 @@ window.kadi = (function(me, $, undefined){
         return BrowserDetect.browser == "Chrome" && BrowserDetect.OS == "Linux";
     };
 
+    me.validateEmail = function(email) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    };
+
     //+ Jonas Raoni Soares Silva
     //@ http://jsfromhell.com/array/permute [rev. #1]
     me.permute = function(v, m){
