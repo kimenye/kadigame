@@ -9,11 +9,10 @@ class Kadi < Padrino::Application
   register Padrino::Rendering
   register Padrino::Mailer
   register Padrino::Helpers
-  register Padrino::Sprockets
+  register Padrino::Assets
 
-  sprockets :minify => false
-
-  enable :sessions
+  set :js_compressor, :uglifier
+  set :compress_assets, true
 
   Pusher.app_id = '26156'
   Pusher.key = '3b40830094bf454823f2'
@@ -163,6 +162,7 @@ class Kadi < Padrino::Application
     else
       get_logged_in_user '/play'
     end
+    render :play
   end
 
   post '/mailing-list', :provides => [:json] do

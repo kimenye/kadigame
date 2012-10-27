@@ -22,8 +22,8 @@ gem 'rack-test', :git => "https://github.com/brynary/rack-test.git"
 
 # Padrino Stable Gem
 gem 'padrino', '0.10.7'
-gem 'padrino-sprockets', :require => 'padrino/sprockets', :git => 'git://github.com/nightsailer/padrino-sprockets'
-gem 'jsmin'
+gem 'padrino-assets'
+gem 'uglifier'
 
 gem 'koala'
 

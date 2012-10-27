@@ -7,6 +7,10 @@
 #sync logs
 $stdout.sync = true
 
+map '/assets' do
+  run Padrino::Assets.environment
+end
+
 require File.expand_path("../config/boot.rb", __FILE__)
 
 run Padrino.application
