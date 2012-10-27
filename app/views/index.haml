@@ -7,9 +7,11 @@
           %a{:href=>'/play'}
             %span Play
       %form.mailingList
-        %p Still shuffling... leave your email and we'll keep you posted when we deal.
+        %p Almost ready... leave your email and we'll keep you posted when we deal.
         %input.big-input#email{:type => 'email'}
         %input.btn-submit#submit{:type => 'submit', :value => 'Keep Me Posted'}
+      .notice
+        %p.notification
       .links
         .fb
           .fb-like{"data-href"=>'http://www.facebook.com/kadigame',  "data-width"=>'400', "data-show-faces"=>'false', "data-stream"=>'false', "data-header"=>'false'}
@@ -33,9 +35,20 @@
       };
 
       var address = $('#email');
-      if (validateEmail(address.val())) {
+      var email = address.val();
+      if (validateEmail(email)) {
         address.attr('disabled', true);
+        $('.notice .notification').html('Saving your email address.');
+
+        $.post('/mailing-list', { email: email }, function(data) {
+          if (data.success) {
+            address.attr('disabled', false);
+            $('.notice .notification').html("Thank you for your interest! We'll hit you up before we launch.");
+          }
+        });
       }
+      else
+        $('.notice .notification').html('Please enter a valid email address!');
       return false;
     });
   });
