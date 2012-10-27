@@ -1,71 +1,54 @@
-.container
-  .page-header
-    %h1
-      %a
-        =image_tag "/images/logo_fb.png", :class => 'logo'
-      %small Kenyan Style Poker
-.container
-  - if !@player
-    =partial 'base/login'
-  - else
-    -#.row
-      .container
-        %a.span1.offset11{:href=>'/logout'} Logout
-    .row#dashboard
-      .container
-        .row
-          .span1
-            .container
-              .row
-                =image_tag "https://graph.facebook.com/#{@player.fb_id}/picture"
-              .row
-                %p= @player.name
-          .span9.offset1
-            .container
-              .row
-                %table.table.table-bordered.span8
-                  %thead
-                    %th.span2
-                      %h5 Credits
-                    %th.span2
-                      %h5 XP
-                    %th.span2
-                      %h5 Level
-                    %th.span2
-                      %h5 Players online
-                  %tbody
-                    %tr
-                      %td
-                        %p{'data-bind' => 'text: credits'}
-                      %td
-                        %p{'data-bind' => 'text: xp'}
-                      %td
-                        %p{'data-bind' => 'text: level'}
-                      %td
-                        %p{'data-bind' => 'text: numPlayersOnline'}
-        .row
-          %br
-      .container
-        .row{'data-bind' => 'if: numPlayersOnline() < 2'}
-          %p.lead Oops! Lonely? Other players are coming soon...
-        .row{'data-bind' => 'if: numPlayersOnline() > 1'}
-          %table.table.table-bordered.span4
-            %thead
-              %th Players
-            %tbody{'data-bind' => 'foreach: playersOnline'}
-              %tr
-                %td
-                  .container.span4
-                    .row
-                      %img{'data-bind' => "attr: { src: photo }"}
-                      %p{'data-bind' => 'text: name'}
-                    .row{'data-bind' => 'fadeVisible: canAcceptInvite'}
-                      %button.btn.btn-warning{'data-toggle' => 'button', 'data-bind' => "click: $root.acceptInvite, attr: { id: 'btn-accept-' + id(), 'data-loading-text' : 'Preparing game...' }" } Accept!
-                    .row{'data-bind' => 'fadeVisible: disableInvite'}
-                      %button.btn.btn-success{'data-toggle' => 'button', 'data-bind' => "click: $root.inviteToPlay, disable: canAcceptInvite, attr: { id: 'btn-' + id(), 'data-loading-text': 'Contacting ' + name() + ' ...', 'data-progress-text' : 'Sent! Waiting for response...', 'data-complete-text' : 'Accepted! Preparing game...'} "} Play!
-    .row#board
-      #game.container.span9
+#main.main
+  .container
+    .row
+      .splash
+      -##largeFbButtonWrap
+        .largeFbButton
+          %a{:href=>'/play'}
+            %span Play
+      %form.mailingList
+        %p Almost ready... leave your email and we'll keep you posted when we deal.
+        %input.big-input#email{:type => 'email'}
+        %input.btn-submit#submit{:type => 'submit', :value => 'Keep Me Posted'}
+      .notice
+        %p.notification
+      .links
+        .fb
+          .fb-like{"data-href"=>'http://www.facebook.com/kadigame',  "data-width"=>'400', "data-show-faces"=>'false', "data-stream"=>'false', "data-header"=>'false'}
+        .twitter
+          %a{:href=>'https://twitter.com/kadigame', :class=>'twitter-follow-button', "data-size"=>'large', "data-show-count"=>'true'}
+            Follow @kadigame
+          %script
+            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+        %a{:href=>'http://sprout.co.ke', :target=>'_blank', :class=>'sprout_logo',}
+          %img{:src=>'/images/sprout.png', :title=>'Sprout'}
+#fb-root
+  %script
+    (function(d, s, id) {var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) return;js = d.createElement(s); js.id = id;js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));
 
+:javascript
+  $(document).ready(function () {
+    $('.mailingList').submit(function() {
+      function validateEmail(email) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+      };
 
-    -content_for :app_js, partial("base/app_js")
--content_for :lib_js, partial("base/lib_js")
+      var address = $('#email');
+      var email = address.val();
+      if (validateEmail(email)) {
+        address.attr('disabled', true);
+        $('.notice .notification').html('Saving your email address.');
+
+        $.post('/mailing-list', { email: email }, function(data) {
+          if (data.success) {
+            address.attr('disabled', false);
+            $('.notice .notification').html("Thank you for your interest! We'll hit you up before we launch.");
+          }
+        });
+      }
+      else
+        $('.notice .notification').html('Please enter a valid email address!');
+      return false;
+    });
+  });

@@ -4,9 +4,8 @@ window.kadi.game = (function(me, $, undefined){
             this.id = id;
             this.name = name;
             this.live = live;
-            if (this.live)
-                this.name = "You";
             this.onKADI = false;
+            this.selectedOpponent = true;
         },
 
         eq: function(other) {
@@ -17,6 +16,13 @@ window.kadi.game = (function(me, $, undefined){
             return this.id + " - " + this.name;
         },
 
+        name: function(personal) {
+            if (this.live && kadi.getVal(personal))
+                return "You";
+            else
+                return this.name;
+        },
+
         isBot: function() {
             return !this.live;
         }
@@ -24,46 +30,42 @@ window.kadi.game = (function(me, $, undefined){
 
     me.GamePlayerUI = me.Player.extend({
         statics: {
-            BOT_DELAY: 2000
+            BOT_DELAY: 2500
         },
-        construct : function(player, deck) {
+        construct : function(player, deck, prepare) {
             this.parent.construct.apply(this, [player.id,player.name,player.live]);
             this.deck = deck;
             this.topCard = null;
             this.requestedSuite = null;
             this.blockMode = false;
             this.cardsToPick = [];
+            this.kadiMode = false;
             this.selections = [];
+            this.cardlessPlayerExists = false;
             if (player.live) {
                 this.notification = new kadi.game.PlayerNotification();
             }
+            if (kadi.getVal(prepare))
+                this.initDisplay();
         },
-        display: function() {
+        initDisplay: function() {
+            var self = this;
             this.div = kadi.createDiv('player ' + this.getLocation() + "", "p" + this.id);
             if (this.live)
                 this.parent = document.getElementById(kadi.game.GameUI.CONTAINER_ID);
             else
                 this.parent = document.getElementById(kadi.game.GameUI.ID);
 
-            var url = "http://graph.facebook.com/" + this.id + "/picture";
+            var url = kadi.getProfileUrl(this.id, this.live);
             this.avatar = document.createElement("IMG");
             this.avatar.className = "img-polaroid img-rounded avatar";
+            this.imageLoaded = false;
 
-//            var preload = new createjs.PreloadJS();
-//            preload.onFileLoad = this.handleProfileImageLoaded;
-//            preload.onFileLoad = handleFileComplete;
-//            preload.loadFile('http://createjs.com/images/404/gBot-confused.jpg');
-//            function handleFileComplete(event) {
-//                document.body.appendChild(event.result);
-//            }
+            var self = this;
+            this.avatar.onload = function() {
+                self.imageLoaded = true;
+            };
 
-//            preload.loadFile(url);
-//            this.handleProfileImageLoaded = function(event) {
-//                console.log("Result ", event);
-//            }
-
-
-//            this.avatar.src = "/images/avatars/plain.gif";
             this.avatar.src = url;
             this.div.appendChild(this.avatar);
 
@@ -77,7 +79,8 @@ window.kadi.game = (function(me, $, undefined){
 
                 this.div.appendChild(this.buttonDiv);
             }
-
+        },
+        display: function() {
             this.parent.appendChild(this.div);
         },
         getLocation: function() {
@@ -89,7 +92,16 @@ window.kadi.game = (function(me, $, undefined){
         cards: function() {
             return this.deck.cards;
         },
+        hide: function() {
+            $(this.avatar).addClass('hidden');
+        },
+        show: function() {
+            $(this.avatar).removeClass('hidden');
+        },
         addCard: function(card,redraw) {
+            if (this.cards().length < 1) {
+                SHOTGUN.fire(kadi.game.Events.DECREMENT_CARDLESS_COUNTER);
+            }
             if (this.live)
                 card.flip();
             this.deck.addCard(card);
@@ -100,19 +112,20 @@ window.kadi.game = (function(me, $, undefined){
             this.deck.removeCard(card);
             if (redraw)
                 this.deck.redrawCards();
+            if (this.cards().length < 1) {
+                SHOTGUN.fire(kadi.game.Events.INCREMENT_CARDLESS_COUNTER);
+            }
         },
 
         reset: function() {
             this.kadi(false);
             this.returnCards();
+            this.show();
             $(this.avatar).removeClass('active');
         },
 
         returnCards: function() {
             SHOTGUN.fire(kadi.game.Events.RETURNED_CARDS, [this.cards()]);
-//            _.each(this.cards(), function(c) {
-//                this.removeCard(c,false);
-//            },this);
             this.deck.cards = [];
         },
 
@@ -142,10 +155,6 @@ window.kadi.game = (function(me, $, undefined){
                     if (kadi.isEnabled(this))
                         self.move();
                 });
-                this.btnPick = $('.btn-pick').click(function() {
-                    if (kadi.isEnabled(this))
-                        self.pick();
-                });
                 this.btnKadi = $('.btn-kadi').click(function() {
                     if (kadi.isEnabled(this))
                         self.kadi(true);
@@ -156,7 +165,8 @@ window.kadi.game = (function(me, $, undefined){
                 self.deck.redrawCards();
             });
 
-            SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function(card, requestedSuite, prev) {
+            SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function(card, requestedSuite, prev,cardlessPlayerExists) {
+                self.cardlessPlayerExists = cardlessPlayerExists;
                 if (self.live) {
                     self.activate(true);
                     self.requestedSuite = requestedSuite;
@@ -166,7 +176,7 @@ window.kadi.game = (function(me, $, undefined){
                         if (kadi.isSomethingMeaningful(prev) && prev.live) {
                             prev.disableKADI();
                         }
-                        self.bot(card, requestedSuite);
+                        self.bot(card, requestedSuite, cardlessPlayerExists);
                     },kadi.game.GamePlayerUI.BOT_DELAY);
                 }
 
@@ -215,18 +225,20 @@ window.kadi.game = (function(me, $, undefined){
             $('.btn-kadi').attr('disabled', true);
             $('.btn-kadi').addClass('disabled');
         },
-        bot: function(card, requestedSuite) {
+        bot: function(card, requestedSuite, cardlessPlayerExists) {
             //TODO: give the players some thinking time...
             var cards = this.cards();
 
             if (kadi.isSomethingMeaningful(requestedSuite)) {
                 var canPlayWithRequestedSuite = kadi.game.RuleEngine.canMeetMatchingSuite(cards, requestedSuite);
+//                console.log("Can play with requested suite: ", requestedSuite, canPlayWithRequestedSuite);
                 if (!canPlayWithRequestedSuite) {
+//                    console.log("About to pick");
                     this.pick();
                 }
                 else
                 {
-                    var canFinish = this.onKADI &&  kadi.game.RuleEngine.canFinish(cards,null,requestedSuite);
+                    var canFinish = this.onKADI &&  kadi.game.RuleEngine.canFinish(cards,null,requestedSuite,cardlessPlayerExists);
 
                     var move = kadi.game.Strategy.bestMoveForRequestedSuite(cards,requestedSuite);
                     if (canFinish) {
@@ -237,7 +249,7 @@ window.kadi.game = (function(me, $, undefined){
                 }
 
             } else {
-                var canFinish = this.onKADI && kadi.game.RuleEngine.canFinish(cards,card,null);
+                var canFinish = this.onKADI && kadi.game.RuleEngine.canFinish(cards,card,null,cardlessPlayerExists);
                 if (canFinish) {
                     var moves = kadi.game.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,card,null);
                     var move = _.first(moves);
@@ -277,7 +289,7 @@ window.kadi.game = (function(me, $, undefined){
             }
         },
         canDeclareKADI: function() {
-            return this.cards().length > 0 && kadi.game.RuleEngine.canDeclareKADI(this.cards());
+            return this.cards().length > 0 && kadi.game.RuleEngine.canDeclareKADI(this.cards(), this.kadiMode);
         },
         pick: function() {
             SHOTGUN.fire(kadi.game.Events.PICK_CARD, [this, 1]);
@@ -299,7 +311,7 @@ window.kadi.game = (function(me, $, undefined){
             {
                 if (this.selections.length > 0) {
                     this.activateActions(false);
-                    var canFinish = this.onKADI & kadi.game.RuleEngine.canFinish(this.cards(), this.topCard, this.requestedSuite);
+                    var canFinish = this.onKADI & kadi.game.RuleEngine.canFinish(this.cards(), this.topCard, this.requestedSuite, this.cardlessPlayerExists);
                     SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, this.selections, canFinish]);
                 }
             }
@@ -319,16 +331,24 @@ window.kadi.game = (function(me, $, undefined){
         },
         activateForBlocking: function(pickingCards) {
             if (this.live) {
-                $('.btn-kadi').attr('disabled', true);
+                var hasOnlyOneCardToBlock = kadi.game.RuleEngine.countBlockingCards(this.cards()) == 1;
 
-                $('.btn-move').attr('disabled', false);
-                $('.btn-move').removeClass('disabled');
-                $('.btn-move').html('Block :-)');
+                if (hasOnlyOneCardToBlock) {
+                    this.blockMode = true;
+                    var blockingCard = _.detect(this.cards(), function(c) { return c.isBlockingCard() });
+                    blockingCard.select();
+                    this.move();
+                }
+                else {
+                    $('.btn-kadi').attr('disabled', true);
+                    $('.btn-move').attr('disabled', false);
+                    $('.btn-move').removeClass('disabled');
+                    $('.btn-move').html('Block :-)');
 
-                this.deck.activatePickingCards();
-                this.blockMode = true;
-                this.cardsToPick = pickingCards;
-                this.turnToPlay = true;
+                    this.deck.activatePickingCards();
+                    this.blockMode = true;
+                    this.cardsToPick = pickingCards;
+                }
             }
         },
         activate: function(status) {

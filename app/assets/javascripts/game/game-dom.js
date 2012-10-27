@@ -11,8 +11,10 @@ window.kadi.game = (function(me, $, undefined){
             this.turnCount = 0;
             this.isPaused = false;
             this.pauseHandler = null;
-            this.playerCount = this.players.length;
             this.begin();
+        },
+        playerCount: function() {
+            return this.players.length;
         },
         begin: function() {
             this.currentIdx = this.startIdx;
@@ -23,6 +25,9 @@ window.kadi.game = (function(me, $, undefined){
         pause: function(handler) {
             this.pauseHandler = handler;
             this.isPaused = true;
+        },
+        finish: function(player) {
+            this.players = _.reject(this.players, function(p) { return p.eq(player); }, this);
         },
         end: function() {
             this.isPaused = true;
@@ -40,7 +45,7 @@ window.kadi.game = (function(me, $, undefined){
             var n = this.currentIdx;
             if (this.isClockwise()) {
                 n += 1;
-                if (n >= this.playerCount)
+                if (n >= this.playerCount())
                     n = 0;
             }   else {
                 n = Math.max(0, n -1 );
@@ -63,13 +68,13 @@ window.kadi.game = (function(me, $, undefined){
                 this.turnCount++;
                 if (this.isClockwise()) {
                     var n = this.currentIdx + 1;
-                    if (n >= this.playerCount)
+                    if (n >= this.playerCount())
                         n = 0;
                     this.currentIdx = n;
                 } else {
                     var n = this.currentIdx - 1;
                     if (n < 0)
-                        n = this.playerCount - 1;
+                        n = this.playerCount() - 1;
                     this.currentIdx = n;
                 }
             }
@@ -95,7 +100,7 @@ window.kadi.game = (function(me, $, undefined){
             this.div = document.createElement("DIV");
             this.div.id = id;
             this.div.className = className;
-            this.parent = document.getElementById(parent);
+            this.parentDiv = document.getElementById(parent);
             $(this.div).css('z-index','0');
         },
 
@@ -104,7 +109,7 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         display: function() {
-            this.parent.appendChild(this.div);
+            this.parentDiv.appendChild(this.div);
         },
         moveTo: function(x,y) {
             var options = {};
@@ -269,7 +274,7 @@ window.kadi.game = (function(me, $, undefined){
             card.moveTo(left,top, rotate, origin);
         },
 
-        redrawCards: function(init) {
+        redrawCards: function() {
             if (this.hasCards()) {
                 var fan = [];
                 if (this.isVertical()) {
@@ -359,7 +364,7 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         display: function() {
-            this.parent.appendChild(this.div);
+            this.parentDiv.appendChild(this.div);
             var positions = kadi.randomizeCardLocations(this.deck.length, this.bBox());
             _.each(this.deck, function(card,idx) {
                 var pos = positions[idx];
@@ -525,7 +530,6 @@ window.kadi.game = (function(me, $, undefined){
             var self = this;
             this.display();
 
-            window.node = this.node();
             this.node().transition({ rotate: '20 deg' }, 500, 'snap');
             this.messages = [];
             var linesDiv = document.createElement("DIV");
@@ -578,7 +582,7 @@ window.kadi.game = (function(me, $, undefined){
             $(this.div).css('z-index',8001);
 
             this.overlay = kadi.createDiv('overlay hidden', 'notification_overlay');
-            this.parent.appendChild(this.overlay);
+            this.parentDiv.appendChild(this.overlay);
 
             SHOTGUN.listen(kadi.game.Events.PLAYER_NOTIFICATION_UI, function(player, action, playedCards) {
                 if (action == kadi.game.RuleEngine.ACTION_PICK_OR_BLOCK) {
@@ -588,8 +592,10 @@ window.kadi.game = (function(me, $, undefined){
                 }
             });
 
-            SHOTGUN.listen(kadi.game.Events.FINISH, function(player) {
-                self.showPlayAgain(player);
+            SHOTGUN.listen(kadi.game.Events.FINISH, function(player, action, playedCards, mode) {
+                if (mode == kadi.game.GameOptions.MODE_FIRST_TO_WIN || player.live) {
+                    self.showPlayAgain(player);
+                }
             });
 
             SHOTGUN.listen(kadi.game.Events.UNHANDLED_ERROR, function(err) {
@@ -645,9 +651,14 @@ window.kadi.game = (function(me, $, undefined){
             this.resetDialog(this.gameOverDialog);
             this.gameOverDialog = kadi.createDiv('win_screen', 'gameOverDialog');
 
-            var title = document.createElement("h3");
+            var title = document.createElement("h4");
             title.innerHTML = player.name + " won!";
             this.gameOverDialog.appendChild(title);
+
+            var avatar = document.createElement("IMG");
+            avatar.className = "img-polaroid img-rounded avatar";
+            avatar.src = player.avatar.src;
+            this.gameOverDialog.appendChild(avatar);
 
             var playAgainButton = kadi.createButton("btn btn-large btn-success","Play Again!");
             $(playAgainButton).click(function() {
@@ -817,6 +828,110 @@ window.kadi.game = (function(me, $, undefined){
         }
     });
 
+    me.GameOptionsUI = me.Box.extend({
+        construct: function(availablePlayers, handler) {
+            this.parent.construct.apply(this, ['game', 'options', 'options-dialog hidden']);
+            kadi.ui.disableLoading('game');
+            this.display();
+
+            this.availablePlayers = availablePlayers;
+            this.handler = handler;
+            $(this.div).css('left', kadi.centerInFrame(800, 400));
+            $(this.div).css('top', 600);
+
+            $(this.div).css('z-index',8001);
+            this.overlay = kadi.createDiv('overlay hidden', 'options_overlay');
+
+            this.parentDiv.appendChild(this.overlay);
+            this.showSelector();
+            this.continuePlaying = false;
+            this.kadiWithOnlyOneCard = false;
+            bootbox.setIcons({
+                "OK"      : "icon-ok icon-white",
+                "CANCEL"  : "icon-ban-circle",
+                "CONFIRM" : "icon-ok-sign icon-white"
+            });
+        },
+
+        showSelector: function() {
+            var self = this;
+            this.dialogDiv = kadi.createDiv('options', 'options_div');
+
+            var header = kadi.createDiv('page-header', 'options_header');
+            header.appendChild(kadi.createElement("h3", "", "", "KADI <small>Choose your options...</small>"));
+            this.dialogDiv.appendChild(header);
+
+            var body  = kadi.createDiv('body');
+            body.appendChild(kadi.createElement('p', "lead", "", "Customize how you play KADI, including chosing your opponents and your Rules!"));
+
+            var list = kadi.createElement("ul", "thumbnails");
+
+            body.appendChild(list);
+            _.each(this.availablePlayers, function(p) {
+
+                var li = kadi.createElement("li", "thumbnail span1");
+                var img = kadi.createElement("img", "opponent");
+                img.src = kadi.getProfileUrl(p.id, false);
+                li.appendChild(img);
+
+                var caption = kadi.createElement("div", "caption", "", "<small class='muted'>" + p.name + "</small>");
+                li.appendChild(caption);
+
+                if (p.selectedOpponent)
+                    $(li).addClass("selected");
+
+                $(li).click(function() {
+                    p.selectedOpponent = !p.selectedOpponent;
+                    $(li).toggleClass("selected");
+
+                    var numSelected = _.reject(self.availablePlayers, function(p) { return !p.selectedOpponent }).length;
+                    kadi.enable($('.modal-footer a'), numSelected >= 1);
+                });
+
+                list.appendChild(li);
+            });
+
+
+            body.appendChild(kadi.createElement("legend",null,null, "Game Options"));
+
+            var lblMode = kadi.createElement("label", "checkbox");
+            var chkMode = document.createElement("input");
+            chkMode.type = "checkbox";
+            lblMode.appendChild(chkMode);
+            lblMode.appendChild(kadi.createElement("span","","","Continue playing after first player wins"));
+
+            $(chkMode).click(function() {
+                self.continuePlaying = !self.continuePlaying;
+            });
+
+            var lblFinish = kadi.createElement("label", "checkbox");
+            var chkFinish = document.createElement("input");
+            chkFinish.type = "checkbox";
+            lblFinish.appendChild(chkFinish);
+            lblFinish.appendChild(kadi.createElement("span","","","Only finish with one card"));
+
+            $(chkFinish).click(function() {
+                self.kadiWithOnlyOneCard = !self.kadiWithOnlyOneCard;
+            });
+
+            body.appendChild(lblMode);
+            body.appendChild(lblFinish);
+
+            this.dialogDiv.appendChild(body);
+            bootbox.dialog($(this.dialogDiv), {
+                "label" : "Play!",
+                "id": "btn-play",
+                "class" : "btn-primary",
+                "callback" : function() {
+                    var opponents = _.reject(self.availablePlayers, function(p) { return !p.selectedOpponent });
+                    var mode = self.continuePlaying ? kadi.game.GameOptions.MODE_LAST_PLAYER_STANDING : kadi.game.GameOptions.MODE_FIRST_TO_WIN;
+                    var kadiMode = self.kadiWithOnlyOneCard ? kadi.game.GameOptions.ONE_CARD_KADI : kadi.game.GameOptions.ANY_CARDS_KADI;
+                    self.handler.callBack([opponents, mode, kadiMode]);
+                }
+            });
+        }
+    });
+
     me.GameUI = JS.Class({
         statics: {
             width: 800,
@@ -824,21 +939,23 @@ window.kadi.game = (function(me, $, undefined){
             ID: 'game',
             CONTAINER_ID: 'game-container'
         },
-        construct: function(player, vs) {
+        construct: function(player, vs, mode, kadiMode) {
             this.id = me.GameUI.ID;
-            if (kadi.isSomethingMeaningful(player))
-                this.me = new kadi.game.GamePlayerUI(player, new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A));
+            this.me = player;
 
             this.opponents = [];
             _.each(vs, function(opponent, idx) {
-                this.opponents.push(new me.GamePlayerUI(opponent,new kadi.game.PlayerDeck.fromIndex(idx)));
+                this.opponents.push(new me.GamePlayerUI(opponent,new kadi.game.PlayerDeck.fromIndex(idx), true));
             },this);
-            this.game = new me.Game(this.me,this.opponents);
+            this.game = new me.Game(this.me,this.opponents, mode, kadiMode);
         },
 
         display : function() {
-            kadi.ui.disableLoading('game');
-            this.game.startGame();
+            var self = this;
+            _.delay(function() {
+                kadi.ui.disableLoading('game');
+                self.game.startGame();
+            }, 2000);
         }
     });
 
@@ -850,9 +967,51 @@ window.kadi.game = (function(me, $, undefined){
      */
     me.initGameUI = function(player, opponents) {
         if (kadi.isSomethingMeaningful(player))
-            kadi.ui.updateLoadingText('Welcome ' + player.name + '. Preparing the game...');
-        me.gameObject = new me.GameUI(player, opponents);
-        me.gameObject.display();
+            kadi.ui.updateLoadingText('Welcome ' + player.name + ". The game will be ready in a few moments...");
+
+        var livePlayer = new kadi.game.GamePlayerUI(player, new kadi.game.PlayerDeck(kadi.game.PlayerDeck.TYPE_A, true));
+        livePlayer.initDisplay();
+
+        var preload = new createjs.PreloadJS();
+        preload.onFileLoad = handleFileLoaded;
+        preload.onError = handleFileError;
+
+        var loadCount = 0;
+
+        function handleFileLoaded(event) {
+            switch (event.type){
+                case createjs.PreloadJS.CSS:
+                    loadCount++;
+                    break;
+                case createjs.PreloadJS.IMAGE:
+                    loadCount++;
+                    if (loadCount == 2)
+                        showOptions();
+                    break;
+            }
+        }
+
+        function handleFileError(result) {
+            console.log("Error with loading file ", result);
+        }
+
+
+        function showOptions() {
+            kadi.ui.updateLoadingText("Almost there...");
+            var compB = new kadi.game.Player('FD03', 'Karucy',false);
+            var compC = new kadi.game.Player('O03', 'Makmende',false);
+            var compD = new kadi.game.Player('O02', 'Prezzo',false);
+            var ops = [compB, compC, compD];
+
+            var handler = new kadi.Handler(function(args) {
+                me.gameObject = new me.GameUI(livePlayer, args[0], args[1], args[2]);
+                bootbox.hideAll();
+                me.gameObject.display();
+            });
+            var optionsDialog = new kadi.game.GameOptionsUI(ops, handler);
+        }
+        preload.loadFile('../images/woodback.jpg');
+        preload.loadFile('../images/card_back_generic.png');
     };
 
     return me;

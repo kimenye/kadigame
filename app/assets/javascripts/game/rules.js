@@ -81,6 +81,9 @@ window.kadi.game = (function(me, $, undefined){
 //                var num = kadi.game.RuleEngine.calculatePicking(playedCards);
                 return _.reject(hand, function(c) { return !c.isJack() }).length;
             },
+            calculateTurnsReverse: function(hand) {
+                return _.reject(hand, function(c) { return !c.isKing() }).length;
+            },
             calculatePicking: function(hand) {
                 var total = 0;
                 _.each(hand, function(c) {
@@ -100,11 +103,12 @@ window.kadi.game = (function(me, $, undefined){
                 return !card.isFaceCard() && !card.isSpecialCard() && !card.isAce();
             },
 
-            canBlock: function(hand) {
-                var handHasAce = kadi.containsCardOfRank(hand, kadi.game.Card.ACE);
-                var handHasPickingCard = kadi.containsPickingCard(hand);
+            countBlockingCards: function(hand) {
+                return _.filter(hand, function(c) { return c.isBlockingCard() }).length;
+            },
 
-                return handHasAce || handHasPickingCard;
+            canBlock: function(hand) {
+                return kadi.game.RuleEngine.countBlockingCards(hand) > 0;
             },
 
             isValidBlockingMove : function(move) {
@@ -117,8 +121,9 @@ window.kadi.game = (function(me, $, undefined){
             canFollow: function(card, other) {
                 var isSameSuite = card.suite == other.suite;
                 var isSameRank = card.rank == other.rank;
+                var areBothPickingCards = card.isPickingCard() && other.isPickingCard();
 
-                var can_follow = (isSameRank || isSameSuite || other.isAce() || card.isAce() || card.isJoker() || other.isJoker());
+                var can_follow = (isSameRank || isSameSuite || other.isAce() || card.isAce() || card.isJoker() || other.isJoker() || areBothPickingCards);
                 return can_follow;
             },
 
@@ -166,15 +171,31 @@ window.kadi.game = (function(me, $, undefined){
                 return false;
             },
 
-            canPlayTogetherWith: function(card, other) {
+            isValidMove: function(hand, topCard) {
+                if (hand.length > 1) {
+                    var validGroup = kadi.game.RuleEngine.evaluateGroup(hand);
+                    return validGroup && kadi.game.RuleEngine.canFollow(_.first(hand), topCard);
+                } else {
+                    var _card = _.first(hand);
+                    return kadi.game.RuleEngine.canFollow(_card,topCard);
+                }
+            },
+
+            canPlayTogetherWith: function(card, other, previousCards) {
                 var follow = me.RuleEngine.canFollow(card,other);
+                var bothPickingCards = card.isPickingCard() && other.isPickingCard();
                 var sameRank = card.rank == other.rank;
                 var sameSuite = card.suite == other.suite;
+                var otherIsAce = other.isAce();
+                var otherIsJoker = other.isJoker();
 
-                if (card.isQueen() || card.isEight())
-                    return follow && (sameSuite || sameRank);
+                if (card.isQueen() || card.isEight() )
+                    return follow && (sameSuite || sameRank) || otherIsAce;
+                else if (card.isKing() && kadi.isSomethingMeaningful(previousCards) && kadi.countNumberOfCardsOfRank(previousCards, "K") % 2 != 0 ) {
+                    return follow && (sameSuite || sameRank || otherIsJoker);
+                }
                 else
-                    return follow && sameRank;
+                    return (follow && sameRank) || bothPickingCards;
             },
 
             canEndMove: function(card) {
@@ -194,15 +215,22 @@ window.kadi.game = (function(me, $, undefined){
             evaluateGroup: function(hand) {
                 if (hand.length < 2)
                     return false;
-
+                
                 var _result = false;
                 var _preceding = _.first(hand);
 
-                var _idx = _.indexOf(hand, _preceding, false) + 1;
+                var _idx = 1;
+                
                 while(_idx < hand.length) {
+                    var _previous = [];
+                    if(hand.length > 2 && _idx > 1) {
+                        _previous = _.first(hand, _idx-1);
+                    }
+                    
                     var _following = _.first(_.rest(hand, _idx));
-                    _result = kadi.game.RuleEngine.canPlayTogetherWith(_preceding, _following);
-
+                    var _others = _.rest(hand, _idx + 1);
+                    _result = kadi.game.RuleEngine.canPlayTogetherWith(_preceding, _following, _previous);
+                
                     if (!_result)
                         break;
                     _idx++;
@@ -255,18 +283,20 @@ window.kadi.game = (function(me, $, undefined){
                 return _groups;
             },
 
-            canFinish: function(hand,topCard, suite) {
-                if (hand.length > 1 && hand.length <= 5) {
-                    var validMoves = me.RuleEngine.movesThatCanFollowTopCardOrSuite(hand, topCard, suite);
-                    return validMoves.length > 0;
-                } else if (hand.length > 5)
-                    return false;
-                else {
-                    if (kadi.isSomethingMeaningful(topCard))
-                        return me.RuleEngine.canFollow(_.first(hand), topCard);
-                    else
+            canFinish: function(hand, topCard, suite, cardlessPlayerExists) {
+                if (!cardlessPlayerExists) {
+                    if (hand.length > 1 && hand.length <= 5) {
+                        var validMoves = me.RuleEngine.movesThatCanFollowTopCardOrSuite(hand, topCard, suite);
+                        return validMoves.length > 0;
+                    } else if (hand.length > 5) return false;
+                    else {
+                        if (kadi.isSomethingMeaningful(topCard)) return me.RuleEngine.canFollow(_.first(hand), topCard);
+                        else
                         return me.RuleEngine.cardCanFollowRequestedSuite(_.first(hand), suite);
+                    }
                 }
+                else
+                    return false;
             },
 
             movesThatCanFollowTopCardOrSuite: function(hand, topCard, suite) {
@@ -286,26 +316,32 @@ window.kadi.game = (function(me, $, undefined){
                     });
             },
 
-            canDeclareKADI: function(hand) {
+            canDeclareKADI: function(hand, singleCardOnly) {
                 var handHasPickingCard = kadi.containsPickingCard(hand);
                 var hasK = kadi.containsCardOfRank(hand,kadi.game.Card.KING);
                 var hasJ = kadi.containsCardOfRank(hand,kadi.game.Card.JACK);
                 var singleCard = hand.length < 2;
                 var hasAce = kadi.containsCardOfRank(hand,kadi.game.Card.ACE);
+                var singleOnly = kadi.getVal(singleCardOnly);
 
                 if(!handHasPickingCard && !hasK && !hasJ && !hasAce) {
-                    if (singleCard)
-                        return me.RuleEngine.canEndMove(_.first(hand));
-                    else {
-                        var moves = kadi.permute(hand);
-                        var validMove = _.detect(moves, function(move) {
-                            return me.RuleEngine.evaluateGroup(move);
-                        });
-                        return kadi.isSomethingMeaningful(validMove);
+                    if (singleOnly) {
+                        if (singleCard)
+                            return me.RuleEngine.canEndMove(_.first(hand));
+                    }
+                    else{
+                        if (singleCard)
+                            return me.RuleEngine.canEndMove(_.first(hand));
+                        else {
+                            var moves = kadi.permute(hand);
+                            var validMove = _.detect(moves, function(move) {
+                                return !_.last(move).isQuestion() && me.RuleEngine.evaluateGroup(move);
+                            });
+                            return kadi.isSomethingMeaningful(validMove);
+                        }
                     }
                 }
-                else
-                    return false;
+                return false;
             }
         }
     });

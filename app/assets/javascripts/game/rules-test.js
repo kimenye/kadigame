@@ -74,6 +74,68 @@ describe("Card rules:", function() {
 
         expect(kadi.game.RuleEngine.canPlayTogetherWith(five_d, ace)).toBe(false);
     });
+    
+    it("A King and a Queen cannot be in a move even if they are in the same rank", function() {
+        
+        var king_spades = kadi.spades("K");
+        var queen_spades = kadi.spades("Q");
+        
+        expect(kadi.game.RuleEngine.canPlayTogetherWith(king_spades, queen_spades)).toBe(false);
+    });
+    
+    it("A Queen can be in a move with Kings if the player reverses cancel each other out", function() {
+        
+        var king_diamonds = kadi.diamonds("K");
+        var king_spades = kadi.spades("K");
+        var queen_spades = kadi.spades("Q");
+        var hand = [king_diamonds, king_spades, queen_spades];
+        
+        expect(kadi.game.RuleEngine.evaluateGroup(hand)).toBe(true);
+        expect(kadi.game.RuleEngine.evaluateGroup([kadi.diamonds("K"), kadi.diamonds("Q")])).toBe(false);
+        expect(kadi.game.RuleEngine.evaluateGroup([kadi.hearts("K"), kadi.diamonds("K"), kadi.diamonds("Q")])).toBe(true);
+        expect(kadi.game.RuleEngine.evaluateGroup([kadi.hearts("K"), kadi.spades("K"), kadi.diamonds("K"), kadi.diamonds("Q")])).toBe(false);
+
+        hand = [kadi.hearts("K"), kadi.spades("K"), kadi.diamonds("K"), kadi.diamonds("Q")];
+        expect(kadi.game.RuleEngine.isValidMove(hand, kadi.joker('0'))).toBe(false);
+
+        hand = [kadi.hearts("K"), kadi.spades("K"), kadi.clubs("K"), kadi.diamonds("K"), kadi.diamonds("Q")];
+        expect(kadi.game.RuleEngine.evaluateGroup(hand)).toBe(true);
+        
+        expect(kadi.game.RuleEngine.isValidMove(hand, kadi.joker('0'))).toBe(true);
+        expect(kadi.game.RuleEngine.isValidMove([kadi.clubs("8")], kadi.clubs("3"))).toBe(true);
+
+        expect(kadi.game.RuleEngine.isValidMove([kadi.hearts("K"), kadi.clubs("K"), kadi.joker("0")], kadi.joker("1"))).toBe(true);
+    });
+
+    it("Assesses whether a move is valid", function() {
+        var hand = [kadi.joker("0"), kadi.spades("2")];
+        expect(kadi.game.RuleEngine.isValidMove(hand, kadi.diamonds("6"))).toBe(true);
+        hand = [kadi.spades("2"),kadi.joker("0")];
+        expect(kadi.game.RuleEngine.isValidMove(hand, kadi.diamonds("6"))).toBe(false);
+    });
+    
+    it("A Queen can follow a King if the previous number of kings after the first king is odd", function() {
+        //K,Q
+        expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.diamonds("K"), kadi.diamonds("Q"))).toBe(false);
+        
+        //K,K,Q
+        expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.diamonds("K"), kadi.diamonds("Q"), [kadi.hearts("K")])).toBe(true);
+       
+        expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.diamonds("K"), kadi.diamonds("Q"), [kadi.hearts("K"), kadi.spades("K")])).toBe(false);
+       
+        expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.diamonds("K"), kadi.diamonds("Q"), [kadi.hearts("K"), kadi.spades("K"), kadi.clubs("K")])).toBe(true);
+    });
+    
+    it("An ace can only follow a King if the previous card to the King is also a King", function() {
+       expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.diamonds("K"), kadi.diamonds("A"))).toBe(false);
+       
+       expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.diamonds("K"), kadi.diamonds("A"), [kadi.hearts("K")])).toBe(true);
+       
+       expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.diamonds("K"), kadi.diamonds("A"), [kadi.hearts("K"), kadi.spades("K")])).toBe(false);
+       
+       expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.diamonds("K"), kadi.diamonds("A"), [kadi.hearts("K"), kadi.spades("K"), kadi.clubs("K")])).toBe(true);
+       
+    });
 
     it("A queen cannot finish a move", function() {
         var card = kadi.diamonds("Q");
@@ -115,23 +177,31 @@ describe("Card rules:", function() {
     describe("Picking card rules", function() {
 
         it("An ace can block any picking card", function() {
-
             var h = [kadi.diamonds("A"), kadi.diamonds("5")];
-
             expect(kadi.game.RuleEngine.canBlock(h)).toBe(true);
         });
 
-        it("An ordinary card cannot block a picking card", function() {
+        it("An ace can answer any question", function() {
+            expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.spades("Q"), kadi.hearts("A")));
+        });
 
+        it("An ordinary card cannot block a picking card", function() {
             var h = [kadi.diamonds("5")];
             expect(kadi.game.RuleEngine.canBlock(h)).toBe(false);
         });
 
         it("Any picking card block another picking card", function() {
-
             var h = [kadi.diamonds("3"), kadi.spades("5"), kadi.clubs("J")];
-
             expect(kadi.game.RuleEngine.canBlock(h)).toBe(true);
+        });
+
+        it("A picking card is a picking card", function() {
+            expect(kadi.game.RuleEngine.canFollow(kadi.diamonds("3"), kadi.spades("2"))).toBe(true);
+            expect(kadi.game.RuleEngine.canPlayTogetherWith(kadi.joker("0"), kadi.spades("2"))).toBe(true);
+        });
+
+        it("Returns the number of cards that can be used to block", function() {
+            expect(kadi.game.RuleEngine.countBlockingCards([kadi.spades("A")])).toBe(1);
         });
 
         it("A picking move cannot mix a picking card and an ace", function() {
@@ -140,7 +210,6 @@ describe("Card rules:", function() {
             expect(kadi.game.RuleEngine.isValidBlockingMove(h)).toBe(false);
             expect(kadi.game.RuleEngine.isValidBlockingMove([kadi.spades("A")])).toBe(true);
             expect(kadi.game.RuleEngine.isValidBlockingMove([kadi.spades("3"), kadi.clubs("2")])).toBe(true);
-
         });
     });
 
@@ -228,13 +297,19 @@ describe("Card rules:", function() {
             expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(false);
         });
 
-        it("A player can be on on kadi if their remainig cards can form a single move", function() {
+        it("A player can be on on kadi if their remaining cards can form a single move", function() {
             var hand = [kadi.spades("4"), kadi.diamonds("4")];
             expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
         });
 
-        it("A player can be on kadi if they have questions that can be answered", function() {
+        it("A player can be on kadi if they have questions only if they can be answered", function() {
             var hand = [kadi.spades("8"), kadi.diamonds("8"), kadi.diamonds("Q"), kadi.diamonds("4")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
+
+            hand = [kadi.spades("Q"), kadi.hearts("Q")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(false);
+
+            hand = [kadi.spades("Q"), kadi.spades("5"), kadi.hearts("Q")];
             expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
         });
 
@@ -287,6 +362,20 @@ describe("Card rules:", function() {
             hand = [kadi.spades("4")];
             var moves = kadi.game.RuleEngine.movesThatCanFollowTopCardOrSuite(hand, null, requestedSuite);
             expect(moves.length).toBe(1);
+        });
+
+        it("In single card KADI mode, you can only be only finish with one card", function() {
+            var hand = [kadi.spades("8"), kadi.spades("4")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand)).toBe(true);
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand,true)).toBe(false);
+
+            hand = [kadi.spades("8")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand,true)).toBe(false);
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand,false)).toBe(false);
+
+            hand = [kadi.spades("4")];
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand,true)).toBe(true);
+            expect(kadi.game.RuleEngine.canDeclareKADI(hand,false)).toBe(true);
         });
     });
 });
@@ -416,11 +505,34 @@ describe("Game mechanics:", function() {
         expect(order.current().eq(playerA)).toBe(true);
     });
 
-    it("A King causes a reverse action", function() {
+    it("When a player finishes the game in last player standing the game continues without the player", function() {
+        var order = new kadi.game.PlayingOrder([playerA, playerB, playerC, playerD], 0);
+        order.next();
+        order.next();
+        expect(order.current().eq(playerC)).toBe(true);
+        expect(order.peek().eq(playerD)).toBe(true);
+
+        order.finish(playerC);
+        expect(order.current().eq(playerD)).toBe(true);
+        order.next();
+        expect(order.current().eq(playerA)).toBe(true);
+    });
+
+    it("A single King causes a reverse action", function() {
         var king = kadi.spades("K");
         var h = [king];
         var action = kadi.game.RuleEngine.actionRequired(h);
         expect(action).toBe(kadi.game.RuleEngine.ACTION_REVERSE);
+        expect(kadi.game.RuleEngine.calculateTurnsReverse(h)).toBe(1);
+    });
+    
+    it("Two Kings cause a double reverse action", function() {
+        
+        var hand = [kadi.spades("K"), kadi.hearts("8"), kadi.diamonds("K")];
+        var action = kadi.game.RuleEngine.actionRequired(hand);
+
+        expect(action).toBe(kadi.game.RuleEngine.ACTION_REVERSE);
+        expect(kadi.game.RuleEngine.calculateTurnsReverse(hand)).toBe(2);
     });
 
     it("Two jumps causes a double jump action", function() {
@@ -557,6 +669,20 @@ describe("Utilities:", function() {
 
         hand.push(kadi.joker("0"));
         expect(kadi.highestPickingCard(hand).eq(kadi.joker("0"))).toBe(true);
+    });
+    
+    it("Returns the number of cards of the specified rank in the hand", function() {
+       var hand = [kadi.diamonds("K")];
+       expect(kadi.countNumberOfCardsOfRank(hand, "Q")).toBe(0);
+       expect(kadi.countNumberOfCardsOfRank(hand,"K")).toBe(1);
+       
+       var newHand = hand.concat([kadi.spades("K"), kadi.hearts("K")]);
+       expect(kadi.countNumberOfCardsOfRank(newHand,"K")).toBe(3);
+    });
+
+    it("Builds the correct profile url", function() {
+        expect(kadi.getProfileUrl("FD03", false)).toBe("/images/avatars/FD03.png");
+        expect(kadi.getProfileUrl("FD03", true)).toBe("http://graph.facebook.com/FD03/picture");
     });
 });
 

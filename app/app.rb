@@ -1,12 +1,17 @@
 require 'koala'
 require 'pusher'
+require 'sprockets'
+require 'httparty'
+require 'json'
 
 class Kadi < Padrino::Application
   use ActiveRecord::ConnectionAdapters::ConnectionManagement
   register Padrino::Rendering
   register Padrino::Mailer
   register Padrino::Helpers
+  register Padrino::Sprockets
 
+  sprockets :minify => false
 
   enable :sessions
 
@@ -40,58 +45,50 @@ class Kadi < Padrino::Application
     def authenticator
       @authenticator ||= Koala::Facebook::OAuth.new(ENV["FACEBOOK_APP_ID"], ENV["FACEBOOK_SECRET"], url("/auth/facebook/callback"))
     end
-  end
 
+    def is_logged_in?
+      return !session[:player].nil?
+    end
 
-  get :index do
-    @graph  = Koala::Facebook::API.new(session[:access_token])
-    @token = session[:access_token]
-
-    #If we have a valid access token
-    if session[:access_token]
+    def get_logged_in_user(redirect_to='/')
+      @graph  = Koala::Facebook::API.new(session[:access_token])
+      @token = session[:access_token]
       begin
-        #read the object from the fb graph
         @user = @graph.get_object("me")
-        puts ">> User #{@user}"
         fb_id = @user['id']
         name = @user['name']
-
         @player = Player.find_by_fb_id(fb_id)
         if @player.nil?
           @player = Player.new({:fb_id => fb_id, :name => name})
-
-          if @player.save
-            puts ">>successfully saved to the database"
-          else
-            puts ">> there was a problem saving that player to the database"
-          end
+          @player.save
         end
-
-        all_friends = @graph.get_connections('me', 'friends')
-        friends_using_app = @graph.fql_query("SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1")
-
-        @friends = all_friends.collect { |f|
-          using_app = friends_using_app.detect { |friend_using| friend_using['id'] == f['id'] }
-          {
-            :id => f['id'],
-            :name => f['name'],
-            :using_app => !using_app.nil?
-          }
-        }
-
+        session[:player] = @player
       rescue Koala::Facebook::APIError
-        puts ">>> The Facebook Session has expired"
         session[:access_token] = nil
+        session[:redirect_to] = redirect_to
         redirect "/auth/facebook"
       end
     end
+  end
 
-    render :index
+  get :index do
+    render :index, :layout => :home
+  end
+  
+  get :version do
+    status 200
+    body({
+            :version => "1.0"
+          }.to_json)
+  end
+
+  post '/mailing-list', :provides => [:json] do
+    resp = HTTParty.post('http://www.kadi.co.ke/subscribers', {:body =>  {:email => params[:email] }.to_json })
+    result = JSON.parse(resp)['success']
+    {:success => result}.to_json
   end
 
   post '/player/sync', :provides => [:json] do
-
-    puts ">>> Syncing player with params #{params}"
     @player = Player.find_by_fb_id(params[:fb_id])
 
     if !@player.nil?
@@ -100,10 +97,14 @@ class Kadi < Padrino::Application
     end
   end
 
-  get :test do
-    render "test"
+  get :play do
+    redirect '/'
+    get_logged_in_user '/play'
+    #@player = Player.first
+    render :play
   end
 
+  #TODO: Disable for production
   get :jasmine do
     render "jasmine", :layout => :jasminetest
   end
@@ -115,7 +116,11 @@ class Kadi < Padrino::Application
 
   get '/auth/facebook/callback' do
     session[:access_token] = authenticator.get_access_token(params[:code])
-    redirect '/'
+    if session[:redirect_to].nil?
+      redirect '/'
+    else
+      redirect session[:redirect_to]
+    end
   end
 
   post "/pusher/presence/auth", :provides => [:json] do

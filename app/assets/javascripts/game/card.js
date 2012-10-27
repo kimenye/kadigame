@@ -185,6 +185,10 @@ window.kadi.game = (function(me, $, undefined){
                 return 0;
             }
 
+            this.isBlockingCard = function() {
+                return this.isPickingCard() || this.isAce();
+            };
+
             this.isPickingCard = function() {
                 return this.isJoker() || this.is("2") || this.is("3");
             };
@@ -282,6 +286,11 @@ window.kadi.game = (function(me, $, undefined){
             this.div.appendChild(this.buildFront());
 
             this.card_container.appendChild(this.div);
+
+            if (kadi.isChromeOnLinux()) {
+                this.container().children().find('.front').removeClass('front').addClass('temp');
+                this.container().children().find('.inner').css('display', 'none');
+            }
         },
 
         deSelect: function() {
@@ -367,6 +376,19 @@ window.kadi.game = (function(me, $, undefined){
             this.revealed = !this.revealed;
             this.elem().find('.inner').toggleClass('hidden');
             this.elem().toggleClass('flip');
+
+            if (kadi.isChromeOnLinux()) {
+                var toShow = this.revealed;
+                var toHide = !toShow;
+                if (toHide) {
+                    this.container().children().find('.front').removeClass('front').addClass('temp');
+                    this.container().children().find('.inner').css('display', 'none');
+                }
+                else {
+                    this.container().children().find('.temp').addClass('front').removeClass('temp');
+                    this.container().children().find('.inner').css('display', 'block');
+                }
+            }
         },
 
         hide: function() {

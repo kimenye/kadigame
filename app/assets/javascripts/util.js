@@ -74,6 +74,13 @@ window.kadi = (function(me, $, undefined){
         return max;
     }
 
+    me.enable = function(elem, status) {
+        elem.attr("disabled", !status);
+        if (status)
+            elem.removeClass('disabled');
+        else
+            elem.addClass('disabled');
+    }
 
     me.calculateFanWidthWithoutOverlap = function(itemWidth, optionalMargin, numItems) {
         var minWidth = optionalMargin;
@@ -94,6 +101,18 @@ window.kadi = (function(me, $, undefined){
         elem.className = className;
         if (kadi.isSomethingMeaningful(id))
             elem.id = id;
+        return elem;
+    }
+
+    me.createElement = function(type, className, id, text) {
+        var elem = document.createElement(type);
+
+        if (kadi.isSomethingMeaningful(className))
+            elem.className = className;
+        if (kadi.isSomethingMeaningful(id))
+            elem.id = id;
+        if (kadi.isSomethingMeaningful(text))
+            elem.innerHTML = text;
         return elem;
     }
 
@@ -387,6 +406,11 @@ window.kadi = (function(me, $, undefined){
         }
         return span;
     };
+    
+    me.countNumberOfCardsOfRank = function(hand, rank) {
+        
+        return _.filter(hand, function(c) { return c.rank == rank }).length;
+    };
 
     me.containsCardOfRank = function(hand, rank) {
         return kadi.isSomethingMeaningful(_.detect(hand, function(c) { return c.rank == rank }));
@@ -439,7 +463,23 @@ window.kadi = (function(me, $, undefined){
             str += c.toS() + ",";
         });
         return str;
-    }
+    };
+
+    me.getProfileUrl = function(id,live) {
+        if (!live)
+            return "/images/avatars/" + id + ".png";
+        else
+            return "http://graph.facebook.com/" + id + "/picture"
+    };
+
+    me.isChromeOnLinux = function() {
+        return BrowserDetect.browser == "Chrome" && BrowserDetect.OS == "Linux";
+    };
+
+    me.validateEmail = function(email) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+    };
 
     //+ Jonas Raoni Soares Silva
     //@ http://jsfromhell.com/array/permute [rev. #1]

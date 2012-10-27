@@ -2,24 +2,9 @@
 %html
   %head
     %title Jasmine Tests
-    %link{:href=> '/stylesheets/bootstrap.min.css', :rel=>'stylesheet', :type => 'text/css' }
-    %link{:href=> '/stylesheets/jasmine.css', :rel=>'stylesheet', :type => 'text/css' }
-    %link{:href=> '/images/favicon.ico', :rel=>'shortcut icon', :type => 'text/css' }
-    =javascript_include_tag "/javascripts/jquery.1.7.2.js"
-    =javascript_include_tag "/javascripts/prefixfree.min.js"
-    =javascript_include_tag "/javascripts/jquery.transit.js"
-    =javascript_include_tag "/javascripts/js.class.min.js"
-    =javascript_include_tag "/javascripts/shotgun.js"
-    =javascript_include_tag "/javascripts/underscore-min.js"
-    =javascript_include_tag "/javascripts/util.js"
-    =javascript_include_tag "/javascripts/game/common-ui.js"
-    =javascript_include_tag "/javascripts/game/card.js"
-    =javascript_include_tag "/javascripts/game/game-ui.js"
-    =javascript_include_tag "/javascripts/game/player-ui.js"
-    =javascript_include_tag "/javascripts/game/game-dom.js"
-    =javascript_include_tag "/javascripts/game/rules.js"
-    =javascript_include_tag "/javascripts/jasmine.js"
-    =javascript_include_tag "/javascripts/jasmine-html.js"
-
+    =stylesheet_link_tag '/assets/test.css'
+    %link{:href=> '/assets/favicon.ico', :rel=>'shortcut icon', :type => 'text/css' }
+    %script{:src=>'/assets/application.js', :type=>'text/javascript'}
   %body
+    =javascript_include_tag "/assets/lib.js"
     = yield
