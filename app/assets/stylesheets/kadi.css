@@ -34,7 +34,7 @@ body {
     height: 54px;
     margin: 60px auto 100px auto;
     position: relative;
-    top: -350px;
+    top: -385px;
     left: 0px;
 }
 
@@ -54,10 +54,10 @@ body {
     width: 480px;
     height: 25px !important;
     border-radius: 5px;
-    border: 1px solid grey;
-    font-family: MuseoSans-500;
-    color: grey;
-    font-size: 25px;
+    font-family: MuseoSans-500 !important;
+    border: 1px solid grey !important;
+    color: grey !important;
+    font-size: 20px !important;
 }
 
 .btn-submit {
@@ -129,7 +129,7 @@ body {
     left: 140px;
     width: 800px;
     height: 90px;
-    top: -308px;
+    top: -330px;
 }
 
 .sprout_logo {
@@ -172,13 +172,13 @@ body {
     font-family: MuseoSans-500;
     font-size: 15px;
     z-index: 2;
-    top: -260px;
 }
 
 .notice {
-    position: absolute;
-    top: 720px;
+    position: relative;
+    top: -465px;
+    height: 20px;
     display: block;
     width: 550px;
-    left: 565px;
+    left: 406px;
 }
