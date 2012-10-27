@@ -2,10 +2,16 @@
   .container
     .row
       .splash
-      #largeFbButtonWrap
+      -##largeFbButtonWrap
         .largeFbButton
           %a{:href=>'/play'}
             %span Play
+      %form.mailingList
+        %p Almost ready... leave your email and we'll keep you posted when we deal.
+        %input.big-input#email{:type => 'email'}
+        %input.btn-submit#submit{:type => 'submit', :value => 'Keep Me Posted'}
+      .notice
+        %p.notification
       .links
         .fb
           .fb-like{"data-href"=>'http://www.facebook.com/kadigame',  "data-width"=>'400', "data-show-faces"=>'false', "data-stream"=>'false', "data-header"=>'false'}
@@ -19,3 +25,30 @@
 #fb-root
   %script
     (function(d, s, id) {var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)) return;js = d.createElement(s); js.id = id;js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));
+
+:javascript
+  $(document).ready(function () {
+    $('.mailingList').submit(function() {
+      function validateEmail(email) {
+        var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(email);
+      };
+
+      var address = $('#email');
+      var email = address.val();
+      if (validateEmail(email)) {
+        address.attr('disabled', true);
+        $('.notice .notification').html('Saving your email address.');
+
+        $.post('/mailing-list', { email: email }, function(data) {
+          if (data.success) {
+            address.attr('disabled', false);
+            $('.notice .notification').html("Thank you for your interest! We'll hit you up before we launch.");
+          }
+        });
+      }
+      else
+        $('.notice .notification').html('Please enter a valid email address!');
+      return false;
+    });
+  });

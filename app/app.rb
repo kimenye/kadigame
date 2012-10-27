@@ -1,6 +1,8 @@
 require 'koala'
 require 'pusher'
 require 'sprockets'
+require 'httparty'
+require 'json'
 
 class Kadi < Padrino::Application
   use ActiveRecord::ConnectionAdapters::ConnectionManagement
@@ -80,6 +82,12 @@ class Kadi < Padrino::Application
           }.to_json)
   end
 
+  post '/mailing-list', :provides => [:json] do
+    resp = HTTParty.post('http://www.kadi.co.ke/subscribers', {:body =>  {:email => params[:email] }.to_json })
+    result = JSON.parse(resp)['success']
+    {:success => result}.to_json
+  end
+
   post '/player/sync', :provides => [:json] do
     @player = Player.find_by_fb_id(params[:fb_id])
 
@@ -90,6 +98,7 @@ class Kadi < Padrino::Application
   end
 
   get :play do
+    redirect '/'
     get_logged_in_user '/play'
     #@player = Player.first
     render :play
