@@ -10,7 +10,7 @@ window.kadi = (function(me, $, undefined){
             this.numberOfTimesPlayed = numberOfTimesPlayed;
             this.numberOfTimesWon = numberOfTimesWon;
             this.selections = [];
-            this.deck = new me.PlayerDeck();
+            this.deck = deck;
         },
 
         eq: function(other) {
@@ -55,11 +55,11 @@ window.kadi = (function(me, $, undefined){
             this.cards = _.reject(this.cards, function(c) {
                 return c.eq(card);
             });
+        },
+
+        hasCards: function() {
+            return !this.isEmpty();
         }
-    });
-
-    me.PlayerDeck = me.Deck.extend({
-
     });
 
     me.GamePlayerUI = me.Player.extend({
@@ -67,8 +67,7 @@ window.kadi = (function(me, $, undefined){
             BOT_DELAY: 2500
         },
         construct : function(player, deck, prepare) {
-            this.parent.construct.apply(this, [player.id,player.name,player.live, player.currentScore, player.numberOfTimesPlayed, player.numberOfTimesWon]);
-            this.deck = deck;
+            this.parent.construct.apply(this, [player.id,player.name,player.live, player.currentScore, player.numberOfTimesPlayed, player.numberOfTimesWon, deck]);
             this.topCard = null; //TODO: remove
             this.requestedSuite = null; //TODO: remove
             this.blockMode = false;
@@ -118,7 +117,6 @@ window.kadi = (function(me, $, undefined){
         getLocation: function() {
             return this.deck.type;
         },
-
         hide: function() {
             $(this.avatar).addClass('hidden');
         },

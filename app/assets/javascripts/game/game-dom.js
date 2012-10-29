@@ -1,6 +1,6 @@
 window.kadi = (function(me, $, undefined){
 
-    me.PlayerDeckUI = me.PlayerDeck.extend({
+    me.PlayerDeckUI = me.Deck.extend({
         statics: {
             WIDTH_H: 400,
             HEIGHT_H: 100,
@@ -36,9 +36,9 @@ window.kadi = (function(me, $, undefined){
 
         },
         construct: function(type) {
+            this.parent.construct.apply(this, []);
             this.type = type;
             kadi.display('game','player_deck_div' + type, 'player_deck ' + type);
-            this.cards = [];
         },
 
         left: function() {
@@ -120,22 +120,9 @@ window.kadi = (function(me, $, undefined){
 
         isVertical: function() { return ! this.isHorizontal() },
 
-        removeCard: function(card) {
-            this.cards = _.reject(this.cards, function(c) {
-                return c.id == card.id;
-            })
-        },
-
-        hasCards: function() {
-            return this.cards.length > 0;
-        },
-
         addCard: function(card) {
-            this.cards.push(card);
-            var self = this;
-            var left = 0;
-            var top = 0;
-            var rotate = 0;
+            this.parent.addCard.apply(this, [card]);
+            var left, top, rotate = 0;
             var origin = null;
             if (this.isHorizontal()) {
                 left = this.left() + kadi.centerInFrame(this.width(),kadi.CardUI.WIDTH); //center the card along the deck
@@ -177,7 +164,7 @@ window.kadi = (function(me, $, undefined){
                 }
             }
         }
-    })
+    });
 
     me.PickingDeck = me.Box.extend({
         statics : {
