@@ -90,6 +90,7 @@ class Kadi < Padrino::Application
 
   post '/record_times_played', :provides => [:json] do
     @player = Player.find_by_fb_id(params[:fb_id])
+    @player.times_played ||= 0
     @player.times_played += 1
     @player.save!
     result = true
@@ -106,6 +107,7 @@ class Kadi < Padrino::Application
   post '/record_win', :provides => [:json] do
     @player = Player.find_by_fb_id(params[:fb_id])
     @player = session[:player]
+    @player.games_won ||= 0
     @player.games_won += 1
     @player.save!
     result_win = result_score = true
