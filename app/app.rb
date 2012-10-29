@@ -13,6 +13,8 @@ class Kadi < Padrino::Application
 
   set :js_compressor, :uglifier
   set :compress_assets, production?
+  enable :sessions
+  set :logging, true
 
   Pusher.app_id = '26156'
   Pusher.key = '3b40830094bf454823f2'
@@ -44,6 +46,8 @@ class Kadi < Padrino::Application
     end
 
     def authenticator
+      #ENV["FACEBOOK_APP_ID"] ||= '176867685781434'
+      #ENV["FACEBOOK_SECRET"] ||= '3fc9252d9265dbc14e45a0a3f4e27298'
       @authenticator ||= Koala::Facebook::OAuth.new(ENV["FACEBOOK_APP_ID"], ENV["FACEBOOK_SECRET"], url("/auth/facebook/callback"))
     end
 
