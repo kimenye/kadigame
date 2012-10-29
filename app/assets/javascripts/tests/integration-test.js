@@ -1,6 +1,6 @@
 describe("Integration tests:", function() {
 
-    var player = new kadi.game.Player('100004183626950', 'Trevor', true, 0, 0, 0);
+    var player = new kadi.Player('100004183626950', 'Trevor', true, 0, 0, 0);
 
     it("Can manage a player", function() {
         expect(player).not.toBeNull();
