@@ -1,6 +1,5 @@
 window.kadi = (function(me, $, undefined){
 
-
     me.PickingDeck = me.Box.extend({
         statics : {
             WIDTH:  150,

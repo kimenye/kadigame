@@ -38,9 +38,18 @@ window.kadi = (function(me, $, undefined){
 
         cards: function() {
             return this.deck.cards;
+        },
+
+        canBlock: function() {
+            return kadi.RuleEngine.canBlock(this.deck.cards);
+        },
+
+        kadi: function(status) {
+            var before = this.onKADI;
+            this.onKADI = status;
+            return before;
         }
     });
-
 
     me.GamePlayerUI = me.Player.extend({
         statics: {
@@ -64,9 +73,9 @@ window.kadi = (function(me, $, undefined){
             var self = this;
             this.div = kadi.createDiv('player ' + this.getLocation() + "", "p" + this.id);
             if (this.live)
-                this.parent = document.getElementById(kadi.GameUI.CONTAINER_ID);
+                this.parentDiv = document.getElementById(kadi.GameUI.CONTAINER_ID);
             else
-                this.parent = document.getElementById(kadi.GameUI.ID);
+                this.parentDiv = document.getElementById(kadi.GameUI.ID);
 
             var url = kadi.getProfileUrl(this.id, this.live);
             this.avatar = document.createElement("IMG");
@@ -92,7 +101,7 @@ window.kadi = (function(me, $, undefined){
             }
         },
         display: function() {
-            this.parent.appendChild(this.div);
+            this.parentDiv.appendChild(this.div);
         },
         getLocation: function() {
             return this.deck.type;
@@ -134,9 +143,7 @@ window.kadi = (function(me, $, undefined){
             this.deck.cards = [];
         },
 
-        canBlock: function() {
-            return kadi.RuleEngine.canBlock(this.deck.cards);
-        },
+
         initHandlers: function() {
             this.display();
             var self = this;
@@ -231,8 +238,7 @@ window.kadi = (function(me, $, undefined){
             }
         },
         kadi: function(status) {
-            var before = this.onKADI;
-            this.onKADI = status;
+            var before = this.parent.kadi.apply(this, [status]);
 
             if (before && !status) {
                 $(this.avatar).wiggle('stop');
