@@ -52,7 +52,6 @@ window.kadi = (function(me, $, undefined){
         }
     });
 
-
     me.RuleEngine = JS.Class({
         statics: {
             ACTION_NONE: "None",
