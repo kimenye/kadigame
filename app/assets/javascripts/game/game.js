@@ -137,12 +137,10 @@ window.kadi = (function(me, $, undefined){
     });
 
     me.Game = JS.Class({
-        construct: function(player, opponents, mode, kadiMode, pickingMode) {
+        construct: function(player, opponents, options) {
             this.me = player;
-            this.mode = mode;
-            this.kadiMode = kadiMode;
+            this.options = options;
             this.opponents = opponents;
-            this.pickingMode = pickingMode;
             this.players = this.opponents;
             this.original = this.players;
             if (kadi.isSomethingMeaningful(this.me))
@@ -549,15 +547,15 @@ window.kadi = (function(me, $, undefined){
         },
 
         singleCardKadi: function() {
-            return this.kadiMode == kadi.GameOptions.ONE_CARD_KADI;
+            return this.options.mustFinishWithOnlyOneCard();
         },
 
         pickTopOnly: function() {
-            return this.pickingMode == kadi.GameOptions.PICKING_MODE_TOP_ONLY;
+            return this.options.canPickOnlyTheTopCard();
         },
 
         eliminationMode: function() {
-            return this.mode == kadi.GameOptions.MODE_ELIMINATION;
+            return this.options.isEliminationMode();
         },
 
         dealSpecificCards: function(playerCards, topCard) {

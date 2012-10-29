@@ -551,8 +551,8 @@ window.kadi = (function(me, $, undefined){
             ID: 'game',
             CONTAINER_ID: 'game-container'
         },
-        construct: function(player, opponents, mode, kadiMode, pickingMode) {
-            this.parent.construct.apply(this, [player, opponents, mode, kadiMode, pickingMode]);
+        construct: function(player, opponents, options) {
+            this.parent.construct.apply(this, [player, opponents, options]);
         },
         initComponents: function() {
             this.pickingDeck = new kadi.PickingDeckUI();
@@ -573,15 +573,14 @@ window.kadi = (function(me, $, undefined){
             },this);
             this.gameOverScreen = new kadi.GameOverScreenUI(mode);
             this.requestedSuiteDeck = new kadi.RequestedSuiteNotification();
-            this.game = new me.GameUI(this.me,this.opponents, mode, kadiMode, pickingMode);
+            this.gameOptions = new me.GameOptions(mode,kadiMode, pickingMode);
+            this.game = new me.GameUI(this.me,this.opponents, this.gameOptions);
 
             var self = this;
             SHOTGUN.listen(kadi.Events.SHOW_OPTIONS, function(winner)  {
 
                 var handler = new kadi.Handler(function(args) {
-                    self.game.mode = args[1];
-                    self.game.kadiMode = args[2];
-                    self.game.pickingMode = args[3];
+                    self.game.options = new me.GameOptions(args[1], args[2], args[3]);
                     bootbox.hideAll();
                     SHOTGUN.fire(kadi.Events.RESTART_GAME, [winner]);
                 });

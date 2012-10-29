@@ -64,5 +64,15 @@ describe("Integration tests:", function() {
             expect(options.canPickOnlyTheTopCard()).not.toBe(true);
             expect(options.mustPickAllTheCards()).not.toBe(false);
         });
+
+        it("A game has options", function() {
+            var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_TOP_ONLY);
+
+            var game = new kadi.Game(null, players, options);
+
+            expect(game.pickTopOnly()).toBe(true);
+            expect(game.eliminationMode()).toBe(true);
+            expect(game.singleCardKadi()).toBe(true);
+        });
     });
 });
