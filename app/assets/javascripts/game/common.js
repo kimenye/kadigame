@@ -15,7 +15,6 @@ window.kadi = (function(me, $, undefined){
                 return c.eq(card);
             });
         },
-
         hasCards: function() {
             return !this.isEmpty();
         }

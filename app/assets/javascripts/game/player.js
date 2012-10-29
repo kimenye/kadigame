@@ -48,6 +48,25 @@ window.kadi = (function(me, $, undefined){
             var before = this.onKADI;
             this.onKADI = status;
             return before;
+        },
+
+        returnCards: function() {
+            SHOTGUN.fire(kadi.Events.RETURNED_CARDS, [this.cards()]);
+            this.deck.cards = [];
+        },
+
+        addCard: function(card) {
+            if (this.deck.isEmpty()) {
+                SHOTGUN.fire(kadi.Events.DECREMENT_CARDLESS_COUNTER);
+            }
+            this.deck.addCard(card);
+        },
+
+        removeCard: function(card,redraw) {
+            this.deck.removeCard(card);
+            if (this.deck.hasCards()) {
+                SHOTGUN.fire(kadi.Events.INCREMENT_CARDLESS_COUNTER);
+            }
         }
     });
 
@@ -113,22 +132,16 @@ window.kadi = (function(me, $, undefined){
             $(this.avatar).removeClass('hidden');
         },
         addCard: function(card,redraw) {
-            if (this.cards().length < 1) {
-                SHOTGUN.fire(kadi.Events.DECREMENT_CARDLESS_COUNTER);
-            }
+            this.parent.addCard.apply(this, [card]);
             if (this.live)
                 card.flip();
-            this.deck.addCard(card);
             if (redraw)
                 this.deck.redrawCards();
         },
         removeCard: function(card,redraw) {
-            this.deck.removeCard(card);
+            this.parent.removeCard.apply(this, [card]);
             if (redraw)
                 this.deck.redrawCards();
-            if (this.cards().length < 1) {
-                SHOTGUN.fire(kadi.Events.INCREMENT_CARDLESS_COUNTER);
-            }
         },
 
         reset: function() {
@@ -137,12 +150,6 @@ window.kadi = (function(me, $, undefined){
             this.show();
             $(this.avatar).removeClass('active');
         },
-
-        returnCards: function() {
-            SHOTGUN.fire(kadi.Events.RETURNED_CARDS, [this.cards()]);
-            this.deck.cards = [];
-        },
-
 
         initHandlers: function() {
             this.display();
@@ -367,14 +374,16 @@ window.kadi = (function(me, $, undefined){
         },
         handleCardDeselected: function(card) {
             this.selections = _.reject(this.selections, function(c) {
-                return c.id = card.id;
+                return c.eq(card);
             },this);
         },
+
         activateActions : function(status) {
             $('.btn-move').attr("disabled", !status);
             if (status)
                 $('.btn-move').removeClass('disabled');
         },
+
         activateForBlocking: function(pickingCards) {
             if (this.live) {
                 var hasOnlyOneCardToBlock = kadi.RuleEngine.countBlockingCards(this.cards()) == 1;
@@ -402,7 +411,6 @@ window.kadi = (function(me, $, undefined){
                 jack.clickHandler = clickHandler;
                 jack.moveCardUp();
             });
-            
         },
         
         activate: function(status) {
