@@ -6,6 +6,7 @@
         .largeFbButton
           %a{:href=>'/play'}
             %span Play
+      =flash_tag(:notice)
       %form.mailingList
         %p Almost ready... leave your email and we'll keep you posted when we deal.
         %input.big-input#email{:type => 'email'}

@@ -9,25 +9,28 @@ class Kadi < Padrino::Application
   register Padrino::Rendering
   register Padrino::Mailer
   register Padrino::Helpers
-  register Padrino::Sprockets
+  register Padrino::Assets
 
-  sprockets :minify => false
-
+  set :js_compressor, :uglifier
+  set :compress_assets, production?
   enable :sessions
+  set :logging, true
 
-  unless ENV["FACEBOOK_APP_ID"] && ENV["FACEBOOK_SECRET"]
-    if production?
-      abort("missing env vars: please set FACEBOOK_APP_ID and FACEBOOK_SECRET with your app credentials")
-    end
-  end
-
-  Pusher.app_id = '26156';
+  Pusher.app_id = '26156'
   Pusher.key = '3b40830094bf454823f2'
   Pusher.secret = '4700f33ab2ce0a58b39d'
 
   helpers do
     def host
       request.env['HTTP_HOST']
+    end
+
+    def development?
+      return PADRINO_ENV == 'development'
+    end
+
+    def production?
+      return PADRINO_ENV == 'production'
     end
 
     def scheme
@@ -43,6 +46,8 @@ class Kadi < Padrino::Application
     end
 
     def authenticator
+      #ENV["FACEBOOK_APP_ID"] ||= '176867685781434'
+      #ENV["FACEBOOK_SECRET"] ||= '3fc9252d9265dbc14e45a0a3f4e27298'
       @authenticator ||= Koala::Facebook::OAuth.new(ENV["FACEBOOK_APP_ID"], ENV["FACEBOOK_SECRET"], url("/auth/facebook/callback"))
     end
 
@@ -58,16 +63,60 @@ class Kadi < Padrino::Application
         fb_id = @user['id']
         name = @user['name']
         @player = Player.find_by_fb_id(fb_id)
+        @app_friends = @graph.fql_query("SELECT uid FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1")
+        @friends_using_app = @app_friends.collect { |f| Player.find_by_fb_id(f['id']) }
+
         if @player.nil?
-          @player = Player.new({:fb_id => fb_id, :name => name})
+          @player = Player.new({:fb_id => fb_id, :name => name, :times_played => 0, :games_won => 0})
           @player.save
         end
         session[:player] = @player
+        session[:friends_with_app] = @friends_using_app
       rescue Koala::Facebook::APIError
         session[:access_token] = nil
         session[:redirect_to] = redirect_to
         redirect "/auth/facebook"
       end
+    end
+  end
+
+  post '/stats', :provides => [:json] do
+    @player = Player.find_by_fb_id(params[:fb_id])
+    stat = GameStats.new({:player_id => @player.id, :start_time => params[:start_time], :end_time => params[:end_time], :elimination => params[:elimination], :one_card => params[:one_card], :pick_top_card => params[:pick_top_card] })
+    stat.save!
+    status 200
+    body({:success => true}.to_json)
+  end
+
+  post '/record_times_played', :provides => [:json] do
+    @player = Player.find_by_fb_id(params[:fb_id])
+    @player.times_played ||= 0
+    @player.times_played += 1
+    @player.save!
+    result = true
+    if result == true
+      status 200
+      body({:success => true}.to_json)
+    else
+      status 500
+      body({:success => false}.to_json)
+    end
+    
+  end
+  
+  post '/record_win', :provides => [:json] do
+    @player = Player.find_by_fb_id(params[:fb_id])
+    @player = session[:player]
+    @player.games_won ||= 0
+    @player.games_won += 1
+    @player.save!
+    result_win = result_score = true
+    if result_score == true && result_win == true
+      status 200
+      body({:success => true}.to_json)
+    else
+      status 500
+      body({:success => false}.to_json)
     end
   end
 
@@ -82,31 +131,56 @@ class Kadi < Padrino::Application
           }.to_json)
   end
 
+  get :social, :provides => [:json]  do
+    result = { :success => false }
+    #if !session[:player].nil? and !session[:friends_with_app].nil?
+    #  friends = session[:friends_with_app].collect { |f|
+    #    profile = service.get_user(f.fb_id)
+    #    {
+    #        :id => f.fb_id,
+    #        :name => f.name,
+    #        :score => !profile.nil? ? service.calculate_score(f.fb_id) : 0,
+    #        :times_played => !profile.nil? ? profile['time_played'].to_i : 0,
+    #        :wins => !profile.nil? ? profile['kills'].to_i : 0
+    #    }
+    #  }
+    #  result = { :success => true, :friends => friends }
+    #end
+    result.to_json
+  end
+
+  get :play do
+    if development?
+      @player = Player.first
+      if @player.games_won.nil?
+        @player.games_won = 0
+      end
+
+      if @player.times_played.nil?
+        @player.times_played = 0
+      end
+      @player.save!
+      @friends_using_app = Player.all
+      @friends_using_app.reject! { |p| p == @player }
+
+      session[:player] = @player
+      session[:friends_with_app] = @friends_using_app
+    else
+      get_logged_in_user '/play'
+    end
+    render :play
+  end
+
   post '/mailing-list', :provides => [:json] do
     resp = HTTParty.post('http://www.kadi.co.ke/subscribers', {:body =>  {:email => params[:email] }.to_json })
     result = JSON.parse(resp)['success']
     {:success => result}.to_json
   end
 
-  post '/player/sync', :provides => [:json] do
-    @player = Player.find_by_fb_id(params[:fb_id])
-
-    if !@player.nil?
-      result = @player.update_attributes({ :roar_id => params[:roar_id], :last_logged_in => Time.now })
-      {:success => result}.to_json
+  if development?
+    get :jasmine do
+      render "jasmine", :layout => :jasminetest
     end
-  end
-
-  get :play do
-    redirect '/'
-    get_logged_in_user '/play'
-    #@player = Player.first
-    render :play
-  end
-
-  #TODO: Disable for production
-  get :jasmine do
-    render "jasmine", :layout => :jasminetest
   end
 
   get '/auth/facebook' do
@@ -115,11 +189,16 @@ class Kadi < Padrino::Application
   end
 
   get '/auth/facebook/callback' do
-    session[:access_token] = authenticator.get_access_token(params[:code])
-    if session[:redirect_to].nil?
+    if params[:error] == "access_denied"
+      flash[:notice] = "<p class='notification'>:-(. Didn't give us permissions. We won't post on your wall without your consent.</p>"
       redirect '/'
     else
-      redirect session[:redirect_to]
+      session[:access_token] = authenticator.get_access_token(params[:code])
+      if session[:redirect_to].nil?
+        redirect '/'
+      else
+        redirect session[:redirect_to]
+      end
     end
   end
 

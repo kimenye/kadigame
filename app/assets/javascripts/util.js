@@ -241,11 +241,11 @@ window.kadi = (function(me, $, undefined){
     me.buildVerticalFan = function(containerWidth,innerWidth, itemWidth, numItems, margin, reverse) {
         var first = kadi.centerInFrame(containerWidth, innerWidth);
         var coords = [];
-        coords.push(new kadi.Pos(kadi.game.PlayerDeck.X_C, first));
+        coords.push(new kadi.Pos(kadi.PlayerDeck.X_C, first));
 
         for(var ctr=1;ctr<numItems;ctr++) {
             var prior = coords[ctr-1].y + itemWidth + margin;
-            coords.push(new kadi.Pos(kadi.game.PlayerDeck.X_C,prior));
+            coords.push(new kadi.Pos(kadi.PlayerDeck.X_C,prior));
         }
 
         return coords;
@@ -427,22 +427,22 @@ window.kadi = (function(me, $, undefined){
     };
 
     me.diamonds = function(rank) {
-        return new kadi.game.Card(rank, kadi.game.Suite.DIAMONDS);
+        return new kadi.Card(rank, kadi.Suite.DIAMONDS);
     };
 
     me.spades = function(rank) {
-        return new kadi.game.Card(rank, kadi.game.Suite.SPADES);
+        return new kadi.Card(rank, kadi.Suite.SPADES);
     }
 
     me.hearts = function(rank) {
-        return new kadi.game.Card(rank, kadi.game.Suite.HEARTS);
+        return new kadi.Card(rank, kadi.Suite.HEARTS);
     }
     me.clubs = function (rank) {
-        return new kadi.game.Card(rank, kadi.game.Suite.CLUBS);
+        return new kadi.Card(rank, kadi.Suite.CLUBS);
     }
 
     me.joker = function(t) {
-        return new kadi.game.Card(t, kadi.game.Suite.JOKERS);
+        return new kadi.Card(t, kadi.Suite.JOKERS);
     }
 
     me.Handler = JS.Class({
@@ -497,7 +497,7 @@ window.kadi = (function(me, $, undefined){
 
     window.onerror = function(msg, url, line) {
         console.log("An un caught error occurred %s on line %s", msg, line);
-        SHOTGUN.fire(kadi.game.Events.UNHANDLED_ERROR, []);
+        SHOTGUN.fire(kadi.Events.UNHANDLED_ERROR, []);
     };
 
     return me;

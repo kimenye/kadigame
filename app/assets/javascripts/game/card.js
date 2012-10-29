@@ -1,4 +1,4 @@
-window.kadi.game = (function(me, $, undefined){
+window.kadi = (function(me, $, undefined){
     me.Suite = JS.Class({
         statics : {
             CLUBS: "C",
@@ -11,12 +11,12 @@ window.kadi.game = (function(me, $, undefined){
             getColorClass: function(suite, rank) {
                 var color = "black";
                 switch(suite) {
-                    case kadi.game.Suite.HEARTS:
-                    case kadi.game.Suite.DIAMONDS:
+                    case kadi.Suite.HEARTS:
+                    case kadi.Suite.DIAMONDS:
                         color = "red";
                         break;
-                    case kadi.game.Suite.JOKERS:
-                        if (rank == kadi.game.Card.JOKER_A)
+                    case kadi.Suite.JOKERS:
+                        if (rank == kadi.Card.JOKER_A)
                             color = "red";
                         break;
                 }
@@ -25,16 +25,16 @@ window.kadi.game = (function(me, $, undefined){
             getSuiteSymbol: function(suite) {
                 var symbol = "\u00a0" ;
                 switch (suite) {
-                    case kadi.game.Suite.CLUBS:
+                    case kadi.Suite.CLUBS:
                         symbol = "\u2663";
                         break;
-                    case kadi.game.Suite.DIAMONDS:
+                    case kadi.Suite.DIAMONDS:
                         symbol = "\u2666";
                         break;
-                    case kadi.game.Suite.HEARTS:
+                    case kadi.Suite.HEARTS:
                         symbol = "\u2665";
                         break;
-                    case kadi.game.Suite.SPADES:
+                    case kadi.Suite.SPADES:
                         symbol = "\u2660";
                         break;
                 }
@@ -43,19 +43,19 @@ window.kadi.game = (function(me, $, undefined){
             getSuiteName: function(suite) {
                 var name = "Joker";
                 switch (suite) {
-                    case kadi.game.Suite.CLUBS:
+                    case kadi.Suite.CLUBS:
                         name = "Clubs";
                         break;
-                    case kadi.game.Suite.DIAMONDS:
+                    case kadi.Suite.DIAMONDS:
                         name = "Diamonds";
                         break;
-                    case kadi.game.Suite.HEARTS:
+                    case kadi.Suite.HEARTS:
                         name = "Hearts";
                         break;
-                    case kadi.game.Suite.SPADES:
+                    case kadi.Suite.SPADES:
                         name =  "Spades";
                         break;
-                    case kadi.game.Suite.ANY:
+                    case kadi.Suite.ANY:
                         name = "Anything";
                         break;
                 }
@@ -65,21 +65,21 @@ window.kadi.game = (function(me, $, undefined){
                 var div = document.createElement("div");
                 div.className = "suite_picker";
 
-                var symbol = kadi.game.Suite.getSuiteSymbol(suite);
-                var classes = "medium " + kadi.game.Suite.getColorClass(suite, kadi.game.Card.ACE);
+                var symbol = kadi.Suite.getSuiteSymbol(suite);
+                var classes = "medium " + kadi.Suite.getColorClass(suite, kadi.Card.ACE);
 
                 var symbolDiv = kadi.createSpan(symbol, classes, null);
                 div.appendChild(symbolDiv);
                 return div;
             },
             getDeckOfCards: function() {
-                var suites = [kadi.game.Suite.CLUBS,kadi.game.Suite.HEARTS,
-                    kadi.game.Suite.DIAMONDS,kadi.game.Suite.SPADES];
-
-                var ranks = [kadi.game.Card.ACE,kadi.game.Card.TWO,kadi.game.Card.THREE,kadi.game.Card.FOUR,
-                    kadi.game.Card.FIVE,kadi.game.Card.SIX,kadi.game.Card.SEVEN,kadi.game.Card.EIGHT,
-                    kadi.game.Card.NINE,kadi.game.Card.TEN,kadi.game.Card.JACK,kadi.game.Card.QUEEN,
-                    kadi.game.Card.KING];
+                var suites = [kadi.Suite.CLUBS,kadi.Suite.HEARTS,
+                    kadi.Suite.DIAMONDS,kadi.Suite.SPADES];
+//                suites = [kadi.Suite.CLUBS];
+                var ranks = [kadi.Card.ACE,kadi.Card.TWO,kadi.Card.THREE,kadi.Card.FOUR,
+                    kadi.Card.FIVE,kadi.Card.SIX,kadi.Card.SEVEN,kadi.Card.EIGHT,
+                    kadi.Card.NINE,kadi.Card.TEN,kadi.Card.JACK,kadi.Card.QUEEN,
+                    kadi.Card.KING];
 
                 var cards = [];
                 _.each(suites, function(suite) {
@@ -88,8 +88,8 @@ window.kadi.game = (function(me, $, undefined){
                     });
                 });
 
-                cards.push(new me.CardUI(kadi.game.Card.JOKER_A,kadi.game.Suite.JOKERS));
-                cards.push(new me.CardUI(kadi.game.Card.JOKER_A,kadi.game.Suite.JOKERS));
+                cards.push(new me.CardUI(kadi.Card.JOKER_A,kadi.Suite.JOKERS));
+                cards.push(new me.CardUI(kadi.Card.JOKER_A,kadi.Suite.JOKERS));
 
                 cards = _.shuffle(cards);
                 return cards;
@@ -118,22 +118,22 @@ window.kadi.game = (function(me, $, undefined){
             getRankName: function(rank) {
                 var name = "" + rank;
                 switch (rank) {
-                    case kadi.game.Card.JOKER_A:
+                    case kadi.Card.JOKER_A:
                         name = "Joker A";
                         break;
-                    case kadi.game.Card.JOKER_B:
+                    case kadi.Card.JOKER_B:
                         name = "Joker B";
                         break;
-                    case kadi.game.Card.QUEEN:
+                    case kadi.Card.QUEEN:
                         name = "Queen";
                         break;
-                    case kadi.game.Card.JACK:
+                    case kadi.Card.JACK:
                         name = "Jack";
                         break;
-                    case kadi.game.Card.KING:
+                    case kadi.Card.KING:
                         name = "King";
                         break;
-                    case kadi.game.Card.ACE:
+                    case kadi.Card.ACE:
                         name = "Ace ";
                         break;
                 }
@@ -147,14 +147,14 @@ window.kadi.game = (function(me, $, undefined){
             this.suite = suite;
             this.rank = rank;
             this.isJoker = function() {
-                return this.rank == kadi.game.Card.JOKER_A || this.rank == kadi.game.Card.JOKER_B;
+                return this.rank == kadi.Card.JOKER_A || this.rank == kadi.Card.JOKER_B;
             };
             this.isAce = function() {
-                return this.rank == kadi.game.Card.ACE;
+                return this.rank == kadi.Card.ACE;
             };
 
             this.isQueen = function() {
-                return this.rank == kadi.game.Card.QUEEN;
+                return this.rank == kadi.Card.QUEEN;
             };
 
             this.isFaceCard = function() {
@@ -163,13 +163,12 @@ window.kadi.game = (function(me, $, undefined){
 
             this.is = function(rank) {
                 return this.rank == rank;
-            }
+            };
 
             this.isQuestion = function() {
                 return this.isEight() || this.isQueen();
-            }
+            };
 
-            //TODO: Testing required
             this.pickingValue = function() {
                 if (this.isPickingCard()) {
                     if (this.is("2")) {
@@ -183,7 +182,35 @@ window.kadi.game = (function(me, $, undefined){
                     }
                 }
                 return 0;
-            }
+            };
+
+            this.eliminationValue = function() {
+                var value = 0;
+                switch (this.rank) {
+                    case kadi.Card.ACE:
+                        value = 100;
+                        break;
+                    case kadi.Card.TWO:
+                        value = 50;
+                        break;
+                    case kadi.Card.THREE:
+                        value = 75;
+                        break;
+                    case kadi.Card.JACK:
+                    case kadi.Card.QUEEN:
+                    case kadi.Card.KING:
+                        value = 20;
+                        break;
+                    case kadi.Card.JOKER_A:
+                    case kadi.Card.JOKER_B:
+                        value = 500;
+                        break;
+                    default:
+                        value = parseInt(this.rank);
+                }
+
+                return value;
+            };
 
             this.isBlockingCard = function() {
                 return this.isPickingCard() || this.isAce();
@@ -206,11 +233,11 @@ window.kadi.game = (function(me, $, undefined){
             };
 
             this.isKing = function() {
-                return this.rank == kadi.game.Card.KING;
+                return this.rank == kadi.Card.KING;
             };
 
             this.isJack = function() {
-                return this.rank == kadi.game.Card.JACK;
+                return this.rank == kadi.Card.JACK;
             };
 
             this.id = function() {
@@ -218,9 +245,9 @@ window.kadi.game = (function(me, $, undefined){
             };
 
             this.toS = function(id) {
-                var suiteName = kadi.game.Suite.getSuiteName(this.suite);
-                var rankName = kadi.game.Card.getRankName(this.rank);
-                if (this.rank == kadi.game.Card.JOKER_A || this.rank == kadi.game.Card.JOKER_B)
+                var suiteName = kadi.Suite.getSuiteName(this.suite);
+                var rankName = kadi.Card.getRankName(this.rank);
+                if (this.rank == kadi.Card.JOKER_A || this.rank == kadi.Card.JOKER_B)
                     return "Joker";
                 else
                     return rankName + " of " + suiteName;
@@ -248,6 +275,19 @@ window.kadi.game = (function(me, $, undefined){
             this.x = -1;
             this.y = -1;
             this.rotate = null;
+            this.activeForBlock = false;
+            this.clickHandler = null;
+        },
+        
+        moveCardUp : function() {
+            this.container().css( 'cursor', 'pointer' );
+            var top = Math.max(kadi.PlayerDeck.Y_A - 20, this.container().position().top - 20);
+            this.moveTo(null,top,null);
+        },
+        
+        moveCardDown : function() {
+            this.container().css( 'cursor', 'default' );
+            this.reset();
         },
 
         buildNode: function() {
@@ -262,9 +302,7 @@ window.kadi.game = (function(me, $, undefined){
             });
             this.container().hover(function() {
                 if (self.active) {
-                    self.container().css( 'cursor', 'pointer' );
-                    var top = Math.max(kadi.game.PlayerDeck.Y_A - 20, self.container().position().top - 20);
-                    self.moveTo(null,top,null);
+                    self.moveCardUp();
                 }
             }, function() {
                 if (self.active && !self.selected) {
@@ -274,7 +312,7 @@ window.kadi.game = (function(me, $, undefined){
             });
 
             this.reset = function() {
-                var top = kadi.game.PlayerDeck.Y_A;
+                var top = kadi.PlayerDeck.Y_A;
                 this.deSelect();
                 this.moveTo(null,top,null);
             };
@@ -329,28 +367,31 @@ window.kadi.game = (function(me, $, undefined){
         },
 
         getSymbol: function() {
-            return kadi.game.Suite.getSuiteSymbol(this.suite);
+            return kadi.Suite.getSuiteSymbol(this.suite);
         },
 
         buildSymbol: function(size) {
             var symbol = this.getSymbol();
-            var classes = "suite " + kadi.game.Suite.getColorClass(this.suite, this.rank);
+            var classes = "suite " + kadi.Suite.getColorClass(this.suite, this.rank);
 
             classes = kadi.isSomethingMeaningful(size) ? classes + " " + size : classes;
             return kadi.createSpan(symbol, classes, null);
         },
 
         buildJokerText: function() {
-            return kadi.createSpan(kadi.game.Card.getJokerRankText(),"rank joker " + kadi.game.Suite.getColorClass(this.suite, this.rank),null);
+            return kadi.createSpan(kadi.Card.getJokerRankText(),"rank joker " + kadi.Suite.getColorClass(this.suite, this.rank),null);
         },
 
         buildRankText: function() {
-            return kadi.createSpan(this.rank, "rank " + kadi.game.Suite.getColorClass(this.suite, this.rank),null);
+            return kadi.createSpan(this.rank, "rank " + kadi.Suite.getColorClass(this.suite, this.rank),null);
         },
 
         handleClick: function() {
             if (this.active) {
                 this.select();
+            }
+            else if(this.activeForBlock) {
+                this.clickHandler.callBack([this]);
             }
         },
 
@@ -359,9 +400,9 @@ window.kadi.game = (function(me, $, undefined){
             this.selected = !this.selected;
             this.container().toggleClass('selected');
             if (before)
-                SHOTGUN.fire(kadi.game.Events.CARD_DESELECTED, [this]);
+                SHOTGUN.fire(kadi.Events.CARD_DESELECTED, [this]);
             else
-                SHOTGUN.fire(kadi.game.Events.CARD_SELECTED, [this]);
+                SHOTGUN.fire(kadi.Events.CARD_SELECTED, [this]);
         },
 
         container : function() {
@@ -442,4 +483,4 @@ window.kadi.game = (function(me, $, undefined){
     });
 
     return me;
-}) (window.kadi.game || {}, jQuery);
+}) (window.kadi || {}, jQuery);

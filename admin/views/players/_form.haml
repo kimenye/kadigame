@@ -11,15 +11,27 @@
   %span.description Ex: a simple text
 
 .group
-  =f.label :roar_id
-  =f.error_message_on :roar_id
-  =f.text_field :roar_id, :class => :text_field, :disabled=> false
-  %span.description Ex: a simple text
-
-.group
   =f.label :last_logged_in
   =f.error_message_on :last_logged_in
   =f.text_field :last_logged_in, :class => :text_field
+  %span.description Ex: a simple text
+
+.group
+  =f.label :times_played
+  =f.error_message_on :times_played
+  =f.text_field :times_played, :class => :text_field
+  %span.description Ex: a simple text
+
+.group
+  =f.label :games_won
+  =f.error_message_on :games_won
+  =f.text_field :games_won, :class => :text_field
+  %span.description Ex: a simple text
+
+.group
+  =f.label :is_test
+  =f.error_message_on :is_test
+  =f.check_box :is_test, :class => :check_box
   %span.description Ex: a simple text
 
 

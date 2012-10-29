@@ -3,9 +3,11 @@
   %head
     %title KADI! Kenyan Style Poker
     =stylesheet_link_tag '/assets/application.css'
-    %link{:href=> '/assets/favicon.ico', :rel=>'shortcut icon', :type => 'text/css' }
+    %link{:href=> '/images/favicon.ico', :rel=>'shortcut icon', :type => 'text/css' }
     %script{:src=>'/assets/application.js', :type=>'text/javascript'}
-  %body
+  %body.play
     = yield
     =javascript_include_tag "/assets/lib.js"
     =javascript_include_tag "/assets/app.js"
+    - if production?
+      =javascript_include_tag "/assets/ga.js"

@@ -15,8 +15,10 @@
         %li
     #game{:style => "display:none;"}
     #game-options{:style => "display:none;"}
+%script
+  !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
 :javascript
   $(document).ready(function () {
-      var me = new kadi.game.Player("#{@player.fb_id}", "#{@player.name}",true);
-      kadi.game.initGameUI(me);
+      var me = new kadi.Player("#{@player.fb_id}", "#{@player.name}",true, 0, parseInt("#{@player.times_played}"), parseInt("#{@player.games_won}"));
+      kadi.initGameUI(me);
   });
