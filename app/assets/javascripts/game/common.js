@@ -134,6 +134,5 @@ window.kadi = (function(me, $, undefined){
         }
     });
 
-
     return me;
 })(window.kadi || {}, jQuery);

@@ -5,11 +5,9 @@
 // the compiled file.
 //
 //= require game/common
-//= require game/common-ui
 //= require game/card
-//= require game/game-ui
+//= require game/game
 //= require game/player
-//= require game/game-dom
 //= require game/rules
 //= require jasmine
 //= require jasmine-html

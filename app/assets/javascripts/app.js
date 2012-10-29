@@ -9,7 +9,7 @@
 //= require game/common
 //= require game/common-ui
 //= require game/card
-//= require game/game-ui
+//= require game/game
 //= require game/player
-//= require game/game-dom
+//= require game/game-ui
 //= require game/rules
