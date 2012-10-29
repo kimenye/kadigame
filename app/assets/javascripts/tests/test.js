@@ -7,7 +7,7 @@
 //= require game/common-ui
 //= require game/card
 //= require game/game-ui
-//= require game/player-ui
+//= require game/player
 //= require game/game-dom
 //= require game/rules
 //= require jasmine

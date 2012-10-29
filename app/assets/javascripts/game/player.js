@@ -1,6 +1,6 @@
 window.kadi = (function(me, $, undefined){
     me.Player = JS.Class({
-        construct : function(id, name, live, currentScore, numberOfTimesPlayed, numberOfTimesWon) {
+        construct : function(id, name, live, currentScore, numberOfTimesPlayed, numberOfTimesWon, deck) {
             this.id = id;
             this.name = name;
             this.live = live;
@@ -10,6 +10,7 @@ window.kadi = (function(me, $, undefined){
             this.numberOfTimesPlayed = numberOfTimesPlayed;
             this.numberOfTimesWon = numberOfTimesWon;
             this.selections = [];
+            this.deck = null;
         },
 
         eq: function(other) {
@@ -39,6 +40,14 @@ window.kadi = (function(me, $, undefined){
             return this.deck.cards;
         }
     });
+
+
+    me.Deck = JS.Class({
+        construct : function() {
+            this.cards = [];
+        }
+    });
+
 
     me.GamePlayerUI = me.Player.extend({
         statics: {
