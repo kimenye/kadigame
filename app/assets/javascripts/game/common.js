@@ -114,8 +114,7 @@ window.kadi = (function(me, $, undefined){
         cut: function() {
             var canStart = false;
             var card = null;
-            do
-            {
+            do {
                 var card = this.cards.shift();
                 canStart = kadi.RuleEngine.canStart(card);
                 if (!canStart)

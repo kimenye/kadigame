@@ -558,6 +558,11 @@ window.kadi = (function(me, $, undefined){
             this.pickingDeck = new kadi.PickingDeckUI();
             this.tableDeck = new kadi.TableDeckUI();
             this.noticeBoard = new kadi.NoticeBoard();
+        },
+        dealCards: function() {
+            this.parent.dealCards.apply(this, []);
+            var starter = this.order.current();
+            SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[starter], 'deck');
         }
     });
 

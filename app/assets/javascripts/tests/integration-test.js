@@ -94,11 +94,16 @@ describe("Integration tests:", function() {
         });
 
         it("Can start a game", function() {
-
             var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_TOP_ONLY);
             var game = new kadi.Game(null, players, options);
 
             game.startGame(0);
+            expect(game.order.current().eq(players[0])).toBe(true);
+
+            _.each(game.players, function(p) {
+                expect(p.deck.hasCards()).toBe(true);
+                expect(p.deck.numCards()).toBe(3);
+            });
         });
     });
 });

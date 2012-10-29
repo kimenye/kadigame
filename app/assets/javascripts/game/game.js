@@ -261,6 +261,7 @@ window.kadi = (function(me, $, undefined){
                     SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[next],'deck');
                 },1000);
             });
+
             SHOTGUN.listen(kadi.Events.FINISH, function(player, action, playedCards, mode) {
                 if(player.live) {
                     player.numberOfTimesWon++;
@@ -622,7 +623,6 @@ window.kadi = (function(me, $, undefined){
             SHOTGUN.fire(kadi.Events.CARDS_DEALT,[]);
             var starter = this.order.current();
             SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[this.tableDeck.topCard(),null,null],starter.id);
-            SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[starter], 'deck');
         },
         
         cardlessPlayerExists: function() {

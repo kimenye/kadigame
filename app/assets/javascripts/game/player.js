@@ -75,7 +75,15 @@ window.kadi = (function(me, $, undefined){
         },
 
         initHandlers: function() {
+            var self = this;
+            SHOTGUN.listen(kadi.Events.RECEIVE_TURN, function(card, requestedSuite, prev) {
+                self.handleReceiveTurn(card, requestedSuite, prev);
+            }, this.id);
+        },
 
+        handleReceiveTurn: function(topCard, requestedSuite, prev) {
+            this.requestedSuite = requestedSuite;
+            this.topCard = topCard;
         }
     });
 
@@ -97,6 +105,7 @@ window.kadi = (function(me, $, undefined){
             if (kadi.getVal(prepare))
                 this.initDisplay();
         },
+
         initDisplay: function() {
             var self = this;
             this.div = kadi.createDiv('player ' + this.getLocation() + "", "p" + this.id);
@@ -168,6 +177,7 @@ window.kadi = (function(me, $, undefined){
 
         initHandlers: function() {
             this.display();
+            this.parent.initHandlers.apply(this, []);
             var self = this;
             if (this.live) {
                 SHOTGUN.listen(kadi.Events.CARD_SELECTED, function(card) {
@@ -219,26 +229,25 @@ window.kadi = (function(me, $, undefined){
             SHOTGUN.listen(kadi.Events.CARDS_DEALT, function() {
                 self.deck.redrawCards();
             });
+        },
 
-            SHOTGUN.listen(kadi.Events.RECEIVE_TURN, function(card, requestedSuite, prev) {
-                if (self.live) {
-                    self.activate(true);
-                    self.requestedSuite = requestedSuite;
-                    self.topCard = card;
-                } else {
-                    _.delay(function() {
-                        if (kadi.isSomethingMeaningful(prev) && prev.live) {
-                            prev.disableKADI();
-                        }
-                        self.bot(card, requestedSuite);
-                    },kadi.GamePlayerUI.BOT_DELAY);
+        handleReceiveTurn: function(topCard, requestedSuite, prev) {
+            this.parent.handleReceiveTurn.apply(this, [topCard, requestedSuite, prev]);
+            if (this.live) {
+                this.activate(true);
+            } else {
+                var self = this;
+                _.delay(function() {
+                    if (kadi.isSomethingMeaningful(prev) && prev.live) {
+                        prev.disableKADI();
+                    }
+                    self.bot(topCard, requestedSuite);
+                },kadi.GamePlayerUI.BOT_DELAY);
                 }
 
-                $(self.avatar).addClass('active');
-                if(!self.onKADI)
-                    $(self.avatar).wiggle('start', { limit: 5 });
-            }, this.id);
-            
+                $(this.avatar).addClass('active');
+                if(!this.onKADI)
+                    $(this.avatar).wiggle('start', { limit: 5 });
         },
 
         endTurn: function(action,playedCards) {
