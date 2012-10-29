@@ -158,7 +158,7 @@ window.kadi = (function(me, $, undefined){
             if (kadi.isSomethingMeaningful(this.me))
                 this.players.push(this.me);
             this.requestedSuite = null;
-            this.pickingDeck = new kadi.PickingDeck();
+            this.pickingDeck = new kadi.PickingDeckUI();
             this.tableDeck = new kadi.TableDeck();
             this.noticeBoard = new kadi.NoticeBoard();
             this.cardless = 0;

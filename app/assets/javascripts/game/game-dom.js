@@ -1,6 +1,6 @@
 window.kadi = (function(me, $, undefined){
 
-    me.PickingDeck = me.Box.extend({
+    me.PickingDeckUI = me.Box.extend({
         statics : {
             WIDTH:  150,
             HEIGHT: 200,
@@ -12,11 +12,11 @@ window.kadi = (function(me, $, undefined){
             var self = this;
             this.parent.construct.apply(this, ['game', 'picking_box_div', 'picking_box']);
             this.deck = kadi.Suite.getDeckOfCards();
-            this.topLeft = function() { return new kadi.Pos(me.PickingDeck.X, me.PickingDeck.Y) };
+            this.topLeft = function() { return new kadi.Pos(me.PickingDeckUI.X, me.PickingDeckUI.Y) };
             this.active = false;
             this.replenished = false;
             this.activePlayer = null;
-            this.bBox = function() { return new kadi.BBox(this.topLeft(), me.PickingDeck.WIDTH, me.PickingDeck.HEIGHT) };
+            this.bBox = function() { return new kadi.BBox(this.topLeft(), me.PickingDeckUI.WIDTH, me.PickingDeckUI.HEIGHT) };
             this.display();
 
             self.node().css('z-index', 6000);
@@ -88,7 +88,7 @@ window.kadi = (function(me, $, undefined){
         },
 
         deal: function() {
-            if (this.deck.length <= kadi.PickingDeck.REPLENISH_THRESHOLD && !this.replenished) {
+            if (this.deck.length <= kadi.PickingDeckUI.REPLENISH_THRESHOLD && !this.replenished) {
                 this.replenished = true;
                 SHOTGUN.fire(kadi.Events.REPLENISH_PICKING_CARDS,[]);
             }
