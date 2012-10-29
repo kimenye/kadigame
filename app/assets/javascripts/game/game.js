@@ -103,6 +103,36 @@ window.kadi = (function(me, $, undefined){
             ANY_CARDS_KADI: "any-cards-kadi",
             PICKING_MODE_TOP_ONLY: "only-pick-the-top-card",
             PICKING_MODE_ALL : "pick-all-the-cards"
+        },
+
+        construct: function(gameEndMode, kadiMode, pickingMode) {
+            this.gameEndMode = gameEndMode;
+            this.kadiMode = kadiMode;
+            this.pickingMode = pickingMode;
+        },
+
+        isEliminationMode: function() {
+            return this.gameEndMode == me.GameOptions.MODE_ELIMINATION;
+        },
+
+        isFirstToWin: function() {
+            return !this.isEliminationMode();
+        },
+
+        canFinishWithMultipleCards: function() {
+            return this.kadiMode == me.GameOptions.ANY_CARDS_KADI;
+        },
+
+        mustFinishWithOnlyOneCard: function() {
+            return !this.canFinishWithMultipleCards();
+        },
+
+        canPickOnlyTheTopCard: function() {
+            return this.pickingMode == me.GameOptions.PICKING_MODE_TOP_ONLY;
+        },
+
+        mustPickAllTheCards: function() {
+            return !this.canPickOnlyTheTopCard();
         }
     });
 
