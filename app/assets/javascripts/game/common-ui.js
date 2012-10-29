@@ -285,5 +285,102 @@ window.kadi = (function(me, $, undefined){
         }
     });
 
+    me.PickingDeckUI = me.Deck.extend({
+        statics : {
+            WIDTH:  150,
+            HEIGHT: 200,
+            X: 500,
+            Y: 200,
+            REPLENISH_THRESHOLD: 10
+        },
+        construct : function() {
+            this.parent.construct.apply(this, []);
+            var self = this;
+            this.deck = kadi.Suite.getDeckOfCards();
+            this.topLeft = function() { return new kadi.Pos(me.PickingDeckUI.X, me.PickingDeckUI.Y) };
+            this.active = false;
+            this.replenished = false;
+            this.activePlayer = null;
+            this.bBox = function() { return new kadi.BBox(this.topLeft(), me.PickingDeckUI.WIDTH, me.PickingDeckUI.HEIGHT) };
+            this.display();
+
+            this.node.css('z-index', 6000);
+            this.node.hover(function() {
+                if (self.active) {
+                    self.node.css( 'cursor', 'pointer' );
+                }
+            }, function() {
+                if (self.active && !self.selected) {
+                    self.node.css( 'cursor', 'default' );
+                }
+            });
+
+            this.node.click(function() {
+                if (self.active && kadi.isSomethingMeaningful(self.activePlayer)) {
+                    self.activePlayer.pick();
+                }
+            });
+
+            SHOTGUN.listen(kadi.Events.RECEIVE_TURN, function(player) {
+                self.active = player.live;
+                self.activePlayer = player; //TODO: this is still tightly coupled, you need to pass an event to the game
+            }, 'deck');
+        },
+
+        returnCard: function(card) {
+            var pos = kadi.getRandomLocation(this.bBox(), 10, 5, 10);
+            card.container().css('z-index', kadi.TableDeck.Z);
+            card.moveTo(pos.x, pos.y, pos.rotate);
+//            this.deck.push([card]); //TODO: to change when we do shift / pop
+            this.deck.push(card);
+        },
+
+        giveCardTo: function(card, player) {
+            var card = _.find(this.deck, function(c) {
+                return c.eq(card);
+            });
+
+            if (kadi.isSomethingMeaningful(card)) {
+                player.addCard(card,true);
+            }
+        },
+
+        display: function() {
+//            this.parentDiv.appendChild(this.div);
+            this.node = kadi.display('game', 'picking_box_div', 'picking_box');
+            var positions = kadi.randomizeCardLocations(this.deck.length, this.bBox());
+            _.each(this.deck, function(card,idx) {
+                var pos = positions[idx];
+                card.display(me.GameUI.ID, pos.x, pos.y, pos.rotate);
+            });
+        },
+
+        numCards: function() {
+            return this.deck.length;
+        },
+
+        cut: function() {
+            var canStart = false;
+            var card = null;
+            do
+            {
+                var card = this.deck.shift();
+                canStart = kadi.RuleEngine.canStart(card);
+                if (!canStart)
+                    this.deck.push(card);
+            }
+            while(!canStart)
+            return card;
+        },
+
+        deal: function() {
+            if (this.deck.length <= kadi.PickingDeckUI.REPLENISH_THRESHOLD && !this.replenished) {
+                this.replenished = true;
+                SHOTGUN.fire(kadi.Events.REPLENISH_PICKING_CARDS,[]);
+            }
+            return this.deck.pop();
+        }
+    });
+
     return me;
 })(window.kadi || {}, jQuery);

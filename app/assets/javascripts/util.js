@@ -515,7 +515,8 @@ window.kadi = (function(me, $, undefined){
         var parentDiv = document.getElementById(parent);
         parentDiv.appendChild(div);
         $(div).css('z-index','0');
-    }
+        return $(div);
+    };
 
     window.onerror = function(msg, url, line) {
         console.log("An un caught error occurred %s on line %s", msg, line);
