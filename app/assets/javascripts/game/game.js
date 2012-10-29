@@ -118,11 +118,14 @@ window.kadi = (function(me, $, undefined){
             if (kadi.isSomethingMeaningful(this.me))
                 this.players.push(this.me);
             this.requestedSuite = null;
-            this.pickingDeck = new kadi.PickingDeckUI();
-            this.tableDeck = new kadi.TableDeckUI();
-            this.noticeBoard = new kadi.NoticeBoard();
+            this.initComponents();
             this.cardless = 0;
             this.turnsToSkip = 0;
+        },
+
+        initComponents: function() {
+            this.pickingDeck = new kadi.PickingDeck();
+            this.tableDeck = new kadi.TableDeck();
         },
 
         startGame: function() {
