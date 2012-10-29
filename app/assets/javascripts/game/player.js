@@ -67,6 +67,10 @@ window.kadi = (function(me, $, undefined){
             if (this.deck.hasCards()) {
                 SHOTGUN.fire(kadi.Events.INCREMENT_CARDLESS_COUNTER);
             }
+        },
+
+        canJump: function() {
+            return kadi.RuleEngine.canJump(this.deck.cards);
         }
     });
 
@@ -338,10 +342,6 @@ window.kadi = (function(me, $, undefined){
         },
         canDeclareKADI: function() {
             return this.cards().length > 0 && kadi.RuleEngine.canDeclareKADI(this.cards(), this.kadiMode);
-        },
-        
-        canJump: function() {
-            return kadi.RuleEngine.canJump(this.deck.cards);
         },
         
         pick: function() {
