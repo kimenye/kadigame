@@ -495,6 +495,21 @@ window.kadi = (function(me, $, undefined){
         return r;
     };
 
+    /**
+     * Hide the loading text
+     *
+     * @param elementToDisplay
+     */
+    me.disableLoading  = function(elementToDisplay) {
+        $('#loading').hide();
+        $('#' + elementToDisplay).show();
+        return true;
+    };
+
+    me.updateLoadingText = function(text) {
+        $('#loading-text').html(text);
+    };
+
     window.onerror = function(msg, url, line) {
         console.log("An un caught error occurred %s on line %s", msg, line);
         SHOTGUN.fire(kadi.Events.UNHANDLED_ERROR, []);

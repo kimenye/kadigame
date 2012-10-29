@@ -277,55 +277,6 @@ window.kadi = (function(me, $, undefined){
         }
     });
 
-    me.RequestedSuiteNotification = me.Box.extend({
-        statics: {
-            WIDTH: 100,
-            HEIGHT: 136
-        },
-        construct: function() {
-            this.parent.construct.apply(this, ['game', 'requested_suite_div', 'requested_suite hidden']);
-            this.display();
-            var self = this;
-            SHOTGUN.listen(kadi.Events.DISPLAY_REQUESTED_SUITE, function(suite) {
-                self.show(suite);
-            });
-
-            SHOTGUN.listen(kadi.Events.HIDE_REQUESTED_SUITE, function() {
-                self.hide();
-            });
-        },
-
-        hide: function() {
-            $(this.suiteHolder).remove();
-            this.suiteHolder = null;
-            $(this.div).transition({
-                opacity: 0,
-                scale: 1
-            }, 500, 'snap');
-        },
-
-        show: function(suite) {
-            $('.requested_suite').removeClass('hidden');
-
-            if (kadi.isSomethingMeaningful(this.suiteHolder)) {
-                $(this.suiteHolder).remove();
-                this.suiteHolder = null;
-            }
-
-            this.suiteHolder = kadi.createDiv('suite_holder', 'suite_holder_div');
-            var symbol = kadi.Suite.getSuiteSymbol(suite);
-            var label = kadi.createSpan(symbol, "suite " + suite + " " + kadi.Suite.getColorClass(suite,"") + " larger", null);
-
-            this.suiteHolder.appendChild(label);
-            this.div.appendChild(this.suiteHolder);
-
-            $(this.div).transition({
-                opacity: 0.5,
-                scale: 0.6
-            }, 1000, 'snap');
-        }
-    });
-
     me.TableDeck = me.Box.extend({
         statics: {
             WIDTH: 150,
