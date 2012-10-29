@@ -327,7 +327,7 @@ window.kadi = (function(me, $, undefined){
 
         returnCard: function(card) {
             var pos = kadi.getRandomLocation(this.bBox(), 10, 5, 10);
-            card.container().css('z-index', kadi.TableDeck.Z);
+            card.container().css('z-index', kadi.TableDeckUI.Z);
             card.moveTo(pos.x, pos.y, pos.rotate);
             this.parent.returnCard.apply(this, [card]);
         },

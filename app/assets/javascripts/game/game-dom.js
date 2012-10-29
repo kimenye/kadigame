@@ -1,6 +1,6 @@
 window.kadi = (function(me, $, undefined){
 
-    me.TableDeck = me.Box.extend({
+    me.TableDeckUI = me.Box.extend({
         statics: {
             WIDTH: 150,
             HEIGHT: 200,
@@ -12,7 +12,7 @@ window.kadi = (function(me, $, undefined){
         construct : function() {
             this.parent.construct.apply(this, ['game', 'table_deck_div', 'table_deck']);
             this.cards = [];
-            this.highestCard = kadi.TableDeck.Z;
+            this.highestCard = kadi.TableDeckUI.Z;
             this.display();
         },
 
@@ -37,9 +37,9 @@ window.kadi = (function(me, $, undefined){
         },
 
         replenishCards: function() {
-            if (this.numCards() >= kadi.TableDeck.MIN_CARDS) {
+            if (this.numCards() >= kadi.TableDeckUI.MIN_CARDS) {
                 var availCards = this.numCards();
-                var cardsToPick = availCards - kadi.TableDeck.MIN_CARDS;
+                var cardsToPick = availCards - kadi.TableDeckUI.MIN_CARDS;
                 var cardsToRecycle = _.first(this.cards,cardsToPick);
                 var remaining = _.rest(this.cards,cardsToPick);
                 this.cards = remaining;
@@ -49,8 +49,8 @@ window.kadi = (function(me, $, undefined){
         },
 
         bBox : function() {
-            var topLeft = new kadi.Pos(kadi.TableDeck.X,kadi.TableDeck.Y);
-            return new kadi.BBox(topLeft, kadi.TableDeck.WIDTH, kadi.TableDeck.HEIGHT);
+            var topLeft = new kadi.Pos(kadi.TableDeckUI.X,kadi.TableDeckUI.Y);
+            return new kadi.BBox(topLeft, kadi.TableDeckUI.WIDTH, kadi.TableDeckUI.HEIGHT);
         },
 
         numCards: function() {

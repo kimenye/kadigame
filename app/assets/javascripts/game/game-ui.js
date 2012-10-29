@@ -159,7 +159,7 @@ window.kadi = (function(me, $, undefined){
                 this.players.push(this.me);
             this.requestedSuite = null;
             this.pickingDeck = new kadi.PickingDeckUI();
-            this.tableDeck = new kadi.TableDeck();
+            this.tableDeck = new kadi.TableDeckUI();
             this.noticeBoard = new kadi.NoticeBoard();
             this.cardless = 0;
             this.turnsToSkip = 0;
