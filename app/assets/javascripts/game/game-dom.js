@@ -1,6 +1,6 @@
 window.kadi = (function(me, $, undefined){
 
-    me.PlayerDeckUI = me.Box.extend({
+    me.PlayerDeckUI = me.PlayerDeck.extend({
         statics: {
             WIDTH_H: 400,
             HEIGHT_H: 100,
@@ -37,8 +37,7 @@ window.kadi = (function(me, $, undefined){
         },
         construct: function(type) {
             this.type = type;
-            this.parent.construct.apply(this, ['game', 'player_deck_div' + type, 'player_deck ' + type]);
-            this.display();
+            kadi.display('game','player_deck_div' + type, 'player_deck ' + type);
             this.cards = [];
         },
 

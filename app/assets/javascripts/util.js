@@ -510,6 +510,13 @@ window.kadi = (function(me, $, undefined){
         $('#loading-text').html(text);
     };
 
+    me.display = function(parent, id, className) {
+        var div = kadi.createElement('div', className, id);
+        var parentDiv = document.getElementById(parent);
+        parentDiv.appendChild(div);
+        $(div).css('z-index','0');
+    }
+
     window.onerror = function(msg, url, line) {
         console.log("An un caught error occurred %s on line %s", msg, line);
         SHOTGUN.fire(kadi.Events.UNHANDLED_ERROR, []);
