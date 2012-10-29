@@ -143,7 +143,7 @@ window.kadi = (function(me, $, undefined){
             this.opponents = opponents;
             this.players = this.opponents;
             this.original = this.players;
-            if (kadi.isSomethingMeaningful(this.me))
+            if (this.hasLivePlayer())
                 this.players.push(this.me);
             this.requestedSuite = null;
             this.initComponents();
@@ -152,24 +152,33 @@ window.kadi = (function(me, $, undefined){
         },
 
         initComponents: function() {
-            this.pickingDeck = new kadi.PickingDeck();
+            this.pickingDeck = new kadi.PickingDeck(kadi.Suite.getDeckOfCards());
             this.tableDeck = new kadi.TableDeck();
         },
 
-        startGame: function() {
+        hasLivePlayer: function() {
+            return kadi.isSomethingMeaningful(this.me);
+        },
+
+        startGame: function(starterIndex) {
             var self = this;
             this.startTime = new Date();
-            self.me.numberOfTimesPlayed++;
-            $.post('/record_times_played', { fb_id: self.me.id }, function(data) { });
-            
-            var starterIdx = kadi.coinToss(this.players);
-            //starterIdx = this.players.length - 1;
-            starterIdx = 0;
+
+            if (this.hasLivePlayer()) {
+                self.me.numberOfTimesPlayed++;
+                $.post('/record_times_played', { fb_id: self.me.id }, function(data) { });
+            }
+
+            var starterIdx = starterIndex;
+            if (!kadi.isSomethingMeaningful(starterIdx)) {
+                starterIdx = kadi.coinToss(this.players);
+            }
+
             var starter = this.players[starterIdx];
 
             _.each(this.players, function(p) {
                 p.initHandlers();
-                p.kadiMode = self.kadiMode == kadi.GameOptions.ONE_CARD_KADI;
+                p.options = self.options;
             });
 
             this.order = new me.PlayingOrder(this.players, starterIdx);
@@ -237,7 +246,6 @@ window.kadi = (function(me, $, undefined){
 
                 }, self);
                 self.order.pause(pauseHandler);
-
             });
 
             SHOTGUN.listen(kadi.Events.ACCEPT_PICKING, function(player, pickingCards) {

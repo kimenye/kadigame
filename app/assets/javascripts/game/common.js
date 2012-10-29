@@ -92,8 +92,8 @@ window.kadi = (function(me, $, undefined){
         statics: {
             REPLENISH_THRESHOLD: 10
         },
-        construct: function() {
-            this.cards = [];
+        construct: function(cards) {
+            this.cards = cards;
             this.replenished = false;
         },
 

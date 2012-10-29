@@ -38,12 +38,23 @@ describe("Integration tests:", function() {
             deck.removeCard(kadi.spades("5"));
             expect(deck.isEmpty()).toBe(true);
         });
+
+        describe("Picking deck", function() {
+            var pickingDeck = new kadi.PickingDeck(kadi.Suite.getDeckOfCards());
+
+            it("Picks a valid starting card to begin the game", function() {
+                expect(pickingDeck.numCards()).toBe(54);
+
+                var startingCard = pickingDeck.cut();
+                expect(kadi.RuleEngine.canStart(startingCard)).toBe(true);
+            });
+        });
     });
 
     describe("A game", function() {
-        var compA = new kadi.Player('100004303570767', 'Wills',false);
-        var compB = new kadi.Player('100004432652693', 'Prezzo',false);
-        var compC = new kadi.Player('100004430102934', 'Smally',false);
+        var compA = new kadi.Player('100004303570767', 'Wills', false, 0, 0, 0, new kadi.Deck());
+        var compB = new kadi.Player('100004432652693', 'Prezzo', false, 0, 0, 0, new kadi.Deck());
+        var compC = new kadi.Player('100004430102934', 'Smally', false, 0, 0, 0, new kadi.Deck());
 
         var players = [compA, compB, compC];
 
@@ -67,12 +78,27 @@ describe("Integration tests:", function() {
 
         it("A game has options", function() {
             var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_TOP_ONLY);
-
             var game = new kadi.Game(null, players, options);
 
             expect(game.pickTopOnly()).toBe(true);
             expect(game.eliminationMode()).toBe(true);
             expect(game.singleCardKadi()).toBe(true);
+        });
+
+        it("A game has a number of players", function() {
+            var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_TOP_ONLY);
+            var game = new kadi.Game(null, players, options);
+
+            expect(game.hasLivePlayer()).toBe(false);
+            expect(game.players.length).toBe(3);
+        });
+
+        it("Can start a game", function() {
+
+            var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_TOP_ONLY);
+            var game = new kadi.Game(null, players, options);
+
+            game.startGame(0);
         });
     });
 });

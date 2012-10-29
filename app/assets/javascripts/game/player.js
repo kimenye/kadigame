@@ -11,6 +11,7 @@ window.kadi = (function(me, $, undefined){
             this.numberOfTimesWon = numberOfTimesWon;
             this.selections = [];
             this.deck = deck;
+            this.options = null;
         },
 
         eq: function(other) {
@@ -71,6 +72,10 @@ window.kadi = (function(me, $, undefined){
 
         canJump: function() {
             return kadi.RuleEngine.canJump(this.deck.cards);
+        },
+
+        initHandlers: function() {
+
         }
     });
 
@@ -123,18 +128,23 @@ window.kadi = (function(me, $, undefined){
                 this.div.appendChild(this.buttonDiv);
             }
         },
+
         display: function() {
             this.parentDiv.appendChild(this.div);
         },
+
         getLocation: function() {
             return this.deck.type;
         },
+
         hide: function() {
             $(this.avatar).addClass('hidden');
         },
+
         show: function() {
             $(this.avatar).removeClass('hidden');
         },
+
         addCard: function(card,redraw) {
             this.parent.addCard.apply(this, [card]);
             if (this.live)
@@ -142,6 +152,7 @@ window.kadi = (function(me, $, undefined){
             if (redraw)
                 this.deck.redrawCards();
         },
+
         removeCard: function(card,redraw) {
             this.parent.removeCard.apply(this, [card]);
             if (redraw)
@@ -229,6 +240,7 @@ window.kadi = (function(me, $, undefined){
             }, this.id);
             
         },
+
         endTurn: function(action,playedCards) {
             SHOTGUN.fire(kadi.Events.END_TURN, [this, action, playedCards]);
             //check if the user can declare KADI...
@@ -248,6 +260,7 @@ window.kadi = (function(me, $, undefined){
                 this.kadi(canDeclare);
             }
         },
+
         kadi: function(status) {
             var before = this.parent.kadi.apply(this, [status]);
 
@@ -264,10 +277,12 @@ window.kadi = (function(me, $, undefined){
                 }
             }
         },
+
         disableKADI: function() {
             $('.btn-kadi').attr('disabled', true);
             $('.btn-kadi').addClass('disabled');
         },
+
         bot: function(card, requestedSuite) {
             //TODO: give the players some thinking time...
             var cards = this.cards();
@@ -326,6 +341,7 @@ window.kadi = (function(me, $, undefined){
                 }
             }
         },
+
         block: function(pickingCards) {
             //the blocking strategy is to add a single picking card of the highest value
             //
@@ -340,6 +356,7 @@ window.kadi = (function(me, $, undefined){
                 SHOTGUN.fire(kadi.Events.BLOCK, [this, [ace], pickingCards, false]);
             }
         },
+
         canDeclareKADI: function() {
             return this.cards().length > 0 && kadi.RuleEngine.canDeclareKADI(this.cards(), this.kadiMode);
         },
@@ -348,6 +365,7 @@ window.kadi = (function(me, $, undefined){
             SHOTGUN.fire(kadi.Events.PICK_CARD, [this, 1]);
             this.endTurn(kadi.RuleEngine.ACTION_NONE, []);
         },
+
         move: function() {
             if (this.blockMode) {
                 if (kadi.RuleEngine.isValidBlockingMove(this.selections)) {
@@ -369,9 +387,11 @@ window.kadi = (function(me, $, undefined){
                 }
             }
         },
+
         handleCardSelected: function(card) {
             this.selections.push(card);
         },
+
         handleCardDeselected: function(card) {
             this.selections = _.reject(this.selections, function(c) {
                 return c.eq(card);
