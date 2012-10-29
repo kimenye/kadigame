@@ -551,17 +551,25 @@ window.kadi = (function(me, $, undefined){
             ID: 'game',
             CONTAINER_ID: 'game-container'
         },
+
         construct: function(player, opponents, options) {
             this.parent.construct.apply(this, [player, opponents, options]);
         },
+
         initComponents: function() {
             this.pickingDeck = new kadi.PickingDeckUI();
             this.tableDeck = new kadi.TableDeckUI();
             this.noticeBoard = new kadi.NoticeBoard();
         },
+
         dealCards: function() {
             this.parent.dealCards.apply(this, []);
             var starter = this.order.current();
+            SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[starter], 'deck');
+        },
+
+        dealSpecificCards: function(playerCards, topCard) {
+            this.parent.dealSpecificCards.apply(playerCards, topCard);
             SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[starter], 'deck');
         }
     });

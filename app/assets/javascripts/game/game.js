@@ -160,35 +160,8 @@ window.kadi = (function(me, $, undefined){
             return kadi.isSomethingMeaningful(this.me);
         },
 
-        startGame: function(starterIndex) {
+        initializeListeners: function() {
             var self = this;
-            this.startTime = new Date();
-
-            if (this.hasLivePlayer()) {
-                self.me.numberOfTimesPlayed++;
-                $.post('/record_times_played', { fb_id: self.me.id }, function(data) { });
-            }
-
-            var starterIdx = starterIndex;
-            if (!kadi.isSomethingMeaningful(starterIdx)) {
-                starterIdx = kadi.coinToss(this.players);
-            }
-
-            var starter = this.players[starterIdx];
-
-            _.each(this.players, function(p) {
-                p.initHandlers();
-                p.options = self.options;
-            });
-
-            this.order = new me.PlayingOrder(this.players, starterIdx);
-            this.dealCards();
-            //TODO: How to give specific players certain cards
-            //var playerOneCards = [kadi.spades("J"), kadi.diamonds("2")];
-            //var playerTwoCards = [kadi.diamonds("J"), kadi.clubs("J")];
-            //
-            //this.dealSpecificCards([playerOneCards, playerTwoCards], kadi.spades("5"));
-
             SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ this.order.current().name + " to start. " ]);
             SHOTGUN.listen(kadi.Events.PICK_CARD, function(player, num) {
                 self.giveCard(player,num);
@@ -199,7 +172,6 @@ window.kadi = (function(me, $, undefined){
                     }
                 }
             });
-
             SHOTGUN.listen(kadi.Events.END_TURN, function(player, action, playedCards) {
                 var paused = self.order.isPaused;
                 if (!paused) {
@@ -210,7 +182,6 @@ window.kadi = (function(me, $, undefined){
                     SHOTGUN.fire(kadi.Events.REPLENISHED_CARDS, [player, action, playedCards]);
                 }
             });
-
             SHOTGUN.listen(kadi.Events.REPLENISHED_CARDS, function(player, action, playedCards) {
                 self.pickingDeck.replenished = false;
                 self.order.unPause();
@@ -274,7 +245,7 @@ window.kadi = (function(me, $, undefined){
                     one_card: self.kadiMode == kadi.GameOptions.ONE_CARD_KADI,
                     pick_top_card: self.pickTopOnly() }, function(data) {
                 });
-                
+
                 if (mode == kadi.GameOptions.MODE_FIRST_TO_WIN) {
                     self.order.end();
                 } else if (mode == kadi.GameOptions.MODE_ELIMINATION) {
@@ -332,27 +303,49 @@ window.kadi = (function(me, $, undefined){
                     self.pickingDeck.returnCard(c);
                 });
             });
-            
+
             SHOTGUN.listen(kadi.Events.INCREMENT_CARDLESS_COUNTER, function() {
                 self.cardless++;
             });
-            
+
             SHOTGUN.listen(kadi.Events.DECREMENT_CARDLESS_COUNTER, function() {
                 self.cardless++;
             });
-            
+
             SHOTGUN.listen(kadi.Events.INCREMENT_SKIP, function(player, card) {
                 self.turnsToSkip++;
                 card.active = false;
                 player.removeCard(card, true);
                 self.tableDeck.addCard(card, !player.live);
             });
-            
-            
-            //_.delay(function() {
-            //    starter.returnCards();
-            //    SHOTGUN.fire(kadi.Events.FINISH, [starter, kadi.RuleEngine.ACTION_NONE, [], self.mode]);
-            //}, 0);
+        },
+
+        startGame: function(starterIndex, playerCards, topCard) {
+            var self = this;
+            this.startTime = new Date();
+
+            if (this.hasLivePlayer()) {
+                self.me.numberOfTimesPlayed++;
+                $.post('/record_times_played', { fb_id: self.me.id }, function(data) { });
+            }
+
+            var starterIdx = starterIndex;
+            if (!kadi.isSomethingMeaningful(starterIdx)) {
+                starterIdx = kadi.coinToss(this.players);
+            }
+
+            _.each(this.players, function(p) {
+                p.initHandlers();
+                p.options = self.options;
+            });
+
+            this.order = new me.PlayingOrder(this.players, starterIdx);
+            if (kadi.isSomethingMeaningful(playerCards) && kadi.isSomethingMeaningful(topCard))
+                this.dealSpecificCards(playerCards, topCard);
+            else
+                this.dealCards();
+
+            this.initializeListeners();
         },
 
         progressPlay: function(player, action, playedCards, test) {
@@ -572,14 +565,12 @@ window.kadi = (function(me, $, undefined){
                 var player = this.players[idx];
 
                 _.each(cards, function(card) {
-                    var cardUi = _.find(this.pickingDeck.deck, function(c) {
+                    var cardUi = _.find(this.pickingDeck.cards, function(c) {
                         return c.eq(card);
                     }, this);
-
                     player.addCard(cardUi);
-
                     //remove the card from the deck
-                    this.pickingDeck.deck = _.reject(this.pickingDeck.deck, function(c) {
+                    this.pickingDeck.deck = _.reject(this.pickingDeck.cards, function(c) {
                         return c.eq(cardUi);
                     });
                 }, this);
@@ -587,12 +578,12 @@ window.kadi = (function(me, $, undefined){
             }, this);
             
             if (topCard) {
-                var cardUi = _.find(this.pickingDeck.deck, function(c) {
+                var cardUi = _.find(this.pickingDeck.cards, function(c) {
                         return c.eq(topCard);
                     }, this);
                 
                 //remove the card from the deck
-                    this.pickingDeck.deck = _.reject(this.pickingDeck.deck, function(c) {
+                    this.pickingDeck.deck = _.reject(this.pickingDeck.cards, function(c) {
                         return c.eq(cardUi);
                     });
                 
@@ -606,7 +597,6 @@ window.kadi = (function(me, $, undefined){
             SHOTGUN.fire(kadi.Events.CARDS_DEALT,[]);
             var starter = this.order.current();
             SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[this.tableDeck.topCard(),null,null],starter.id);
-            SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[starter], 'deck');
         },
 
         dealCards: function() {

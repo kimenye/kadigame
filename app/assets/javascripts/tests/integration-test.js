@@ -52,11 +52,14 @@ describe("Integration tests:", function() {
     });
 
     describe("A game", function() {
-        var compA = new kadi.Player('100004303570767', 'Wills', false, 0, 0, 0, new kadi.Deck());
-        var compB = new kadi.Player('100004432652693', 'Prezzo', false, 0, 0, 0, new kadi.Deck());
-        var compC = new kadi.Player('100004430102934', 'Smally', false, 0, 0, 0, new kadi.Deck());
+        var compA = null, compB = null, compC = null, players = null;
 
-        var players = [compA, compB, compC];
+        beforeEach(function() {
+            compA = new kadi.Player('100004303570767', 'Wills', false, 0, 0, 0, new kadi.Deck());
+            compB = new kadi.Player('100004432652693', 'Prezzo', false, 0, 0, 0, new kadi.Deck());
+            compC = new kadi.Player('100004430102934', 'Smally', false, 0, 0, 0, new kadi.Deck());
+            players = [compA, compB, compC];
+        });
 
         it("Game Options are mutually exclusive", function() {
             var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_TOP_ONLY);
@@ -99,11 +102,33 @@ describe("Integration tests:", function() {
 
             game.startGame(0);
             expect(game.order.current().eq(players[0])).toBe(true);
+            expect(game.order.current().topCard.eq(game.tableDeck.topCard())).toBe(true);
 
             _.each(game.players, function(p) {
                 expect(p.deck.hasCards()).toBe(true);
                 expect(p.deck.numCards()).toBe(3);
             });
+        });
+
+        it("Can deal specific cards to players", function() {
+            var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_TOP_ONLY);
+            var game = new kadi.Game(null, players, options);
+
+            var playerOneCards = [kadi.spades("J"), kadi.spades("2"), kadi.hearts("3")];
+            var playerTwoCards = [kadi.clubs("J"), kadi.diamonds("2"), kadi.spades("3")];
+            var playerThreeCards = [kadi.hearts("J"), kadi.hearts("2"), kadi.clubs("3")];
+
+            var cards = [playerOneCards, playerTwoCards, playerThreeCards];
+            cards = [playerTwoCards];
+            var topCard = kadi.spades("5");
+
+            game.startGame(1, cards, topCard);
+            var curr = game.order.current();
+            _.each(curr.deck.cards, function(c, idx) {
+                expect(c.eq(playerTwoCards[idx])).toBe(true);
+            });
+
+            expect(game.tableDeck.topCard().eq(topCard)).toBe(true);
         });
     });
 });
