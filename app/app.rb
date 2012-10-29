@@ -12,7 +12,7 @@ class Kadi < Padrino::Application
   register Padrino::Assets
 
   set :js_compressor, :uglifier
-  set :compress_assets, true
+  set :compress_assets, production?
 
   Pusher.app_id = '26156'
   Pusher.key = '3b40830094bf454823f2'
