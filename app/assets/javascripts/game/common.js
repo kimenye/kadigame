@@ -23,6 +23,31 @@ window.kadi = (function(me, $, undefined){
         }
     });
 
+    me.TableDeck = me.Deck.extend({
+        statics: {
+            MIN_CARDS: 5
+        },
+        construct: function() {
+            this.cards = [];
+        },
+
+        topCard: function() {
+            return _.last(this.cards);
+        },
+
+        replenishCards: function() {
+            if (this.numCards() >= kadi.TableDeck.MIN_CARDS) {
+                var availCards = this.numCards();
+                var cardsToPick = availCards - kadi.TableDeck.MIN_CARDS;
+                var cardsToRecycle = _.first(this.cards,cardsToPick);
+                var remaining = _.rest(this.cards,cardsToPick);
+                this.cards = remaining;
+                return cardsToRecycle;
+            }
+            return [];
+        }
+    });
+
     me.PickingDeck = me.Deck.extend({
         statics: {
             REPLENISH_THRESHOLD: 10

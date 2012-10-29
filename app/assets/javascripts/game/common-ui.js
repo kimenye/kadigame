@@ -342,5 +342,45 @@ window.kadi = (function(me, $, undefined){
         }
     });
 
+    me.TableDeckUI = me.TableDeck.extend({
+        statics: {
+            WIDTH: 150,
+            HEIGHT: 200,
+            X: 300,
+            Y: 200,
+            Z: 5000
+        },
+        construct : function() {
+            this.parent.construct.apply(this, []);
+            this.highestCard = kadi.TableDeckUI.Z;
+            kadi.display('game', 'table_deck_div', 'table_deck');
+        },
+
+        addCard: function(card, flip) {
+            this.parent.addCard.apply(this, [card]);
+            this.highestCard += 1;
+            card.container().css('z-index', this.highestCard);
+
+            var pos = kadi.getRandomLocation(this.bBox(), 15, 10, 15);
+            if (this.cards.length == 1)
+                pos.rotate = 0;
+
+            card.moveTo(pos.x, pos.y, pos.rotate);
+            if (flip) {
+                card.flip();
+            }
+        },
+
+        reset: function() {
+            SHOTGUN.fire(kadi.Events.RETURNED_CARDS, [this.cards]);
+            this.cards = [];
+        },
+
+        bBox : function() {
+            var topLeft = new kadi.Pos(kadi.TableDeckUI.X,kadi.TableDeckUI.Y);
+            return new kadi.BBox(topLeft, kadi.TableDeckUI.WIDTH, kadi.TableDeckUI.HEIGHT);
+        }
+    });
+
     return me;
 })(window.kadi || {}, jQuery);
