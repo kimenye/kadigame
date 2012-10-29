@@ -1,34 +1,5 @@
 window.kadi = (function(me, $, undefined){
 
-    me.Box = JS.Class({
-        construct: function(parent,id,className,x,y,width,height) {
-            this.id = id;
-            this.div = document.createElement("DIV");
-            this.div.id = id;
-            this.div.className = className;
-            this.parentDiv = document.getElementById(parent);
-            $(this.div).css('z-index','0');
-        },
-
-        node : function() {
-            return $(this.div);
-        },
-
-        display: function() {
-            this.parentDiv.appendChild(this.div);
-        },
-        moveTo: function(x,y) {
-            var options = {};
-            if (kadi.isSomethingMeaningful(x)) {
-                _.extend(options, {x: x + "px" });
-            }
-            if (kadi.isSomethingMeaningful(y)) {
-                _.extend(options, {y: y + "px" });
-            }
-            this.node().transition(options, 500, 'snap');
-        }
-    });
-
     me.PlayerDeck = me.Box.extend({
         statics: {
             WIDTH_H: 400,
@@ -414,63 +385,6 @@ window.kadi = (function(me, $, undefined){
 
         topCard: function() {
             return _.last(this.cards);
-        }
-    });
-
-    me.Message = JS.Class({
-        construct: function(idx, text) {
-            this.idx = idx;
-            this.text = text;
-        }
-    });
-
-    me.NoticeBoard = me.Box.extend({
-        statics: {
-            WIDTH: 125,
-            HEIGHT: 175,
-            X: 140,
-            Y: 290
-        },
-        construct : function() {
-            this.parent.construct.apply(this, ['game', 'notification_div', 'notification']);
-            var self = this;
-            this.display();
-
-            this.node().transition({ rotate: '20 deg' }, 500, 'snap');
-            this.messages = [];
-            var linesDiv = document.createElement("DIV");
-            linesDiv.className = "lines";
-            this.div.appendChild(linesDiv);
-
-            var ul = document.createElement("UL");
-            ul.className = "list";
-            this.listDiv = ul;
-            this.ctr = 0;
-
-            this.div.appendChild(ul);
-
-            SHOTGUN.listen(kadi.Events.MSG_RECEIVED, function(text) {
-                self.log(text);
-            });
-        },
-
-        reset: function() {
-            $('.msg').remove();
-        },
-
-        log: function(text) {
-            var li = document.createElement("LI");
-            this.ctr += 1;
-            li.id = "msg-" + this.ctr;
-            li.className = "msg";
-            var txt = kadi.createSpan(text);
-            li.appendChild(txt);
-            if (this.ctr > 2) {
-                var earliest = this.ctr - 2;
-                var old = document.getElementById('msg-' + earliest);
-                $(old).remove();
-            }
-            this.listDiv.appendChild(li);
         }
     });
 
@@ -860,7 +774,7 @@ window.kadi = (function(me, $, undefined){
 
     me.GameOptionsUI = JS.Class({
         construct: function(availablePlayers, handler, me, eliminationMode, kadiMode, pickTopCard) {
-            kadi.ui.disableLoading('game');
+            kadi.disableLoading('game');
             this.me = me;
 
             this.availablePlayers = availablePlayers;
@@ -1056,7 +970,7 @@ window.kadi = (function(me, $, undefined){
         display : function() {
             var self = this;
             _.delay(function() {
-                kadi.ui.disableLoading('game');
+                kadi.disableLoading('game');
                 self.game.startGame();
             }, 2000);
         }
@@ -1070,7 +984,7 @@ window.kadi = (function(me, $, undefined){
      */
     me.initGameUI = function(player, opponents) {
         if (kadi.isSomethingMeaningful(player))
-            kadi.ui.updateLoadingText('Welcome ' + player.name + ". The game will be ready in a few moments...");
+            kadi.updateLoadingText('Welcome ' + player.name + ". The game will be ready in a few moments...");
 
         var livePlayer = new kadi.GamePlayerUI(player, new kadi.PlayerDeck(kadi.PlayerDeck.TYPE_A, true));
         livePlayer.initDisplay();
@@ -1098,9 +1012,8 @@ window.kadi = (function(me, $, undefined){
             console.log("Error with loading file ", result);
         }
 
-
         function showOptions() {
-            kadi.ui.updateLoadingText("Almost there...");
+            kadi.updateLoadingText("Almost there...");
             var compB = new kadi.Player('FD03', 'Karucy',false);
             var compC = new kadi.Player('O03', 'Makmende',false);
             var compD = new kadi.Player('O02', 'Prezzo',false);

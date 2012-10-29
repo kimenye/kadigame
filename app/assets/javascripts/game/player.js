@@ -41,7 +41,6 @@ window.kadi = (function(me, $, undefined){
         }
     });
 
-
     me.Deck = JS.Class({
         construct : function() {
             this.cards = [];
@@ -58,7 +57,6 @@ window.kadi = (function(me, $, undefined){
             });
         }
     });
-
 
     me.GamePlayerUI = me.Player.extend({
         statics: {
