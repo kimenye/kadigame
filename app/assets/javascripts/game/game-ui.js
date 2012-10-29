@@ -1,45 +1,5 @@
 window.kadi = (function(me, $, undefined){
 
-    me.Events = JS.Class({
-        statics : {
-            CARD_SELECTED : "card-selected",
-            CARD_DESELECTED: "card-deselected",
-            PICK_CARD: "pick-card",
-            CARDS_DEALT: "cards-dealt",
-            END_TURN: "end-turn",
-            RECEIVE_TURN: "receive-turn",
-            ACTIVATE_CARD: "activate-card",
-            DEACTIVATE_CARD: "deactivate-card",
-            PLAY_CARDS: "play-cards",
-            BLOCK: "block-picking",
-            MSG_RECEIVED: "msg-received",
-            REJECT_MOVES: "reject-moves",
-            REPLENISH_PICKING_CARDS: "replenish-picking-cards",
-            REPLENISHED_CARDS: "replenished-cards",
-            PLAYER_NOTIFICATION_UI: "player-notification-ui",
-            ACCEPT_PICKING: "accept-picking",
-            SUITE_REQUESTED: "suite-requested",
-            HIDE_REQUESTED_SUITE: "hide-requested-suite",
-            DISPLAY_REQUESTED_SUITE: "display-requested-suite",
-            DECLARE_KADI: "declare-kadi",
-            UNDECLARE_KADI: "undeclare-kadi",
-            FINISH: "finish",
-            UNHANDLED_ERROR: "unhandled-error",
-            RESTART_GAME: "restart-game",
-            RETURNED_CARDS: "returned-cards",
-            LATE_KADI: "late-kadi",
-            INCREMENT_CARDLESS_COUNTER: "increment-cardless-counter",
-            DECREMENT_CARDLESS_COUNTER: "decrement-cardless-counter",
-            ELIMINATION_GAME_OVER: "elimination-game-over",
-            ELIMINATE_PLAYER: "eliminate-player",
-            REINIT_GAME: "re-init-game",
-            SHOW_OPTIONS: "show-options",
-            BLOCK_SKIP: "block-skip",
-            INCREMENT_SKIP: "increment-skip",
-            RESET_PLAYER_CARDS: "reset-player-cards"
-        }
-    });
-
     me.PlayingOrder = JS.Class({
         statics: {
             CLOCKWISE: 1,
