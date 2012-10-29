@@ -20,7 +20,7 @@ window.kadi.game = (function(me, $, undefined){
             return this.id + " - " + this.name;
         },
 
-        name: function(personal) {
+        displayName: function(personal) {
             if (this.live && kadi.getVal(personal))
                 return "You";
             else
@@ -39,8 +39,6 @@ window.kadi.game = (function(me, $, undefined){
             return this.deck.cards;
         }
     });
-
-
 
     me.GamePlayerUI = me.Player.extend({
         statics: {
