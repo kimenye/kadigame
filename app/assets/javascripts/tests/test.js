@@ -12,4 +12,4 @@
 //= require game/rules
 //= require jasmine
 //= require jasmine-html
-//= require game/rules-test
+//= require tests/rules-test

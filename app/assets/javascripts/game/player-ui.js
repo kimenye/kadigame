@@ -9,6 +9,7 @@ window.kadi.game = (function(me, $, undefined){
             this.currentScore = currentScore;
             this.numberOfTimesPlayed = numberOfTimesPlayed;
             this.numberOfTimesWon = numberOfTimesWon;
+            this.selections = [];
         },
 
         eq: function(other) {
@@ -28,26 +29,18 @@ window.kadi.game = (function(me, $, undefined){
 
         isBot: function() {
             return !this.live;
+        },
+
+        clearSelections: function() {
+            this.selections = [];
+        },
+
+        cards: function() {
+            return this.deck.cards;
         }
     });
 
-    me.SocialDashboard = JS.Class({
-        construct: function(handler) {
-            this.friends = [];
-            this.loaded = false;
-            this.handler = handler;
-            var self = this;
-            var url = "/social";
-            $.getJSON(url, function(data) {
-                if (data.success) {
-                    self.friends = data.friends;
-                    self.loaded = true;
-                    if (kadi.isSomethingMeaningful(self.handler))
-                        handler.callBack([self.friends]);
-                }
-            });
-        }
-    });
+
 
     me.GamePlayerUI = me.Player.extend({
         statics: {
@@ -56,12 +49,12 @@ window.kadi.game = (function(me, $, undefined){
         construct : function(player, deck, prepare) {
             this.parent.construct.apply(this, [player.id,player.name,player.live, player.currentScore, player.numberOfTimesPlayed, player.numberOfTimesWon]);
             this.deck = deck;
-            this.topCard = null;
-            this.requestedSuite = null;
+            this.topCard = null; //TODO: remove
+            this.requestedSuite = null; //TODO: remove
             this.blockMode = false;
-            this.cardsToPick = [];
-            this.kadiMode = false;
-            this.selections = [];
+            this.cardsToPick = []; //TODO: remove
+            this.kadiMode = false; //TODO: remove
+
             if (player.live) {
                 this.notification = new kadi.game.PlayerNotification();
             }
@@ -81,7 +74,6 @@ window.kadi.game = (function(me, $, undefined){
             this.avatar.className = "img-polaroid img-rounded avatar";
             this.imageLoaded = false;
 
-            var self = this;
             this.avatar.onload = function() {
                 self.imageLoaded = true;
             };
@@ -106,12 +98,7 @@ window.kadi.game = (function(me, $, undefined){
         getLocation: function() {
             return this.deck.type;
         },
-        clearSelections: function() {
-            this.selections = [];
-        },
-        cards: function() {
-            return this.deck.cards;
-        },
+
         hide: function() {
             $(this.avatar).addClass('hidden');
         },
@@ -421,6 +408,24 @@ window.kadi.game = (function(me, $, undefined){
                 if (status)
                     $('.btn-move').removeClass('disabled');
             }
+        }
+    });
+
+    me.SocialDashboard = JS.Class({
+        construct: function(handler) {
+            this.friends = [];
+            this.loaded = false;
+            this.handler = handler;
+            var self = this;
+            var url = "/social";
+            $.getJSON(url, function(data) {
+                if (data.success) {
+                    self.friends = data.friends;
+                    self.loaded = true;
+                    if (kadi.isSomethingMeaningful(self.handler))
+                        handler.callBack([self.friends]);
+                }
+            });
         }
     });
 
