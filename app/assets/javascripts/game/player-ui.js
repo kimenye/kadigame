@@ -62,7 +62,6 @@ window.kadi.game = (function(me, $, undefined){
             this.cardsToPick = [];
             this.kadiMode = false;
             this.selections = [];
-            this.cardlessPlayerExists = false;
             if (player.live) {
                 this.notification = new kadi.game.PlayerNotification();
             }
@@ -207,8 +206,7 @@ window.kadi.game = (function(me, $, undefined){
                 self.deck.redrawCards();
             });
 
-            SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function(card, requestedSuite, prev,cardlessPlayerExists) {
-                self.cardlessPlayerExists = cardlessPlayerExists;
+            SHOTGUN.listen(kadi.game.Events.RECEIVE_TURN, function(card, requestedSuite, prev) {
                 if (self.live) {
                     self.activate(true);
                     self.requestedSuite = requestedSuite;
@@ -218,7 +216,7 @@ window.kadi.game = (function(me, $, undefined){
                         if (kadi.isSomethingMeaningful(prev) && prev.live) {
                             prev.disableKADI();
                         }
-                        self.bot(card, requestedSuite, cardlessPlayerExists);
+                        self.bot(card, requestedSuite);
                     },kadi.game.GamePlayerUI.BOT_DELAY);
                 }
 
@@ -268,7 +266,7 @@ window.kadi.game = (function(me, $, undefined){
             $('.btn-kadi').attr('disabled', true);
             $('.btn-kadi').addClass('disabled');
         },
-        bot: function(card, requestedSuite, cardlessPlayerExists) {
+        bot: function(card, requestedSuite) {
             //TODO: give the players some thinking time...
             var cards = this.cards();
 
@@ -279,7 +277,7 @@ window.kadi.game = (function(me, $, undefined){
                 }
                 else
                 {
-                    var canFinish = this.onKADI &&  kadi.game.RuleEngine.canFinish(cards,null,requestedSuite,cardlessPlayerExists);
+                    var canFinish = this.onKADI &&  kadi.game.RuleEngine.canFinish(cards,null,requestedSuite);
                     var move = kadi.game.Strategy.bestMoveForRequestedSuite(cards,requestedSuite);
                     if (canFinish) {
                         var moves = kadi.game.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,null,requestedSuite);
@@ -298,7 +296,7 @@ window.kadi.game = (function(me, $, undefined){
                 }
 
             } else {
-                var canFinish = this.onKADI && kadi.game.RuleEngine.canFinish(cards,card,null,cardlessPlayerExists);
+                var canFinish = this.onKADI && kadi.game.RuleEngine.canFinish(cards,card,null);
                 if (canFinish) {
                     var moves = kadi.game.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,card,null);
                     var move = _.first(moves);
@@ -368,7 +366,7 @@ window.kadi.game = (function(me, $, undefined){
             {
                 if (this.selections.length > 0) {
                     this.activateActions(false);
-                    var canFinish = this.onKADI & kadi.game.RuleEngine.canFinish(this.cards(), this.topCard, this.requestedSuite, this.cardlessPlayerExists);
+                    var canFinish = this.onKADI & kadi.game.RuleEngine.canFinish(this.cards(), this.topCard, this.requestedSuite);
                     SHOTGUN.fire(kadi.game.Events.PLAY_CARDS, [this, this.selections, canFinish]);
                 }
             }
