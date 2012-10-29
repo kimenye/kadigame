@@ -3,7 +3,7 @@
     %ul.wat-cf
       %li.first.active=link_to pat(:list), url(:players, :index)
       %li=link_to pat(:new), url(:players, :new)
-  #players.content
+  .content
     %h2.title
       =pat(:all)
       =mt(:players)
@@ -15,8 +15,10 @@
           %th=mat(:player, :name)
           %th=mat(:player, :created_at)
           %th=mat(:player, :updated_at)
-          %th=mat(:player, :roar_id)
           %th=mat(:player, :last_logged_in)
+          %th=mat(:player, :times_played)
+          %th=mat(:player, :games_won)
+          %th=mat(:player, :is_test)
           %th.last="&nbsp;"
         -@players.each do |player|
           %tr
@@ -25,14 +27,14 @@
             %td=player.name
             %td=player.created_at
             %td=player.updated_at
-            %td=player.roar_id
             %td=player.last_logged_in
+            %td=player.times_played
+            %td=player.games_won
+            %td=player.is_test
             %td.last
               =button_to pat(:edit), url(:players, :edit, :id => player.id), :method => :get, :class => :button_to
-              =button_to pat(:delete), url(:players, :destroy, :id => player.id), :method => :delete, :class => :hide, :id => "delete-form-#{player.id}"
+              ="|"
               =button_to pat(:delete), url(:players, :destroy, :id => player.id), :method => :delete, :class => :button_to, :onsubmit => "return confirm('#{pat(:confirm)}')"
-              -#myFunction.bind($data, 'param1', 'param2')
-              -#%a{:href => '#','data-bind' => "click: $root.deletePlayer.bind($data, #{player.id} ,'#{player.name}', '#{player.roar_id}')"} Delete
       .actions-bar.wat-cf
         .actions="&nbsp;"
 
