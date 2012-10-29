@@ -10,7 +10,7 @@ window.kadi = (function(me, $, undefined){
             this.numberOfTimesPlayed = numberOfTimesPlayed;
             this.numberOfTimesWon = numberOfTimesWon;
             this.selections = [];
-            this.deck = null;
+            this.deck = new me.PlayerDeck();
         },
 
         eq: function(other) {
@@ -56,6 +56,10 @@ window.kadi = (function(me, $, undefined){
                 return c.eq(card);
             });
         }
+    });
+
+    me.PlayerDeck = me.Deck.extend({
+
     });
 
     me.GamePlayerUI = me.Player.extend({

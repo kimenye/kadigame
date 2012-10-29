@@ -241,11 +241,11 @@ window.kadi = (function(me, $, undefined){
     me.buildVerticalFan = function(containerWidth,innerWidth, itemWidth, numItems, margin, reverse) {
         var first = kadi.centerInFrame(containerWidth, innerWidth);
         var coords = [];
-        coords.push(new kadi.Pos(kadi.PlayerDeck.X_C, first));
+        coords.push(new kadi.Pos(kadi.PlayerDeckUI.X_C, first));
 
         for(var ctr=1;ctr<numItems;ctr++) {
             var prior = coords[ctr-1].y + itemWidth + margin;
-            coords.push(new kadi.Pos(kadi.PlayerDeck.X_C,prior));
+            coords.push(new kadi.Pos(kadi.PlayerDeckUI.X_C,prior));
         }
 
         return coords;

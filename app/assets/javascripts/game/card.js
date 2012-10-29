@@ -281,7 +281,7 @@ window.kadi = (function(me, $, undefined){
         
         moveCardUp : function() {
             this.container().css( 'cursor', 'pointer' );
-            var top = Math.max(kadi.PlayerDeck.Y_A - 20, this.container().position().top - 20);
+            var top = Math.max(kadi.PlayerDeckUI.Y_A - 20, this.container().position().top - 20);
             this.moveTo(null,top,null);
         },
         
@@ -312,7 +312,7 @@ window.kadi = (function(me, $, undefined){
             });
 
             this.reset = function() {
-                var top = kadi.PlayerDeck.Y_A;
+                var top = kadi.PlayerDeckUI.Y_A;
                 this.deSelect();
                 this.moveTo(null,top,null);
             };
