@@ -6,6 +6,7 @@
 //
 //= require preloadjs-0.2.0.min
 //= require bootbox.min
+//= require game/common
 //= require game/common-ui
 //= require game/card
 //= require game/game-ui
