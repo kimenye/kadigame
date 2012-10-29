@@ -515,7 +515,7 @@ window.kadi.game = (function(me, $, undefined){
                     SHOTGUN.fire(kadi.game.Events.HIDE_REQUESTED_SUITE, []);
                 }
                 _.each(cards, function(card) {
-                    SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ player.name + " played " + card.toS()]);
+                    SHOTGUN.fire(kadi.game.Events.MSG_RECEIVED, [ player.displayName(true) + " played " + card.toS()]);
                     card.deSelect();
                     card.active = false;
                     player.removeCard(card, true);
