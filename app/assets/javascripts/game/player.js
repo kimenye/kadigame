@@ -13,6 +13,7 @@ window.kadi = (function(me, $, undefined){
             this.deck = deck;
             this.options = null;
             this.gameContext = null;
+            this.active = false;
         },
 
         eq: function(other) {
@@ -35,7 +36,7 @@ window.kadi = (function(me, $, undefined){
         },
 
         clearSelections: function() {
-            this.selections = [];
+            this.selections = []; //TODO: should this really be on the player or UI?
         },
 
         cards: function() {
@@ -84,10 +85,105 @@ window.kadi = (function(me, $, undefined){
 
         handleReceiveTurn: function(gameContext) {
             this.gameContext = gameContext;
+            this.active = true;
         },
 
         isMyTurn: function() {
             return kadi.isSomethingMeaningful(this.gameContext);
+        },
+
+        bot: function() {
+            var cards = this.cards();
+
+            if (kadi.isSomethingMeaningful(this.gameContext.requestedSuite)) {
+                var canPlayWithRequestedSuite = kadi.RuleEngine.canMeetMatchingSuite(cards, this.gameContext.requestedSuite);
+                if (!canPlayWithRequestedSuite) {
+                    this.pick();
+                }
+                else
+                {
+                    var canFinish = this.onKADI &&  kadi.RuleEngine.canFinish(cards,null,this.gameContext.requestedSuite);
+                    var move = kadi.Strategy.bestMoveForRequestedSuite(cards,this.gameContext.requestedSuite);
+                    if (canFinish) {
+                        var moves = kadi.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,null,this.gameContext.requestedSuite);
+                        move = _.first(moves);
+                    }
+                    console.log("Fired A: ", this, kadi.handToS(move), this.onKADI, new Date());
+                    try
+                    {
+                        SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI]);
+                    }
+                    catch(ex) {
+                        var trace = printStackTrace();
+                        console.log("Trace: ", trace);
+                        this.pick();
+                    }
+                }
+
+            } else {
+                var canFinish = this.onKADI && kadi.RuleEngine.canFinish(cards,this.gameContext.topCard,null);
+                if (canFinish) {
+                    var moves = kadi.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,this.gameContext.topCard,null);
+                    var move = _.first(moves);
+                    console.log("Fired B: ", this, kadi.handToS(move), this.onKADI, new Date());
+                    SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI]);
+                }
+                else {
+                    var canPlay = kadi.RuleEngine.canPlay(cards, this.gameContext.topCard);
+                    if (canPlay) {
+                        var groups = kadi.RuleEngine.group(cards,this.gameContext.topCard);
+                        if (groups.length == 0) {
+                            //look for a possible move
+                            var moves = kadi.RuleEngine.possibleMoves(this.gameContext.topCard, cards);
+                            var move = _.first(moves);
+                            console.log("Fired: C", this, kadi.handToS(move.cards), this.onKADI, new Date());
+                            SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move.cards, this.onKADI]);
+                        } else {
+                            var move = _.first(groups);
+                            console.log("Fired: D", this, kadi.handToS(move), this.onKADI, new Date());
+                            SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI]);
+                        }
+                    }
+                    else
+                        this.pick();
+                }
+            }
+        },
+
+        block: function(pickingCards) {
+            //the blocking strategy is to add a single picking card of the highest value
+            //
+            var hasPickingCard = kadi.containsPickingCard(this.deck.cards);
+
+            //TODO: Never block if you have a picking card and the next player is on KADI
+            if (hasPickingCard) {
+                var highestCard = kadi.highestPickingCard(this.deck.cards);
+                SHOTGUN.fire(kadi.Events.BLOCK, [this, [highestCard], pickingCards, true]);
+            } else {
+                var ace = _.detect(this.deck.cards, function(c) { return c.rank == kadi.Card.ACE });
+                SHOTGUN.fire(kadi.Events.BLOCK, [this, [ace], pickingCards, false]);
+            }
+        },
+
+        pick: function() {
+            SHOTGUN.fire(kadi.Events.PICK_CARD, [this, 1]);
+            this.endTurn(kadi.RuleEngine.ACTION_NONE, []);
+        },
+
+        endTurn: function(action,playedCards) {
+            SHOTGUN.fire(kadi.Events.END_TURN, [this, action, playedCards]);
+            var canDeclare = this.canDeclareKADI();
+            this.active = false;
+            if (this.live) {
+                if (!canDeclare)
+                    this.kadi(false);
+            }
+            else
+                this.kadi(canDeclare);
+        },
+
+        canDeclareKADI: function() {
+            return this.cards().length > 0 && kadi.RuleEngine.canDeclareKADI(this.cards(), this.options.mustFinishWithOnlyOneCard());
         }
     });
 
@@ -97,8 +193,6 @@ window.kadi = (function(me, $, undefined){
         },
         construct : function(player, deck, prepare) {
             this.parent.construct.apply(this, [player.id,player.name,player.live, player.currentScore, player.numberOfTimesPlayed, player.numberOfTimesWon, deck]);
-            this.topCard = null; //TODO: remove
-            this.requestedSuite = null; //TODO: remove
             this.blockMode = false;
             this.cardsToPick = []; //TODO: remove
             this.kadiMode = false; //TODO: remove
@@ -258,22 +352,17 @@ window.kadi = (function(me, $, undefined){
         },
 
         endTurn: function(action,playedCards) {
-            SHOTGUN.fire(kadi.Events.END_TURN, [this, action, playedCards]);
+            this.parent.endTurn.apply(this, [action, playedCards]);
             //check if the user can declare KADI...
             $(this.avatar).removeClass('active');
             var canDeclare = this.canDeclareKADI();
 
-            if (this.live)
-            {
+            if (this.live) {
                 this.activate(false);
                 if (canDeclare) {
                     $('.btn-kadi').attr('disabled', false);
                     $('.btn-kadi').removeClass('disabled');
                 }
-                else
-                    this.kadi(false);
-            } else {
-                this.kadi(canDeclare);
             }
         },
 
@@ -297,88 +386,6 @@ window.kadi = (function(me, $, undefined){
         disableKADI: function() {
             $('.btn-kadi').attr('disabled', true);
             $('.btn-kadi').addClass('disabled');
-        },
-
-        bot: function() {
-            var cards = this.cards();
-
-            if (kadi.isSomethingMeaningful(this.gameContext.requestedSuite)) {
-                var canPlayWithRequestedSuite = kadi.RuleEngine.canMeetMatchingSuite(cards, this.gameContext.requestedSuite);
-                if (!canPlayWithRequestedSuite) {
-                    this.pick();
-                }
-                else
-                {
-                    var canFinish = this.onKADI &&  kadi.RuleEngine.canFinish(cards,null,this.gameContext.requestedSuite);
-                    var move = kadi.Strategy.bestMoveForRequestedSuite(cards,this.gameContext.requestedSuite);
-                    if (canFinish) {
-                        var moves = kadi.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,null,this.gameContext.requestedSuite);
-                        move = _.first(moves);
-                    }
-                    console.log("Fired A: ", this, kadi.handToS(move), this.onKADI, new Date());
-                    try
-                    {
-                        SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI]);
-                    }
-                    catch(ex) {
-                        var trace = printStackTrace();
-                        console.log("Trace: ", trace);
-                        this.pick();
-                    }
-                }
-
-            } else {
-                var canFinish = this.onKADI && kadi.RuleEngine.canFinish(cards,this.gameContext.topCard,null);
-                if (canFinish) {
-                    var moves = kadi.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,this.gameContext.topCard,null);
-                    var move = _.first(moves);
-                    console.log("Fired B: ", this, kadi.handToS(move), this.onKADI, new Date());
-                    SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI]);
-                }
-                else {
-                    var canPlay = kadi.RuleEngine.canPlay(cards, this.gameContext.topCard);
-                    if (canPlay) {
-                        var groups = kadi.RuleEngine.group(cards,this.gameContext.topCard);
-                        if (groups.length == 0) {
-                            //look for a possible move
-                            var moves = kadi.RuleEngine.possibleMoves(this.gameContext.topCard, cards);
-                            var move = _.first(moves);
-                            console.log("Fired: C", this, kadi.handToS(move.cards), this.onKADI, new Date());
-                            SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move.cards, this.onKADI]);
-                        } else {
-                            var move = _.first(groups);
-                            console.log("Fired: D", this, kadi.handToS(move), this.onKADI, new Date());
-                            SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI]);
-                        }
-                    }
-                    else
-                        this.pick();
-                }
-            }
-        },
-
-        block: function(pickingCards) {
-            //the blocking strategy is to add a single picking card of the highest value
-            //
-            var hasPickingCard = kadi.containsPickingCard(this.deck.cards);
-
-            //TODO: Never block if you have a picking card and the next player is on KADI
-            if (hasPickingCard) {
-                var highestCard = kadi.highestPickingCard(this.deck.cards);
-                SHOTGUN.fire(kadi.Events.BLOCK, [this, [highestCard], pickingCards, true]);
-            } else {
-                var ace = _.detect(this.deck.cards, function(c) { return c.rank == kadi.Card.ACE });
-                SHOTGUN.fire(kadi.Events.BLOCK, [this, [ace], pickingCards, false]);
-            }
-        },
-
-        canDeclareKADI: function() {
-            return this.cards().length > 0 && kadi.RuleEngine.canDeclareKADI(this.cards(), this.kadiMode);
-        },
-        
-        pick: function() {
-            SHOTGUN.fire(kadi.Events.PICK_CARD, [this, 1]);
-            this.endTurn(kadi.RuleEngine.ACTION_NONE, []);
         },
 
         move: function() {

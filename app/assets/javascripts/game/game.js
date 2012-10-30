@@ -344,6 +344,7 @@ window.kadi = (function(me, $, undefined){
             }
 
             var starterIdx = starterIndex;
+            //starterIdx = this.players.length - 1;
             if (!kadi.isSomethingMeaningful(starterIdx)) {
                 starterIdx = kadi.coinToss(this.players);
             }

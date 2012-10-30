@@ -147,6 +147,8 @@ describe("Integration tests:", function() {
                 expect(compA.isMyTurn()).toBe(true);
                 expect(compB.isMyTurn()).toBe(false);
 
+                expect(compA.canDeclareKADI()).toBe(false);
+                expect(compA.active).toBe(true);
 //                compA.bot();
             });
         });
