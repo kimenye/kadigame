@@ -119,7 +119,6 @@ describe("Integration tests:", function() {
             var playerThreeCards = [kadi.hearts("J"), kadi.hearts("2"), kadi.clubs("3")];
 
             var cards = [playerOneCards, playerTwoCards, playerThreeCards];
-            cards = [playerTwoCards];
             var topCard = kadi.spades("5");
 
             game.startGame(1, cards, topCard);
