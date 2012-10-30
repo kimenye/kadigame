@@ -61,6 +61,10 @@ describe("Integration tests:", function() {
             players = [compA, compB, compC];
         });
 
+        afterEach(function() {
+            compA, compB, compC = null;
+        });
+
         it("Game Options are mutually exclusive", function() {
             var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_TOP_ONLY);
             expect(options.isEliminationMode()).toBe(true);
@@ -108,6 +112,7 @@ describe("Integration tests:", function() {
                 expect(p.deck.hasCards()).toBe(true);
                 expect(p.deck.numCards()).toBe(3);
             });
+            game.removeListeners();
         });
 
         it("Can deal specific cards to players", function() {
@@ -128,6 +133,9 @@ describe("Integration tests:", function() {
             });
 
             expect(game.tableDeck.topCard().eq(topCard)).toBe(true);
+
+            game.removeListeners();
+            game = null;
         });
 
         describe("Game play rules", function() {
@@ -135,10 +143,9 @@ describe("Integration tests:", function() {
             it("A player can move cards", function() {
                 var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_TOP_ONLY);
                 var game = new kadi.Game(null, players, options);
-
                 var playerOneCards = [kadi.spades("J"), kadi.spades("2"), kadi.hearts("3")];
                 var playerTwoCards = [kadi.clubs("J"), kadi.diamonds("2"), kadi.spades("3")];
-                var playerThreeCards = [kadi.hearts("J"), kadi.hearts("2"), kadi.clubs("3")];
+                var playerThreeCards = [kadi.hearts("J"), kadi.hearts("5"), kadi.clubs("4")];
 
                 var cards = [playerOneCards, playerTwoCards, playerThreeCards];
                 var topCard = kadi.spades("5");
@@ -160,6 +167,14 @@ describe("Integration tests:", function() {
 
                 runs(function() {
                     //its now player B's turn
+                    compB.bot(true);
+                    waitsFor(function() {
+                        return compA.isMyTurn();
+                    });
+
+                    runs(function() {
+                        expect(compC.deck.numCards()).toBe(5);
+                    });
                 });
             });
         });

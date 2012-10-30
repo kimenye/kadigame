@@ -172,6 +172,12 @@ window.kadi = (function(me, $, undefined){
             return kadi.isSomethingMeaningful(this.me);
         },
 
+        removeListeners: function() {
+            //TODO: Remove other listeners
+            SHOTGUN.remove(kadi.Events.PICK_CARD);
+            SHOTGUN.remove(kadi.Events.END_TURN);
+        },
+
         initializeListeners: function() {
             var self = this;
             SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ this.order.current().name + " to start. " ]);
@@ -203,7 +209,7 @@ window.kadi = (function(me, $, undefined){
                 SHOTGUN.fire(kadi.Events.END_TURN, [player, action, playedCards]);
             });
 
-            SHOTGUN.listen(kadi.Events.PLAY_CARDS, function(player, cards, onKADI) {
+            SHOTGUN.listen(kadi.Events.PLAY_CARDS, function(player, cards, onKADI, test) {
                 self.attemptPlay(player,cards, false, onKADI);
             });
 
@@ -370,6 +376,7 @@ window.kadi = (function(me, $, undefined){
                 return;
 
             _.delay(function() {
+//                console.log("Action : ", action);
                 if (action == kadi.RuleEngine.ACTION_NONE) {
                     self.order.next();
                     var next = self.order.current();
@@ -434,14 +441,12 @@ window.kadi = (function(me, $, undefined){
                         self.order.next();
                         var next = self.order.current();
 
-                        if(!test) {
-                            SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ nextPlayer.name + " to pick " + num ]);
-                            SHOTGUN.fire(kadi.Events.PICK_CARD, [nextPlayer,num]);
-                            _.delay(function() {
-                                SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
-                                SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[new me.GameContext(self.tableDeck.topCard(),null, player)],next.id);
-                            },1000);
-                        }
+                        SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ nextPlayer.name + " to pick " + num ]);
+                        SHOTGUN.fire(kadi.Events.PICK_CARD, [nextPlayer,num]);
+                        _.delay(function() {
+                            SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
+                            SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[new me.GameContext(self.tableDeck.topCard(),null, player)],next.id);
+                        },1000);
                     }
                     else {
                         if (nextPlayer.isBot()) {
