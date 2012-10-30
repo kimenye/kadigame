@@ -176,6 +176,7 @@ window.kadi = (function(me, $, undefined){
             //TODO: Remove other listeners
             SHOTGUN.remove(kadi.Events.PICK_CARD);
             SHOTGUN.remove(kadi.Events.END_TURN);
+            SHOTGUN.remove(kadi.Events.PLAY_CARDS);
         },
 
         initializeListeners: function() {
@@ -210,7 +211,7 @@ window.kadi = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.Events.PLAY_CARDS, function(player, cards, onKADI, test) {
-                self.attemptPlay(player,cards, false, onKADI);
+                self.attemptPlay(player,cards, false, onKADI, test);
             });
 
             SHOTGUN.listen(kadi.Events.BLOCK, function(player, blockCards, pickingCards, add) {
@@ -375,8 +376,9 @@ window.kadi = (function(me, $, undefined){
             if(this.order.isPaused)
                 return;
 
+            var delay = test? 0 : 1000;
             _.delay(function() {
-//                console.log("Action : ", action);
+                console.log("Action : ", action);
                 if (action == kadi.RuleEngine.ACTION_NONE) {
                     self.order.next();
                     var next = self.order.current();
@@ -404,10 +406,8 @@ window.kadi = (function(me, $, undefined){
                         self.order.next();
                         var next = self.order.current();
                         self.turnsToSkip = 0;
-                        if(!test) {
-                            SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
-                            SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[ new me.GameContext(self.tableDeck.topCard(), null, player)],next.id);
-                        }
+                        SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
+                        SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[ new me.GameContext(self.tableDeck.topCard(), null, player)],next.id);
                     }
                     else {
                         SHOTGUN.fire(kadi.Events.BLOCK_SKIP, [], player.id);
@@ -476,17 +476,15 @@ window.kadi = (function(me, $, undefined){
                     }
                 }
                 else {
-                    if(!test) {
-                        SHOTGUN.fire(kadi.Events.PICK_CARD, [player,1]);
-                    }
+                    SHOTGUN.fire(kadi.Events.PICK_CARD, [player,1]);
+
                     self.order.next();
                     var next = self.order.current();
-                    if(!test) {
-                        SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
-                        SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[new me.GameContext(self.tableDeck.topCard(),null, player)],next.id);
-                    }
+
+                    SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
+                    SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[new me.GameContext(self.tableDeck.topCard(),null, player)],next.id);
                 }
-            }, 1000);
+            }, delay);
         },
 
         attemptBlock: function(player,blockCards,pickingCards) {
@@ -503,7 +501,7 @@ window.kadi = (function(me, $, undefined){
             }, this);
         },
 
-        attemptPlay : function(player, cards, isBlock, wasOnKADI) {
+        attemptPlay : function(player, cards, isBlock, wasOnKADI, test) {
             var self = this;
             var meetsRequestedSuite = true;
             var clearRequested = false;
@@ -535,10 +533,10 @@ window.kadi = (function(me, $, undefined){
                     action = kadi.RuleEngine.ACTION_PICK_SUITE;
                 }
                 if (!wasOnKADI)
-                    player.endTurn(action,cards);
+                    player.endTurn(action,cards, test);
                 else {
                     if(this.cardlessPlayerExists() && this.cardless > 1) {
-                        player.endTurn(action,cards);
+                        player.endTurn(action,cards, test);
                     }
                     else {
                         console.log("%s has finished the game with hand %s, cardless: %s", player.name, kadi.handToS(cards), self.cardless);

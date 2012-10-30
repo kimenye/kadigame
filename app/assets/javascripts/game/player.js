@@ -92,6 +92,20 @@ window.kadi = (function(me, $, undefined){
             return kadi.isSomethingMeaningful(this.gameContext);
         },
 
+        play: function(cards, test) {
+            var move = [];
+            _.each(cards, function(c) {
+                var cardUi = _.detect(this.cards(), function(card) {
+                    return card.eq(c);
+                });
+
+                if (kadi.isSomethingMeaningful(cardUi))
+                    move.push(cardUi);
+
+            }, this);
+            SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI, test]);
+        },
+
         bot: function(test) {
             var cards = this.cards();
 

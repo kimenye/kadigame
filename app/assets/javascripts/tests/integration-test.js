@@ -143,11 +143,11 @@ describe("Integration tests:", function() {
             it("A player can move cards", function() {
                 var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_TOP_ONLY);
                 var game = new kadi.Game(null, players, options);
-                var playerOneCards = [kadi.spades("J"), kadi.spades("2"), kadi.hearts("3")];
-                var playerTwoCards = [kadi.clubs("J"), kadi.diamonds("2"), kadi.spades("3")];
-                var playerThreeCards = [kadi.hearts("J"), kadi.hearts("5"), kadi.clubs("4")];
+                var playerACards = [kadi.spades("Q"), kadi.spades("7"), kadi.diamonds("Q")];
+                var playerBCards = [kadi.clubs("A"), kadi.diamonds("2"), kadi.spades("3")];
+                var playerCCards = [kadi.hearts("J"), kadi.hearts("5"), kadi.clubs("4")];
 
-                var cards = [playerOneCards, playerTwoCards, playerThreeCards];
+                var cards = [playerACards, playerBCards, playerCCards];
                 var topCard = kadi.spades("5");
                 game.startGame(0, cards, topCard);
 
@@ -157,23 +157,51 @@ describe("Integration tests:", function() {
                 expect(compA.canDeclareKADI()).toBe(false);
                 expect(compA.active).toBe(true);
 
-                compA.pick(true);
+                compA.pick(true); //Player A picks
 
                 expect(compA.isMyTurn()).toBe(false);
 
                 waitsFor(function() {
-                    return compB.isMyTurn();
+                    return compB.isMyTurn(); //Player B turn because A picked
                 });
 
                 runs(function() {
                     //its now player B's turn
-                    compB.bot(true);
+                    compB.bot(true); //Player B plays 3&2
+
                     waitsFor(function() {
-                        return compA.isMyTurn();
+                        return compA.isMyTurn(); // Player C is skipped because he picks
                     });
 
                     runs(function() {
                         expect(compC.deck.numCards()).toBe(5);
+                        compA.play([kadi.diamonds("Q"),kadi.spades("Q")], true); //Player A needs to answer
+
+                        waitsFor(function() {
+                            return compB.isMyTurn(); //Player B's turn
+                        });
+
+                        runs(function() {
+                            expect(compA.deck.numCards()).toBe(3);
+
+                            compB.play([kadi.clubs("A")], true); //Player B plays an A - requests any card
+
+                            waitsFor(function() {
+                                return compC.isMyTurn(); //its now player c's turn
+                            });
+
+                            runs(function() {
+                                expect(game.requestedSuite).not.toBeNull();
+                                expect(game.requestedSuite).toBe(kadi.Suite.ANY); //check for requested suite
+                                expect(game.cardlessPlayerExists()).toBe(true); //player b has no card
+
+                                compC.play([kadi.hearts("J")], true);
+
+                                waitsFor(function() {
+                                    return compB.isMyTurn();
+                                });
+                            });
+                        });
                     });
                 });
             });
