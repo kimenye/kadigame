@@ -570,6 +570,7 @@ window.kadi = (function(me, $, undefined){
 
         dealSpecificCards: function(playerCards, topCard) {
             this.parent.dealSpecificCards.apply(playerCards, topCard);
+            var starter = this.order.current();
             SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[starter], 'deck');
         }
     });

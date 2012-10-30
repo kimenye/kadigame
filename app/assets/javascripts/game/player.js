@@ -12,6 +12,7 @@ window.kadi = (function(me, $, undefined){
             this.selections = [];
             this.deck = deck;
             this.options = null;
+            this.gameContext = null;
         },
 
         eq: function(other) {
@@ -76,14 +77,17 @@ window.kadi = (function(me, $, undefined){
 
         initHandlers: function() {
             var self = this;
-            SHOTGUN.listen(kadi.Events.RECEIVE_TURN, function(card, requestedSuite, prev) {
-                self.handleReceiveTurn(card, requestedSuite, prev);
+            SHOTGUN.listen(kadi.Events.RECEIVE_TURN, function(gameContext) {
+                self.handleReceiveTurn(gameContext);
             }, this.id);
         },
 
-        handleReceiveTurn: function(topCard, requestedSuite, prev) {
-            this.requestedSuite = requestedSuite;
-            this.topCard = topCard;
+        handleReceiveTurn: function(gameContext) {
+            this.gameContext = gameContext;
+        },
+
+        isMyTurn: function() {
+            return kadi.isSomethingMeaningful(this.gameContext);
         }
     });
 
@@ -231,23 +235,22 @@ window.kadi = (function(me, $, undefined){
             });
         },
 
-        handleReceiveTurn: function(topCard, requestedSuite, prev) {
-            this.parent.handleReceiveTurn.apply(this, [topCard, requestedSuite, prev]);
+        handleReceiveTurn: function(gameContext) {
+            this.parent.handleReceiveTurn.apply(this, [gameContext]);
             if (this.live) {
                 this.activate(true);
             } else {
                 var self = this;
                 _.delay(function() {
-                    if (kadi.isSomethingMeaningful(prev) && prev.live) {
-                        prev.disableKADI();
-                    }
-                    self.bot(topCard, requestedSuite);
-                },kadi.GamePlayerUI.BOT_DELAY);
-                }
+                    if(gameContext.previousPlayerIsLive())
+                        gameContext.previousPlayer.disableKADI();
+                    self.bot(gameContext.topCard, gameContext.requestedSuite);
+                }, kadi.GamePlayerUI.BOT_DELAY);
+            }
 
-                $(this.avatar).addClass('active');
-                if(!this.onKADI)
-                    $(this.avatar).wiggle('start', { limit: 5 });
+            $(this.avatar).addClass('active');
+            if(!this.onKADI)
+                $(this.avatar).wiggle('start', { limit: 5 });
         },
 
         endTurn: function(action,playedCards) {

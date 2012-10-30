@@ -102,7 +102,7 @@ describe("Integration tests:", function() {
 
             game.startGame(0);
             expect(game.order.current().eq(players[0])).toBe(true);
-            expect(game.order.current().topCard.eq(game.tableDeck.topCard())).toBe(true);
+            expect(game.order.current().gameContext.topCard.eq(game.tableDeck.topCard())).toBe(true);
 
             _.each(game.players, function(p) {
                 expect(p.deck.hasCards()).toBe(true);
@@ -128,6 +128,24 @@ describe("Integration tests:", function() {
             });
 
             expect(game.tableDeck.topCard().eq(topCard)).toBe(true);
+        });
+
+        describe("Game play rules", function() {
+
+            it("A player can move cards", function() {
+                var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_TOP_ONLY);
+                var game = new kadi.Game(null, players, options);
+
+                var playerOneCards = [kadi.spades("J"), kadi.spades("2"), kadi.hearts("3")];
+                var playerTwoCards = [kadi.clubs("J"), kadi.diamonds("2"), kadi.spades("3")];
+                var playerThreeCards = [kadi.hearts("J"), kadi.hearts("2"), kadi.clubs("3")];
+
+                var cards = [playerOneCards, playerTwoCards, playerThreeCards];
+                var topCard = kadi.spades("5");
+                game.startGame(1, cards, topCard);
+
+
+            });
         });
     });
 });
