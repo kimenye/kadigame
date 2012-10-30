@@ -220,7 +220,6 @@ window.kadi = (function(me, $, undefined){
             var self = this;
             if (mode == kadi.GameOptions.MODE_FIRST_TO_WIN) {
                 SHOTGUN.listen(kadi.Events.FINISH, function(winner, action, playedCards, mode) {
-                    
                     if (mode == kadi.GameOptions.MODE_FIRST_TO_WIN) {
                         self.showPlayAgain(winner);
                     }

@@ -177,6 +177,9 @@ window.kadi = (function(me, $, undefined){
             SHOTGUN.remove(kadi.Events.PICK_CARD);
             SHOTGUN.remove(kadi.Events.END_TURN);
             SHOTGUN.remove(kadi.Events.PLAY_CARDS);
+            SHOTGUN.remove(kadi.Events.BLOCK);
+            SHOTGUN.remove(kadi.Events.INCREMENT_CARDLESS_COUNTER);
+            SHOTGUN.remove(kadi.Events.DECREMENT_CARDLESS_COUNTER);
         },
 
         initializeListeners: function() {
@@ -214,11 +217,11 @@ window.kadi = (function(me, $, undefined){
                 self.attemptPlay(player,cards, false, onKADI, test);
             });
 
-            SHOTGUN.listen(kadi.Events.BLOCK, function(player, blockCards, pickingCards, add) {
+            SHOTGUN.listen(kadi.Events.BLOCK, function(player, blockCards, pickingCards, add, test) {
                 if (add)
-                    self.attemptBlock(player,blockCards,pickingCards);
+                    self.attemptBlock(player,blockCards,pickingCards, test);
                 else
-                    self.attemptPlay(player, blockCards, true);
+                    self.attemptPlay(player, blockCards, true, false, test);
             });
 
             SHOTGUN.listen(kadi.Events.REPLENISH_PICKING_CARDS, function() {
@@ -257,16 +260,17 @@ window.kadi = (function(me, $, undefined){
             SHOTGUN.listen(kadi.Events.FINISH, function(player, action, playedCards, mode) {
                 if(player.live) {
                     player.numberOfTimesWon++;
-                    $.post('/record_win', { fb_id: player.id }, function(data) {
-                    });
+                    $.post('/record_win', { fb_id: player.id }, function(data) {});
                 }
 
-                $.post('/stats', { fb_id: self.me.id, start_time: self.startTime, end_time: new Date(),
-                    elimination: mode == kadi.GameOptions.MODE_ELIMINATION,
-                    one_card: self.kadiMode == kadi.GameOptions.ONE_CARD_KADI,
-                    pick_top_card: self.pickTopOnly() }, function(data) {
-                });
+                if (self.hasLivePlayer()) {
+                    $.post('/stats', { fb_id: self.me.id, start_time: self.startTime, end_time: new Date(),
+                        elimination: mode == kadi.GameOptions.MODE_ELIMINATION,
+                        one_card: self.kadiMode == kadi.GameOptions.ONE_CARD_KADI,
+                        pick_top_card: self.pickTopOnly() }, function(data) {});
+                }
 
+                self.gameOver = true;
                 if (mode == kadi.GameOptions.MODE_FIRST_TO_WIN) {
                     self.order.end();
                 } else if (mode == kadi.GameOptions.MODE_ELIMINATION) {
@@ -326,11 +330,13 @@ window.kadi = (function(me, $, undefined){
             });
 
             SHOTGUN.listen(kadi.Events.INCREMENT_CARDLESS_COUNTER, function() {
+//                console.log("Cardless player :-) Added");
                 self.cardless++;
             });
 
             SHOTGUN.listen(kadi.Events.DECREMENT_CARDLESS_COUNTER, function() {
-                self.cardless++;
+//                console.log("Cardless player :-( Removed");
+                self.cardless--;
             });
 
             SHOTGUN.listen(kadi.Events.INCREMENT_SKIP, function(player, card) {
@@ -368,6 +374,12 @@ window.kadi = (function(me, $, undefined){
                 this.dealCards();
 
             this.initializeListeners();
+
+//            _.delay(function() {
+//                var starter = self.players[starterIdx];
+//                starter.returnCards();
+//                SHOTGUN.fire(kadi.Events.FINISH, [starter, kadi.RuleEngine.ACTION_NONE, [], self.options.gameEndMode]);
+//            }, 0);
         },
 
         progressPlay: function(player, action, playedCards, test) {
@@ -378,7 +390,7 @@ window.kadi = (function(me, $, undefined){
 
             var delay = test? 0 : 1000;
             _.delay(function() {
-                console.log("Action : ", action);
+//                console.log("Action : ", action);
                 if (action == kadi.RuleEngine.ACTION_NONE) {
                     self.order.next();
                     var next = self.order.current();
@@ -390,10 +402,8 @@ window.kadi = (function(me, $, undefined){
                         self.order.reverse();
                     });
                     var next = self.order.current();
-                    if(!test) {
-                        SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
-                        SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[ new me.GameContext(self.tableDeck.topCard(),null, player)],next.id);
-                    }
+                    SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
+                    SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[ new me.GameContext(self.tableDeck.topCard(),null, player)],next.id);
                 } else if (action == kadi.RuleEngine.ACTION_SKIP) {
                     var next = self.order.peek();
                     var canJump = next.canJump() && next.live;
@@ -411,9 +421,7 @@ window.kadi = (function(me, $, undefined){
                     }
                     else {
                         SHOTGUN.fire(kadi.Events.BLOCK_SKIP, [], player.id);
-                        
                         _.delay(function() {
-                            
                             _.each(_.range(self.turnsToSkip), function(idx) {
                                 self.order.next();
                             });
@@ -424,11 +432,8 @@ window.kadi = (function(me, $, undefined){
                                 SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
                                 SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[new me.GameContext(self.tableDeck.topCard(), null)],next.id);
                             }
-                            
                             SHOTGUN.fire(kadi.Events.RESET_PLAYER_CARDS, [], player.id);
-                            
                         }, 3000);
-                        
                     }
                     
                 } else if (action == kadi.RuleEngine.ACTION_PICK_OR_BLOCK) {
@@ -450,12 +455,10 @@ window.kadi = (function(me, $, undefined){
                     }
                     else {
                         if (nextPlayer.isBot()) {
-                            nextPlayer.block(playedCards);
+                            nextPlayer.block(playedCards, test);
                         }
                         else {
-                            if(!test) {
-                                SHOTGUN.fire(kadi.Events.PLAYER_NOTIFICATION_UI, [nextPlayer, action, playedCards, num]);
-                            }
+                            SHOTGUN.fire(kadi.Events.PLAYER_NOTIFICATION_UI, [nextPlayer, action, playedCards, num]);
                         }
                     }
                 } else if (action == kadi.RuleEngine.ACTION_PICK_SUITE) {
@@ -487,7 +490,7 @@ window.kadi = (function(me, $, undefined){
             }, delay);
         },
 
-        attemptBlock: function(player,blockCards,pickingCards) {
+        attemptBlock: function(player,blockCards,pickingCards, test) {
             _.each(blockCards, function(card) {
                 SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ player.name + " played " + card.toS()]);
                 card.deSelect();
@@ -497,7 +500,7 @@ window.kadi = (function(me, $, undefined){
                 player.clearSelections();
                 //We already know the action
                 var newPickingCards = pickingCards.concat(blockCards);
-                player.endTurn(kadi.RuleEngine.ACTION_PICK_OR_BLOCK, newPickingCards);
+                player.endTurn(kadi.RuleEngine.ACTION_PICK_OR_BLOCK, newPickingCards, test);
             }, this);
         },
 

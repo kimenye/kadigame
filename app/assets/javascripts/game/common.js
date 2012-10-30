@@ -78,6 +78,7 @@ window.kadi = (function(me, $, undefined){
         },
 
         replenishCards: function() {
+            //TODO: needs to be tested...
             if (this.numCards() >= kadi.TableDeck.MIN_CARDS) {
                 var availCards = this.numCards();
                 var cardsToPick = availCards - kadi.TableDeck.MIN_CARDS;

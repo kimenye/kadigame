@@ -62,6 +62,7 @@ describe("Integration tests:", function() {
         });
 
         afterEach(function() {
+            _.each([compA, compB, compC], function(p) { p.removeListeners() });
             compA, compB, compC = null;
         });
 
@@ -140,11 +141,11 @@ describe("Integration tests:", function() {
 
         describe("Game play rules", function() {
 
-            it("A player can move cards", function() {
+            it("Basic rules : Picking, Requesting Ace and Jumping", function() {
                 var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_TOP_ONLY);
                 var game = new kadi.Game(null, players, options);
                 var playerACards = [kadi.spades("Q"), kadi.spades("7"), kadi.diamonds("Q")];
-                var playerBCards = [kadi.clubs("A"), kadi.diamonds("2"), kadi.spades("3")];
+                var playerBCards = [kadi.clubs("A"), kadi.spades("3")];
                 var playerCCards = [kadi.hearts("J"), kadi.hearts("5"), kadi.clubs("4")];
 
                 var cards = [playerACards, playerBCards, playerCCards];
@@ -167,15 +168,15 @@ describe("Integration tests:", function() {
 
                 runs(function() {
                     //its now player B's turn
-                    compB.bot(true); //Player B plays 3&2
+                    compB.play([kadi.spades("3")]); //Player B plays 3
 
                     waitsFor(function() {
                         return compA.isMyTurn(); // Player C is skipped because he picks
                     });
 
                     runs(function() {
-                        expect(compC.deck.numCards()).toBe(5);
-                        compA.play([kadi.diamonds("Q"),kadi.spades("Q")], true); //Player A needs to answer
+                        expect(compC.deck.numCards()).toBe(6);
+                        compA.play([kadi.spades("Q"),kadi.diamonds("Q")], true); //Player A needs to answer
 
                         waitsFor(function() {
                             return compB.isMyTurn(); //Player B's turn
@@ -199,6 +200,94 @@ describe("Integration tests:", function() {
 
                                 waitsFor(function() {
                                     return compB.isMyTurn();
+                                });
+
+                                runs(function(){
+                                    game.removeListeners();
+                                    game = null;
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+
+            it("Basic rules : Reversing and KADI", function() {
+                var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_TOP_ONLY);
+                var game = new kadi.Game(null, players, options);
+                var playerACards = [kadi.spades("Q"), kadi.spades("3"), kadi.clubs("9")];
+                var playerBCards = [kadi.clubs("A"), kadi.diamonds("K")];
+                var playerCCards = [kadi.spades("K"), kadi.clubs("4"), kadi.diamonds("4"), kadi.clubs("5")];
+
+                var cards = [playerACards, playerBCards, playerCCards];
+                var topCard = kadi.spades("5");
+                game.startGame(0, cards, topCard);
+
+                expect(compB.onKADI).toBe(false);
+                compA.play([kadi.spades("Q"), kadi.spades("3")], true);
+
+                waitsFor(function() {
+                    return compC.isMyTurn();
+                });
+
+                runs(function() {
+                    expect(compA.canDeclareKADI()).toBe(true);
+                    expect(game.cardlessPlayerExists()).toBe(false);
+                    expect(compA.onKADI).toBe(true);
+                    compC.play([kadi.spades("K")], true);
+
+                    waitsFor(function() {
+                       return compB.isMyTurn();
+                    });
+
+                    runs(function() {
+                        compB.play([kadi.diamonds("K")], true);
+
+                        waitsFor(function() {
+                            return compC.isMyTurn();
+                        });
+
+                        runs(function() {
+                            expect(compC.onKADI).toBe(false);
+                            compC.play([kadi.diamonds("4"), kadi.clubs("4")]);
+
+                            waitsFor(function() {
+                               return compA.isMyTurn();
+                            });
+
+                            runs(function() {
+                                expect(compA.onKADI).toBe(true);
+                                expect(game.cardlessPlayerExists()).toBe(true);
+                                compA.pick(true);
+
+                                waitsFor(function() {
+                                    return compB.isMyTurn();
+                                });
+
+                                runs(function() {
+                                    expect(compA.isCardless()).toBe(false);
+                                    expect(compB.isCardless()).toBe(true);
+                                    expect(compC.isCardless()).toBe(false);
+                                    expect(game.cardlessPlayerExists()).toBe(true);
+                                    compB.pick(true);
+
+                                    waitsFor(function() {
+                                        return compC.isMyTurn();
+                                    });
+
+                                    runs(function() {
+                                        expect(game.cardlessPlayerExists()).toBe(false);
+                                        expect(compA.isCardless()).toBe(false);
+                                        expect(compB.isCardless()).toBe(false);
+                                        expect(compC.isCardless()).toBe(false);
+                                        expect(compC.onKADI).toBe(true);
+                                        expect(compC.canFinish()).toBe(true);
+                                        compC.bot(true); //finish
+
+                                        waitsFor(function() {
+                                            return game.gameOver;
+                                        });
+                                    });
                                 });
                             });
                         });
