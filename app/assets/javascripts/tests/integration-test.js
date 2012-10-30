@@ -287,11 +287,39 @@ describe("Integration tests:", function() {
                                         waitsFor(function() {
                                             return game.gameOver;
                                         });
+
+                                        runs(function() {
+                                            game.removeListeners();
+                                        });
                                     });
                                 });
                             });
                         });
                     });
+                });
+            });
+
+            it("Basic rules : Adding picking cards", function() {
+                var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_ALL);
+                var game = new kadi.Game(null, players, options);
+                var playerACards = [kadi.spades("2"), kadi.spades("3"), kadi.clubs("9")];
+                var playerBCards = [kadi.clubs("3"), kadi.diamonds("K")];
+                var playerCCards = [kadi.spades("K"), kadi.clubs("4"), kadi.diamonds("4")];
+
+                var cards = [playerACards, playerBCards, playerCCards];
+                var topCard = kadi.spades("5");
+                game.startGame(0, cards, topCard);
+
+                compA.play([kadi.spades("2"), kadi.spades("3")], true);
+
+                waitsFor(function() {
+                   return compA.isMyTurn();
+                });
+
+                runs(function() {
+                    expect(compA.deck.numCards()).toBe(1);
+                    expect(compB.deck.numCards()).toBe(1);
+                    expect(compC.deck.numCards()).toBe(11);
                 });
             });
         });
