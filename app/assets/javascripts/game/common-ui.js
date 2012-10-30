@@ -297,32 +297,28 @@ window.kadi = (function(me, $, undefined){
             var self = this;
             this.cards = kadi.Suite.getDeckOfCards();
             this.topLeft = function() { return new kadi.Pos(me.PickingDeckUI.X, me.PickingDeckUI.Y) };
-            this.active = false;
-            this.activePlayer = null;
             this.bBox = function() { return new kadi.BBox(this.topLeft(), me.PickingDeckUI.WIDTH, me.PickingDeckUI.HEIGHT) };
+            this.active = false;
             this.display();
 
             this.node.css('z-index', 6000);
             this.node.hover(function() {
-                if (self.active) {
+                if (self.active)
                     self.node.css( 'cursor', 'pointer' );
-                }
+                else
+                    self.node.css('cursor', 'default')
             }, function() {
-                if (self.active && !self.selected) {
-                    self.node.css( 'cursor', 'default' );
-                }
+                self.node.css( 'cursor', 'default' );
             });
 
             this.node.click(function() {
-                if (self.active && kadi.isSomethingMeaningful(self.activePlayer)) {
-                    self.activePlayer.pick();
-                }
+                if (self.active)
+                    SHOTGUN.fire(kadi.Events.ACTIVE_PLAYER_PICK, []);
             });
 
-            SHOTGUN.listen(kadi.Events.RECEIVE_TURN, function(player) {
-                self.active = player.live;
-                self.activePlayer = player; //TODO: this is still tightly coupled, you need to pass an event to the game
-            }, 'deck');
+            SHOTGUN.listen(kadi.Events.ACTIVATE_PICKING_DECK, function(status) {
+                self.active = status;
+            });
         },
 
         returnCard: function(card) {

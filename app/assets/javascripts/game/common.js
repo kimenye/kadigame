@@ -10,6 +10,8 @@ window.kadi = (function(me, $, undefined){
             RECEIVE_TURN: "receive-turn",
             ACTIVATE_CARD: "activate-card",
             DEACTIVATE_CARD: "deactivate-card",
+            ACTIVATE_PICKING_DECK: "activate-picking-deck",
+            ACTIVE_PLAYER_PICK: "active-player-pick",
             PLAY_CARDS: "play-cards",
             BLOCK: "block-picking",
             MSG_RECEIVED: "msg-received",

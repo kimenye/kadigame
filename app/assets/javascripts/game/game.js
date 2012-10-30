@@ -244,7 +244,6 @@ window.kadi = (function(me, $, undefined){
                 _.delay(function() {
                     SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
                     SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[ new me.GameContext(self.tableDeck.topCard(),null,player)],next.id);
-                    SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[next],'deck');
                 },1000);
             });
 
@@ -376,7 +375,7 @@ window.kadi = (function(me, $, undefined){
                     if(!test) {
                         SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
                         SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[ new me.GameContext(self.tableDeck.topCard(), self.requestedSuite, player)],next.id);
-                        SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[next],'deck');
+//                        SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[next],'deck');
                     }
                 } else if (action == kadi.RuleEngine.ACTION_REVERSE) {
                     var turnsToReverse = kadi.RuleEngine.calculateTurnsReverse(playedCards);
@@ -387,7 +386,7 @@ window.kadi = (function(me, $, undefined){
                     if(!test) {
                         SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
                         SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[ new me.GameContext(self.tableDeck.topCard(),null, player)],next.id);
-                        SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[next],'deck');
+//                        SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[next],'deck');
                     }
                 } else if (action == kadi.RuleEngine.ACTION_SKIP) {
                     var next = self.order.peek();
@@ -404,7 +403,7 @@ window.kadi = (function(me, $, undefined){
                         if(!test) {
                             SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
                             SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[ new me.GameContext(self.tableDeck.topCard(), null, player)],next.id);
-                            SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[next],'deck');
+//                            SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[next],'deck');
                         }
                     }
                     else {
@@ -421,7 +420,7 @@ window.kadi = (function(me, $, undefined){
                             if(!test) {
                                 SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
                                 SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[new me.GameContext(self.tableDeck.topCard(), null)],next.id);
-                                SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[next],'deck');
+//                                SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[next],'deck');
                             }
                             
                             SHOTGUN.fire(kadi.Events.RESET_PLAYER_CARDS, [], player.id);
@@ -446,7 +445,7 @@ window.kadi = (function(me, $, undefined){
                             _.delay(function() {
                                 SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
                                 SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[new me.GameContext(self.tableDeck.topCard(),null, player)],next.id);
-                                SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[next],'deck');
+//                                SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[next],'deck');
                             },1000);
                         }
                     }
@@ -486,7 +485,7 @@ window.kadi = (function(me, $, undefined){
                     if(!test) {
                         SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
                         SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[new me.GameContext(self.tableDeck.topCard(),null, player)],next.id);
-                        SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[next],'deck');
+//                        SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[next],'deck');
                     }
                 }
             }, 1000);

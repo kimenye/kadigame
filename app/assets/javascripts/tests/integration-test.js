@@ -142,9 +142,12 @@ describe("Integration tests:", function() {
 
                 var cards = [playerOneCards, playerTwoCards, playerThreeCards];
                 var topCard = kadi.spades("5");
-                game.startGame(1, cards, topCard);
+                game.startGame(0, cards, topCard);
 
+                expect(compA.isMyTurn()).toBe(true);
+                expect(compB.isMyTurn()).toBe(false);
 
+//                compA.bot();
             });
         });
     });
