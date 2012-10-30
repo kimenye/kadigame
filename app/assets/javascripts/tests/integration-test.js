@@ -320,6 +320,33 @@ describe("Integration tests:", function() {
                     expect(compA.deck.numCards()).toBe(1);
                     expect(compB.deck.numCards()).toBe(1);
                     expect(compC.deck.numCards()).toBe(11);
+
+                    game.removeListeners();
+                });
+            });
+
+            it("Basic rules : Blocking and requesting a card at the same time", function() {
+                var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_ALL);
+                var game = new kadi.Game(null, [compA, compB], options);
+
+                var playerACards = [kadi.spades("2"), kadi.spades("3"), kadi.diamonds("9")];
+                var playerBCards = [kadi.clubs("A"), kadi.diamonds("A"), kadi.clubs("5")];
+
+                var cards = [playerACards, playerBCards];
+                var topCard = kadi.spades("5");
+                game.startGame(0, cards, topCard);
+
+                compA.bot(true);
+
+                waitsFor(function() {
+                    return compA.isMyTurn();
+                });
+
+                runs(function() {
+                    expect(compA.deck.numCards()).toBe(1);
+                    expect(compB.deck.numCards()).toBe(2); //TODO: should the computer be blocking and requesting...
+                    console.log(game.tableDeck.topCard().toS());
+                    game.removeListeners();
                 });
             });
         });
