@@ -186,10 +186,10 @@ window.kadi = (function(me, $, undefined){
                 }
             });
 
-            SHOTGUN.listen(kadi.Events.END_TURN, function(player, action, playedCards) {
+            SHOTGUN.listen(kadi.Events.END_TURN, function(player, action, playedCards, test) {
                 var paused = self.order.isPaused;
                 if (!paused) {
-                    self.progressPlay(player, action, playedCards);
+                    self.progressPlay(player, action, playedCards, test);
                 }
                 else {
                     self.order.executeHandler();
@@ -373,10 +373,8 @@ window.kadi = (function(me, $, undefined){
                 if (action == kadi.RuleEngine.ACTION_NONE) {
                     self.order.next();
                     var next = self.order.current();
-                    if(!test) {
-                        SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
-                        SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[ new me.GameContext(self.tableDeck.topCard(), self.requestedSuite, player)],next.id);
-                    }
+                    SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
+                    SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[ new me.GameContext(self.tableDeck.topCard(), self.requestedSuite, player)],next.id);
                 } else if (action == kadi.RuleEngine.ACTION_REVERSE) {
                     var turnsToReverse = kadi.RuleEngine.calculateTurnsReverse(playedCards);
                     _.each(_.range(turnsToReverse), function(idx) {

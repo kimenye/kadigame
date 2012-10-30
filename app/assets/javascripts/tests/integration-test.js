@@ -149,7 +149,18 @@ describe("Integration tests:", function() {
 
                 expect(compA.canDeclareKADI()).toBe(false);
                 expect(compA.active).toBe(true);
-//                compA.bot();
+
+                compA.pick(true);
+
+                expect(compA.isMyTurn()).toBe(false);
+
+                waitsFor(function() {
+                    return compB.isMyTurn();
+                });
+
+                runs(function() {
+                    //its now player B's turn
+                });
             });
         });
     });

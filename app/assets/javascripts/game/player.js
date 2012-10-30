@@ -92,7 +92,7 @@ window.kadi = (function(me, $, undefined){
             return kadi.isSomethingMeaningful(this.gameContext);
         },
 
-        bot: function() {
+        bot: function(test) {
             var cards = this.cards();
 
             if (kadi.isSomethingMeaningful(this.gameContext.requestedSuite)) {
@@ -165,13 +165,14 @@ window.kadi = (function(me, $, undefined){
             }
         },
 
-        pick: function() {
+        pick: function(test) {
             SHOTGUN.fire(kadi.Events.PICK_CARD, [this, 1]);
-            this.endTurn(kadi.RuleEngine.ACTION_NONE, []);
+            this.endTurn(kadi.RuleEngine.ACTION_NONE, [],test);
         },
 
-        endTurn: function(action,playedCards) {
-            SHOTGUN.fire(kadi.Events.END_TURN, [this, action, playedCards]);
+        endTurn: function(action,playedCards,test) {
+            this.gameContext = null;
+            SHOTGUN.fire(kadi.Events.END_TURN, [this, action, playedCards, test]);
             var canDeclare = this.canDeclareKADI();
             this.active = false;
             if (this.live) {
