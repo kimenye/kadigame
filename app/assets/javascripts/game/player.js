@@ -210,6 +210,9 @@ window.kadi = (function(me, $, undefined){
         statics: {
             GAMEROOM_CHANNEL: "presence-gameroom",
             EVENT_CHANNEL_SUBSCRIBED : "event-channel-subscribed",
+            EVENT_CHANNEL_UNSUBSCRIBED: "event-channel-unsubscribed",
+            EVENT_MEMBER_ADDED : "event-member-added",
+            EVENT_MEMBER_LEFT: "event-member-left",
             EVENT_CHANNEL_SUB_ERROR: "event-channel-sub-error"
         },
         construct: function(player, init, test) {
@@ -238,7 +241,15 @@ window.kadi = (function(me, $, undefined){
             this.gameRoomPresence.bind('pusher:subscription_succeeded', function() {
                 var end = new Date();
                 self.connected = true;
-                SHOTGUN.fire(me.RealtimeSync.EVENT_CHANNEL_SUBSCRIBED, [channel, this.gameRoomPresence.members.count]);
+                SHOTGUN.fire(me.RealtimeSync.EVENT_CHANNEL_SUBSCRIBED, [channel, self.gameRoomPresence.members.count]);
+            });
+
+            this.gameRoomPresence.bind('pusher:member_added', function(member) {
+                SHOTGUN.fire(me.RealtimeSync.EVENT_MEMBER_ADDED, [channel, member, self.gameRoomPresence.members.count]);
+            });
+
+            this.gameRoomPresence.bind('pusher:member_removed', function(member) {
+                SHOTGUN.fire(me.RealtimeSync.EVENT_MEMBER_LEFT, [channel, member, self.gameRoomPresence.members.count]);
             });
         },
 
