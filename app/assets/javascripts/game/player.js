@@ -12,6 +12,8 @@ window.kadi = (function(me, $, undefined){
             this.selections = [];
             this.deck = deck;
             this.options = null;
+            this.gameContext = null;
+            this.active = false;
         },
 
         eq: function(other) {
@@ -34,7 +36,7 @@ window.kadi = (function(me, $, undefined){
         },
 
         clearSelections: function() {
-            this.selections = [];
+            this.selections = []; //TODO: should this really be on the player or UI?
         },
 
         cards: function() {
@@ -65,25 +67,142 @@ window.kadi = (function(me, $, undefined){
 
         removeCard: function(card,redraw) {
             this.deck.removeCard(card);
-            if (this.deck.hasCards()) {
+            if (this.deck.isEmpty()) {
                 SHOTGUN.fire(kadi.Events.INCREMENT_CARDLESS_COUNTER);
             }
+        },
+
+        isCardless: function() {
+            return this.deck.isEmpty();
         },
 
         canJump: function() {
             return kadi.RuleEngine.canJump(this.deck.cards);
         },
 
+        removeListeners: function() {
+            //TODO: remove offending events
+        },
+
         initHandlers: function() {
             var self = this;
-            SHOTGUN.listen(kadi.Events.RECEIVE_TURN, function(card, requestedSuite, prev) {
-                self.handleReceiveTurn(card, requestedSuite, prev);
+            SHOTGUN.listen(kadi.Events.RECEIVE_TURN, function(gameContext) {
+                self.handleReceiveTurn(gameContext);
             }, this.id);
         },
 
-        handleReceiveTurn: function(topCard, requestedSuite, prev) {
-            this.requestedSuite = requestedSuite;
-            this.topCard = topCard;
+        handleReceiveTurn: function(gameContext) {
+            this.gameContext = gameContext;
+            this.active = true;
+        },
+
+        isMyTurn: function() {
+            return kadi.isSomethingMeaningful(this.gameContext);
+        },
+
+        play: function(cards, test) {
+            var move = [];
+            _.each(cards, function(c) {
+                var cardUi = _.detect(this.cards(), function(card) {
+                    return card.eq(c);
+                });
+
+                if (kadi.isSomethingMeaningful(cardUi))
+                    move.push(cardUi);
+
+            }, this);
+            SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI, test]);
+        },
+
+        canFinish: function() {
+            var topCard = kadi.isSomethingMeaningful(this.gameContext.topCard) ? this.gameContext.topCard : null;
+            var suite = kadi.isSomethingMeaningful(this.gameContext.requestedSuite) ? this.gameContext.requestedSuite : null;
+            return this.onKADI && kadi.RuleEngine.canFinish(this.cards(),topCard,suite);
+        },
+
+        bot: function(test) {
+            var cards = this.cards();
+
+            if (kadi.isSomethingMeaningful(this.gameContext.requestedSuite)) {
+                var canPlayWithRequestedSuite = kadi.RuleEngine.canMeetMatchingSuite(cards, this.gameContext.requestedSuite);
+                if (!canPlayWithRequestedSuite) {
+                    this.pick(test);
+                }
+                else {
+                    var move = kadi.Strategy.bestMoveForRequestedSuite(cards,this.gameContext.requestedSuite);
+                    if (this.canFinish()) {
+                        var moves = kadi.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,null,this.gameContext.requestedSuite);
+                        move = _.first(moves);
+                    }
+                    console.log("Fired A: ", this, kadi.handToS(move), this.onKADI, new Date());
+                    SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI, test]);
+                }
+
+            } else {
+//                var canFinish = this.onKADI && kadi.RuleEngine.canFinish(cards,this.gameContext.topCard,null);
+                var canFinish = this.canFinish();
+                if (canFinish) {
+                    var moves = kadi.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,this.gameContext.topCard,null);
+                    var move = _.first(moves);
+                    console.log("Fired B: ", this, kadi.handToS(move), this.onKADI, new Date());
+                    SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI, test]);
+                }
+                else {
+                    var canPlay = kadi.RuleEngine.canPlay(cards, this.gameContext.topCard);
+                    if (canPlay) {
+                        var groups = kadi.RuleEngine.group(cards,this.gameContext.topCard);
+                        if (groups.length == 0) {
+                            //look for a possible move
+                            var moves = kadi.RuleEngine.possibleMoves(this.gameContext.topCard, cards);
+                            var move = _.first(moves);
+                            console.log("Fired: C", this, kadi.handToS(move.cards), this.onKADI, new Date());
+                            SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move.cards, this.onKADI, test]);
+                        } else {
+                            var move = _.first(groups);
+                            console.log("Fired: D", this, kadi.handToS(move), this.onKADI, new Date());
+                            SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI, test]);
+                        }
+                    }
+                    else
+                        this.pick(test);
+                }
+            }
+        },
+
+        block: function(pickingCards, test) {
+            //the blocking strategy is to add a single picking card of the highest value
+            var hasPickingCard = kadi.containsPickingCard(this.deck.cards);
+
+            //TODO: Never block if you have a picking card and the next player is on KADI
+            if (hasPickingCard) {
+                var highestCard = kadi.highestPickingCard(this.deck.cards);
+                SHOTGUN.fire(kadi.Events.BLOCK, [this, [highestCard], pickingCards, true, test]);
+            } else {
+                var ace = _.detect(this.deck.cards, function(c) { return c.rank == kadi.Card.ACE });
+                SHOTGUN.fire(kadi.Events.BLOCK, [this, [ace], pickingCards, false, test]);
+            }
+        },
+
+        pick: function(test) {
+            SHOTGUN.fire(kadi.Events.PICK_CARD, [this, 1]);
+            this.endTurn(kadi.RuleEngine.ACTION_NONE, [],test);
+        },
+
+        endTurn: function(action,playedCards,test) {
+            this.gameContext = null;
+            SHOTGUN.fire(kadi.Events.END_TURN, [this, action, playedCards, test]);
+            var canDeclare = this.canDeclareKADI();
+            this.active = false;
+            if (this.live) {
+                if (!canDeclare)
+                    this.kadi(false);
+            }
+            else
+                this.kadi(canDeclare);
+        },
+
+        canDeclareKADI: function() {
+            return this.cards().length > 0 && kadi.RuleEngine.canDeclareKADI(this.cards(), this.options.mustFinishWithOnlyOneCard());
         }
     });
 
@@ -93,8 +212,6 @@ window.kadi = (function(me, $, undefined){
         },
         construct : function(player, deck, prepare) {
             this.parent.construct.apply(this, [player.id,player.name,player.live, player.currentScore, player.numberOfTimesPlayed, player.numberOfTimesWon, deck]);
-            this.topCard = null; //TODO: remove
-            this.requestedSuite = null; //TODO: remove
             this.blockMode = false;
             this.cardsToPick = []; //TODO: remove
             this.kadiMode = false; //TODO: remove
@@ -224,6 +341,10 @@ window.kadi = (function(me, $, undefined){
                     });
                     
                 }, this.id);
+
+                SHOTGUN.listen(kadi.Events.ACTIVE_PLAYER_PICK, function() {
+                    self.pick();
+                });
             }
 
             SHOTGUN.listen(kadi.Events.CARDS_DEALT, function() {
@@ -231,42 +352,36 @@ window.kadi = (function(me, $, undefined){
             });
         },
 
-        handleReceiveTurn: function(topCard, requestedSuite, prev) {
-            this.parent.handleReceiveTurn.apply(this, [topCard, requestedSuite, prev]);
+        handleReceiveTurn: function(gameContext) {
+            this.parent.handleReceiveTurn.apply(this, [gameContext]);
             if (this.live) {
                 this.activate(true);
             } else {
                 var self = this;
                 _.delay(function() {
-                    if (kadi.isSomethingMeaningful(prev) && prev.live) {
-                        prev.disableKADI();
-                    }
-                    self.bot(topCard, requestedSuite);
-                },kadi.GamePlayerUI.BOT_DELAY);
-                }
+                    if(gameContext.previousPlayerIsLive())
+                        gameContext.previousPlayer.disableKADI();
+                    self.bot();
+                }, kadi.GamePlayerUI.BOT_DELAY);
+            }
 
-                $(this.avatar).addClass('active');
-                if(!this.onKADI)
-                    $(this.avatar).wiggle('start', { limit: 5 });
+            $(this.avatar).addClass('active');
+            if(!this.onKADI)
+                $(this.avatar).wiggle('start', { limit: 5 });
         },
 
         endTurn: function(action,playedCards) {
-            SHOTGUN.fire(kadi.Events.END_TURN, [this, action, playedCards]);
+            this.parent.endTurn.apply(this, [action, playedCards]);
             //check if the user can declare KADI...
             $(this.avatar).removeClass('active');
             var canDeclare = this.canDeclareKADI();
 
-            if (this.live)
-            {
+            if (this.live) {
                 this.activate(false);
                 if (canDeclare) {
                     $('.btn-kadi').attr('disabled', false);
                     $('.btn-kadi').removeClass('disabled');
                 }
-                else
-                    this.kadi(false);
-            } else {
-                this.kadi(canDeclare);
             }
         },
 
@@ -292,89 +407,6 @@ window.kadi = (function(me, $, undefined){
             $('.btn-kadi').addClass('disabled');
         },
 
-        bot: function(card, requestedSuite) {
-            //TODO: give the players some thinking time...
-            var cards = this.cards();
-
-            if (kadi.isSomethingMeaningful(requestedSuite)) {
-                var canPlayWithRequestedSuite = kadi.RuleEngine.canMeetMatchingSuite(cards, requestedSuite);
-                if (!canPlayWithRequestedSuite) {
-                    this.pick();
-                }
-                else
-                {
-                    var canFinish = this.onKADI &&  kadi.RuleEngine.canFinish(cards,null,requestedSuite);
-                    var move = kadi.Strategy.bestMoveForRequestedSuite(cards,requestedSuite);
-                    if (canFinish) {
-                        var moves = kadi.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,null,requestedSuite);
-                        move = _.first(moves);
-                    }
-                    console.log("Fired A: ", this, kadi.handToS(move), this.onKADI, new Date());
-                    try
-                    {
-                        SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI]);
-                    }
-                    catch(ex) {
-                        var trace = printStackTrace();
-                        console.log("Trace: ", trace);
-                        this.pick();
-                    }
-                }
-
-            } else {
-                var canFinish = this.onKADI && kadi.RuleEngine.canFinish(cards,card,null);
-                if (canFinish) {
-                    var moves = kadi.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,card,null);
-                    var move = _.first(moves);
-                    console.log("Fired B: ", this, kadi.handToS(move), this.onKADI, new Date());
-                    SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI]);
-                }
-                else {
-                    var canPlay = kadi.RuleEngine.canPlay(cards, card);
-                    if (canPlay) {
-                        var groups = kadi.RuleEngine.group(cards,card);
-                        if (groups.length == 0) {
-                            //look for a possible move
-                            var moves = kadi.RuleEngine.possibleMoves(card, cards);
-                            var move = _.first(moves);
-                            console.log("Fired: C", this, kadi.handToS(move.cards), this.onKADI, new Date());
-                            SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move.cards, this.onKADI]);
-                        } else {
-                            var move = _.first(groups);
-                            console.log("Fired: D", this, kadi.handToS(move), this.onKADI, new Date());
-                            SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI]);
-                        }
-                    }
-                    else
-                        this.pick();
-                }
-            }
-        },
-
-        block: function(pickingCards) {
-            //the blocking strategy is to add a single picking card of the highest value
-            //
-            var hasPickingCard = kadi.containsPickingCard(this.deck.cards);
-
-            //TODO: Never block if you have a picking card and the next player is on KADI
-            if (hasPickingCard) {
-                var highestCard = kadi.highestPickingCard(this.deck.cards);
-                SHOTGUN.fire(kadi.Events.BLOCK, [this, [highestCard], pickingCards, true]);
-            } else {
-                var ace = _.detect(this.deck.cards, function(c) { return c.rank == kadi.Card.ACE });
-                SHOTGUN.fire(kadi.Events.BLOCK, [this, [ace], pickingCards, false]);
-            }
-        },
-
-        canDeclareKADI: function() {
-            return this.cards().length > 0 && kadi.RuleEngine.canDeclareKADI(this.cards(), this.kadiMode);
-        },
-        
-        pick: function() {
-            SHOTGUN.fire(kadi.Events.PICK_CARD, [this, 1]);
-            this.endTurn(kadi.RuleEngine.ACTION_NONE, []);
-        },
-
         move: function() {
             if (this.blockMode) {
                 if (kadi.RuleEngine.isValidBlockingMove(this.selections)) {
@@ -392,7 +424,7 @@ window.kadi = (function(me, $, undefined){
                 if (this.selections.length > 0) {
                     this.activateActions(false);
                     var canFinish = this.onKADI & kadi.RuleEngine.canFinish(this.cards(), this.topCard, this.requestedSuite);
-                    SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, this.selections, canFinish]);
+                    SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, this.selections, canFinish, false]);
                 }
             }
         },
@@ -448,6 +480,7 @@ window.kadi = (function(me, $, undefined){
                 $('.btn-move').attr("disabled", !status);
                 if (status)
                     $('.btn-move').removeClass('disabled');
+                SHOTGUN.fire(kadi.Events.ACTIVATE_PICKING_DECK, [status]);
             }
         }
     });
