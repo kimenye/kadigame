@@ -10,6 +10,10 @@ describe("Multiplayer tests:", function() {
 
         runs(function() {
             expect(sync.socketId).not.toBeNull();
+            sync.disconnect();
+            waitsFor(function() {
+                return !sync.connected;
+            });
         });
     });
 });

@@ -223,12 +223,12 @@ window.kadi = (function(me, $, undefined){
         init: function() {
             var self = this;
             var start = new Date();
-            this.pusher = new Pusher("3b40830094bf454823f2", { encrypted: true, auth: { params: { userid: this.id, name: this.player.name } } });
+            this.pusher = new Pusher("3b40830094bf454823f2", { encrypted: true, auth: { params: { userid: this.player.id, name: this.player.name } } });
             this.pusher.connection.bind('connected', function() {
                 self.socketId = self.pusher.connection.socket_id;
             });
 
-            var channel = me.RealtimeSync.GAMEROOM_CHANNEL + (this.test? "-test" : "");
+            var channel = this.presenceChannelName();
 
             this.gameRoomPresence  = this.pusher.subscribe(channel);
             this.gameRoomPresence.bind('pusher:subscription_error', function(msg) {
@@ -240,6 +240,24 @@ window.kadi = (function(me, $, undefined){
                 self.connected = true;
                 SHOTGUN.fire(me.RealtimeSync.EVENT_CHANNEL_SUBSCRIBED, [channel, this.gameRoomPresence.members.count]);
             });
+        },
+
+        presenceChannelName: function() {
+            return me.RealtimeSync.GAMEROOM_CHANNEL + (this.test? "-test" : "");
+        },
+
+        disconnectChannel: function(channel) {
+            this.pusher.unsubscribe(channel);
+        },
+
+        disconnectPresence: function() {
+            this.disconnectChannel(this.presenceChannelName());
+            this.connected = false;
+        },
+
+        disconnect: function() {
+            this.disconnectPresence();
+            this.pusher.disconnect();
         }
     });
 
