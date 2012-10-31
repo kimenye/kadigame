@@ -310,7 +310,7 @@ window.kadi = (function(me, $, undefined){
         showStats: function(winner, loggedInPlayer, players) {
             var self = this;
             bootbox.hideAll();
-            var tableHeader = "<table class='table table-striped'><tr><th>Player Name</th><th>Times Played</th><th>Times Won</th></tr>";
+            var tableHeader = "<table class='table table-bordered table-striped'><tr><th>Player Name</th><th>Times Played</th><th>Times Won</th></tr>";
             var tableData = "";
             var tableEnd = "</table>";
             _.each(players, function(player){ tableData += "<tr><td>" + player.name + "</td><td>" + player.times_played + "</td><td>" + player.games_won + "</td></tr>"  });
