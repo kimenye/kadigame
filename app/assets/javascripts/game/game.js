@@ -330,6 +330,7 @@ window.kadi = (function(me, $, undefined){
             }
 
             var starterIdx = starterIndex;
+            starterIdx = 3;
             if (!kadi.isSomethingMeaningful(starterIdx)) {
                 starterIdx = kadi.coinToss(this.players);
             }
@@ -346,6 +347,12 @@ window.kadi = (function(me, $, undefined){
                 this.dealCards();
 
             this.initializeListeners();
+
+//            _.delay(function() {
+//                var starter = self.players[starterIdx];
+//                starter.returnCards();
+//                SHOTGUN.fire(kadi.Events.FINISH, [starter, kadi.RuleEngine.ACTION_NONE, [], kadi.GameOptions.MODE_FIRST_TO_WIN, self.me]);
+//            }, 0);
         },
 
         progressPlay: function(player, action, playedCards, test) {
@@ -531,7 +538,7 @@ window.kadi = (function(me, $, undefined){
                     else {
                         console.log("%s has finished the game with hand %s, cardless: %s", player.name, kadi.handToS(cards), self.cardless);
                         _.delay(function() {
-                            SHOTGUN.fire(kadi.Events.FINISH, [player, action, cards, self.mode]);
+                            SHOTGUN.fire(kadi.Events.FINISH, [player, action, cards, self.mode, self.me]);
                         }, 2000);
                     }
                 }

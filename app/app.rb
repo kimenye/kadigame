@@ -88,6 +88,11 @@ class Kadi < Padrino::Application
     body({:success => true}.to_json)
   end
 
+  post 'get_players' do
+    players = Player.all
+    players.to_json
+  end
+
   post '/record_times_played', :provides => [:json] do
     @player = Player.find_by_fb_id(params[:fb_id])
     @player.times_played ||= 0

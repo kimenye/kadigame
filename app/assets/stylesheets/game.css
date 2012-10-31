@@ -471,3 +471,7 @@
     top: 200px;
     opacity: 0;
 }
+
+.stats {
+    top: 15px !important;
+}

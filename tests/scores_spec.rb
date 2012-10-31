@@ -32,6 +32,7 @@ describe 'Scores API' do
 
   it "lists all the users present" do
     test_users = service.get_users
+    binding.pry
     test_users.should_not be_nil
     test_users.length.should > 0
   end

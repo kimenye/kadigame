@@ -219,11 +219,17 @@ window.kadi = (function(me, $, undefined){
             this.mode = mode;
             var self = this;
             if (mode == kadi.GameOptions.MODE_FIRST_TO_WIN) {
-                SHOTGUN.listen(kadi.Events.FINISH, function(winner, action, playedCards, mode) {
-                    
-                    if (mode == kadi.GameOptions.MODE_FIRST_TO_WIN) {
-                        self.showPlayAgain(winner);
-                    }
+                SHOTGUN.listen(kadi.Events.FINISH, function(winner, action, playedCards, mode, loggedInPlayer) {
+
+                    $.post('/get_players', function(data) {
+                        jsonData = $.parseJSON(data);
+                        var players = _.sortBy(jsonData, function(player){ return player.games_won; });
+                        if (mode == kadi.GameOptions.MODE_FIRST_TO_WIN) {
+                            self.showPlayAgain(winner, loggedInPlayer, players.slice(0, 9));
+                        }
+                    })
+
+
                 });
             } else {
                 SHOTGUN.listen(kadi.Events.ELIMINATION_GAME_OVER, function(players, winner) {
@@ -268,7 +274,7 @@ window.kadi = (function(me, $, undefined){
             dialog.appendChild(kadi.createElement("hr"));
             return dialog;
         },
-        showPlayAgain: function(winner) {
+        showPlayAgain: function(winner, loggedInPlayer, players) {
             var self = this;
             var dialog =  this.buildHeader(winner);
             var btns = [];
@@ -279,6 +285,14 @@ window.kadi = (function(me, $, undefined){
                     "class" : "btn-primary",
                     "callback" : function() {
                         self.rematch(winner);
+                    }
+                },
+                {
+                    "label" : "Stats",
+                    "id": "btn-stats",
+                    "class" : "btn-primary",
+                    "callback" : function() {
+                        self.showStats(winner, loggedInPlayer, players);
                     }
                 },
                 {
@@ -293,6 +307,33 @@ window.kadi = (function(me, $, undefined){
             );
             bootbox.dialog($(dialog), btns);
         },
+
+        showStats: function(winner, loggedInPlayer, players) {
+            var self = this;
+            bootbox.hideAll();
+            var tableHeader = "<table class='table table-striped'><tr><th>Player Name</th><th>Times Played</th><th>Times Won</th></tr>";
+            var tableData = "";
+            var tableEnd = "</table>";
+            _.each(players, function(player){ tableData += "<tr><td>" + player.name + "</td><td>" + player.times_played + "</td><td>" + player.games_won + "</td></tr>"  });
+            var html = "<br>" + tableHeader + tableData + tableEnd;
+            var playerDiv = kadi.createElement('div', 'winner');
+            var avatar = kadi.createElement('img', 'opponent center');
+            avatar.src = loggedInPlayer.avatar.src;
+            playerDiv.appendChild(avatar);
+            var dash = kadi.createElement('div', 'dashboard');
+            dash.appendChild(kadi.createElement("p", 'muted', null, "Played: " + "<small> " + loggedInPlayer.numberOfTimesPlayed + " </small>"));
+            dash.appendChild(kadi.createElement("p", 'muted', null, "Won: " + "<small> " + (loggedInPlayer.numberOfTimesWon + 1 ) + " </small>"));
+            var stats = kadi.createElement('div', 'social stats');
+            var divData = kadi.createElement('p', null, null, html);
+            stats.appendChild(dash);
+            playerDiv.appendChild(stats);
+            playerDiv.appendChild(divData);
+
+            bootbox.alert(playerDiv, function() {
+                self.showPlayAgain(winner, loggedInPlayer, players);
+            });
+        },
+
         showOptions: function(winner) {
             bootbox.hideAll();
             SHOTGUN.fire(kadi.Events.SHOW_OPTIONS, [winner]);
