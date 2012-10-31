@@ -523,6 +523,12 @@ window.kadi = (function(me, $, undefined){
         SHOTGUN.fire(kadi.Events.UNHANDLED_ERROR, []);
     };
 
+    Pusher.channel_auth_endpoint = "/pusher/presence/auth";
+    Pusher.log = function(message) {
+        if (window.console && window.console.log) window.console.log(message);
+    };
+
+
     return me;
 })(window.kadi || {}, jQuery);
 

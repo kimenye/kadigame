@@ -206,6 +206,43 @@ window.kadi = (function(me, $, undefined){
         }
     });
 
+    me.RealtimeSync = JS.Class({
+        statics: {
+            GAMEROOM_CHANNEL: "presence-gameroom",
+            EVENT_CHANNEL_SUBSCRIBED : "event-channel-subscribed",
+            EVENT_CHANNEL_SUB_ERROR: "event-channel-sub-error"
+        },
+        construct: function(player, init, test) {
+            this.player = player;
+            this.connected = false;
+            this.test = test;
+            if (kadi.getVal(init))
+                this.init();
+        },
+
+        init: function() {
+            var self = this;
+            var start = new Date();
+            this.pusher = new Pusher("3b40830094bf454823f2", { encrypted: true, auth: { params: { userid: this.id, name: this.player.name } } });
+            this.pusher.connection.bind('connected', function() {
+                self.socketId = self.pusher.connection.socket_id;
+            });
+
+            var channel = me.RealtimeSync.GAMEROOM_CHANNEL + (this.test? "-test" : "");
+
+            this.gameRoomPresence  = this.pusher.subscribe(channel);
+            this.gameRoomPresence.bind('pusher:subscription_error', function(msg) {
+                SHOTGUN.fire(me.RealtimeSync.EVENT_CHANNEL_SUB_ERROR, [msg]);
+            });
+
+            this.gameRoomPresence.bind('pusher:subscription_succeeded', function() {
+                var end = new Date();
+                self.connected = true;
+                SHOTGUN.fire(me.RealtimeSync.EVENT_CHANNEL_SUBSCRIBED, [channel, this.gameRoomPresence.members.count]);
+            });
+        }
+    });
+
     me.GamePlayerUI = me.Player.extend({
         statics: {
             BOT_DELAY: 2500

@@ -12,5 +12,5 @@
 //= require underscore-min
 //= require stacktrace-min-0.4
 //= require browser
-//= require spin.min
+//= require pusher.min
 //= require util
