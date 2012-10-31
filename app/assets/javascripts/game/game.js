@@ -538,7 +538,7 @@ window.kadi = (function(me, $, undefined){
                     else {
                         console.log("%s has finished the game with hand %s, cardless: %s", player.name, kadi.handToS(cards), self.cardless);
                         _.delay(function() {
-                            SHOTGUN.fire(kadi.Events.FINISH, [player, action, cards, self.mode, self.me]);
+                            SHOTGUN.fire(kadi.Events.FINISH, [player, action, cards, self.options.gameEndMode, self.me]);
                         }, 2000);
                     }
                 }

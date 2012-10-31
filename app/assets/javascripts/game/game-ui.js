@@ -220,7 +220,6 @@ window.kadi = (function(me, $, undefined){
             var self = this;
             if (mode == kadi.GameOptions.MODE_FIRST_TO_WIN) {
                 SHOTGUN.listen(kadi.Events.FINISH, function(winner, action, playedCards, mode, loggedInPlayer) {
-
                     $.post('/get_players', function(data) {
                         jsonData = $.parseJSON(data);
                         var players = _.sortBy(jsonData, function(player){ return player.games_won; });
