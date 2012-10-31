@@ -183,8 +183,20 @@ class Kadi < Padrino::Application
   end
 
   if development?
-    get :jasmine do
-      render "jasmine", :layout => :jasminetest
+    get 'tests/rules' do
+      render "/tests/rules", :layout => :jasmine
+    end
+
+    get '/tests/integration' do
+      render "/tests/integration", :layout => :jasmine
+    end
+
+    get '/tests/multiplayer' do
+      render "/tests/multiplayer", :layout => :jasmine
+    end
+
+    get '/tests' do
+      render "/tests/all", :layout => :jasmine
     end
   end
 

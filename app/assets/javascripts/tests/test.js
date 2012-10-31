@@ -11,6 +11,4 @@
 //= require game/rules
 //= require jasmine
 //= require jasmine-html
-//= require tests/rules-test
-//= require tests/integration-test
 //= require tests/test-runner
