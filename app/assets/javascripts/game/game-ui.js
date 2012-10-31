@@ -321,7 +321,7 @@ window.kadi = (function(me, $, undefined){
             playerDiv.appendChild(avatar);
             var dash = kadi.createElement('div', 'dashboard');
             dash.appendChild(kadi.createElement("p", 'muted', null, "Played: " + "<small> " + loggedInPlayer.numberOfTimesPlayed + " </small>"));
-            dash.appendChild(kadi.createElement("p", 'muted', null, "Won: " + "<small> " + (loggedInPlayer.numberOfTimesWon + 1 ) + " </small>"));
+            dash.appendChild(kadi.createElement("p", 'muted', null, "Won: " + "<small> " + (loggedInPlayer.numberOfTimesWon ) + " </small>"));
             var stats = kadi.createElement('div', 'social stats');
             var divData = kadi.createElement('p', null, null, html);
             stats.appendChild(dash);
