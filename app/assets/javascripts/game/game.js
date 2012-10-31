@@ -400,9 +400,9 @@ window.kadi = (function(me, $, undefined){
                     SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[ new me.GameContext(self.tableDeck.topCard(),null, player)],next.id);
                 } else if (action == kadi.RuleEngine.ACTION_SKIP) {
                     var next = self.order.peek();
-                    var canJump = next.canJump() && next.live;
+                    var canJump = next.canJump();
                     self.turnsToSkip = kadi.RuleEngine.calculateTurnsSkipped(playedCards);
-                    
+
                     if (!canJump) {
                         _.each(_.range(self.turnsToSkip), function(idx) {
                             self.order.next();
@@ -414,7 +414,11 @@ window.kadi = (function(me, $, undefined){
                         SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[ new me.GameContext(self.tableDeck.topCard(), null, player)],next.id);
                     }
                     else {
-                        SHOTGUN.fire(kadi.Events.BLOCK_SKIP, [], player.id);
+                        if (next.live)
+                            SHOTGUN.fire(kadi.Events.BLOCK_SKIP, [], next.id);
+                        else
+                            next.blockJump();
+
                         _.delay(function() {
                             _.each(_.range(self.turnsToSkip), function(idx) {
                                 self.order.next();
@@ -422,11 +426,9 @@ window.kadi = (function(me, $, undefined){
                             self.order.next();
                             var next = self.order.current();
                             self.turnsToSkip = 0;
-                            if(!test) {
-                                SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
-                                SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[new me.GameContext(self.tableDeck.topCard(), null)],next.id);
-                            }
-                            SHOTGUN.fire(kadi.Events.RESET_PLAYER_CARDS, [], player.id);
+                            SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
+                            SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[new me.GameContext(self.tableDeck.topCard(), null)],next.id);
+                            SHOTGUN.fire(kadi.Events.RESET_PLAYER_CARDS, [], next.id);
                         }, 3000);
                     }
                     

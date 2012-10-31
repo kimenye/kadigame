@@ -183,6 +183,12 @@ window.kadi = (function(me, $, undefined){
             }
         },
 
+        blockJump: function() {
+            _.each(_.filter(this.cards(), function(c) { return c.isJack() }), function(jack) {
+                SHOTGUN.fire(kadi.Events.INCREMENT_SKIP, [this, jack]);
+            }, this);
+        },
+
         pick: function(test) {
             SHOTGUN.fire(kadi.Events.PICK_CARD, [this, 1]);
             this.endTurn(kadi.RuleEngine.ACTION_NONE, [],test);
