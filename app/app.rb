@@ -89,7 +89,7 @@ class Kadi < Padrino::Application
   end
 
   post 'get_players' do
-    players = Player.all
+    players = Player.find(:all, :order => "games_won DESC", :limit => "10")
     players.to_json
   end
 
