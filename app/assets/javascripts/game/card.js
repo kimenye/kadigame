@@ -278,7 +278,11 @@ window.kadi = (function(me, $, undefined){
             this.activeForBlock = false;
             this.clickHandler = null;
         },
-        
+
+        wiggle: function() {
+            this.container().wiggle('start', { limit: 3 });
+        },
+
         moveCardUp : function() {
             this.container().css( 'cursor', 'pointer' );
             var top = Math.max(kadi.PlayerDeckUI.Y_A - 20, this.container().position().top - 20);
@@ -393,7 +397,7 @@ window.kadi = (function(me, $, undefined){
             if (this.active) {
                 this.select();
             }
-            else if(this.activeForBlock) {
+            else if(this.activeForBlock && kadi.isSomethingMeaningful(this.clickHandler)) {
                 this.clickHandler.callBack([this]);
             }
         },

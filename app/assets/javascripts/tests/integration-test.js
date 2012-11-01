@@ -349,6 +349,29 @@ describe("Integration tests:", function() {
                     game.removeListeners();
                 });
             });
+
+            it("Advanced rules : Blocking a Jump with another jump", function() {
+                var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_ALL);
+                var game = new kadi.Game(null, [compA, compB, compC], options);
+
+                var playerACards = [kadi.spades("J"), kadi.spades("3"), kadi.diamonds("9")];
+                var playerBCards = [kadi.clubs("J"), kadi.diamonds("J"), kadi.diamonds("5")];
+                var playerCCards = [kadi.spades("K"), kadi.clubs("4"), kadi.diamonds("4")];
+
+                var cards = [playerACards, playerBCards, playerCCards];
+                var topCard = kadi.spades("5");
+                game.startGame(0, cards, topCard);
+
+                compA.play([kadi.spades("J")], true);
+
+                waitsFor(function() {
+                    return compB.isMyTurn();
+                });
+
+                runs(function() {
+                    expect(compB.deck.numCards()).toBe(1);
+                });
+            });
         });
     });
 });
