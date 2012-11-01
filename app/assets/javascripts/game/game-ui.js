@@ -221,14 +221,14 @@ window.kadi = (function(me, $, undefined){
             if (mode == kadi.GameOptions.MODE_FIRST_TO_WIN) {
                 SHOTGUN.listen(kadi.Events.FINISH, function(winner, action, playedCards, mode, loggedInPlayer) {
                     $.post('/get_players', function(data) {
-                        jsonData = $.parseJSON(data);
+                        //TODO: Sort this on the server...
+                        //and make sure its highest scores first
+                        var jsonData = $.parseJSON(data);
                         var players = _.sortBy(jsonData, function(player){ return player.games_won; });
                         if (mode == kadi.GameOptions.MODE_FIRST_TO_WIN) {
                             self.showPlayAgain(winner, loggedInPlayer, players.slice(0, 9));
                         }
-                    })
-
-
+                    });
                 });
             } else {
                 SHOTGUN.listen(kadi.Events.ELIMINATION_GAME_OVER, function(players, winner) {
@@ -607,7 +607,7 @@ window.kadi = (function(me, $, undefined){
         },
 
         dealSpecificCards: function(playerCards, topCard) {
-            this.parent.dealSpecificCards.apply(playerCards, topCard);
+            this.parent.dealSpecificCards.apply(this, [playerCards, topCard]);
         }
     });
 
@@ -643,6 +643,15 @@ window.kadi = (function(me, $, undefined){
             var self = this;
             _.delay(function() {
                 kadi.disableLoading('game');
+
+//                var playerCCards = [kadi.diamonds("K"), kadi.clubs("4"), kadi.diamonds("4")];
+//                var playerACards = [kadi.spades("J"), kadi.spades("3"), kadi.diamonds("9")];
+//                var playerBCards = [kadi.clubs("J"), kadi.diamonds("7"), kadi.diamonds("5")];
+
+//                var cards = [playerCCards, playerACards, playerBCards];
+//                var topCard = kadi.spades("5");
+
+//                self.game.startGame(1, cards, topCard);
                 self.game.startGame();
             }, 2000);
         }

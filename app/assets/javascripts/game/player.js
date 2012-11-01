@@ -403,15 +403,13 @@ window.kadi = (function(me, $, undefined){
                     });
                     self.activateForSkipping(clickHandler);
                 }, this.id);
-                
+
                 SHOTGUN.listen(kadi.Events.RESET_PLAYER_CARDS, function() {
-                    
                     var jacks = _.filter(self.cards(), function(card) { return card.isJack() });
                     _.each(jacks, function(jack){
                         jack.activeForBlock = false;
                         jack.moveCardDown();
                     });
-                    
                 }, this.id);
 
                 SHOTGUN.listen(kadi.Events.ACTIVE_PLAYER_PICK, function() {
@@ -491,8 +489,7 @@ window.kadi = (function(me, $, undefined){
                     this.cardsToPick = [];
                 }
             }
-            else
-            {
+            else {
                 if (this.selections.length > 0) {
                     this.activateActions(false);
                     var canFinish = this.onKADI & kadi.RuleEngine.canFinish(this.cards(), this.topCard, this.requestedSuite);
@@ -543,6 +540,7 @@ window.kadi = (function(me, $, undefined){
                 jack.activeForBlock = true;
                 jack.clickHandler = clickHandler;
                 jack.moveCardUp();
+                jack.wiggle();
             });
         },
         

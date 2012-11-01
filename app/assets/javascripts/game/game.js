@@ -420,16 +420,19 @@ window.kadi = (function(me, $, undefined){
                             next.blockJump();
 
                         _.delay(function() {
+                            if (next.live) {
+                                SHOTGUN.fire(kadi.Events.RESET_PLAYER_CARDS, [], next.id);
+                            }
                             _.each(_.range(self.turnsToSkip), function(idx) {
                                 self.order.next();
                             });
                             self.order.next();
-                            var next = self.order.current();
+                            next = self.order.current();
                             self.turnsToSkip = 0;
                             SHOTGUN.fire(kadi.Events.MSG_RECEIVED, [ self.order.turn() ]);
                             SHOTGUN.fire(kadi.Events.RECEIVE_TURN,[new me.GameContext(self.tableDeck.topCard(), null)],next.id);
-                            SHOTGUN.fire(kadi.Events.RESET_PLAYER_CARDS, [], next.id);
-                        }, 3000);
+
+                        }, 1500);
                     }
                     
                 } else if (action == kadi.RuleEngine.ACTION_PICK_OR_BLOCK) {
@@ -586,15 +589,15 @@ window.kadi = (function(me, $, undefined){
 
             }, this);
             
-            if (topCard) {
+            if (kadi.isSomethingMeaningful(topCard)) {
                 var cardUi = _.find(this.pickingDeck.cards, function(c) {
                         return c.eq(topCard);
                     }, this);
                 
                 //remove the card from the deck
-                    this.pickingDeck.deck = _.reject(this.pickingDeck.cards, function(c) {
-                        return c.eq(cardUi);
-                    });
+                this.pickingDeck.deck = _.reject(this.pickingDeck.cards, function(c) {
+                    return c.eq(cardUi);
+                });
                 
                 this.tableDeck.addCard(cardUi, true);
             }
