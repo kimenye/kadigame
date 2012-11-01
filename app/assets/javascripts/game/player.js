@@ -363,6 +363,12 @@ window.kadi = (function(me, $, undefined){
             this.parent.initHandlers.apply(this, []);
             var self = this;
             if (this.live) {
+
+                SHOTGUN.listen(kadi.Events.CARD_DOUBLE_CLICKED, function(card) {
+                    self.handleCardSelected(card);
+                    self.move();
+                });
+
                 SHOTGUN.listen(kadi.Events.CARD_SELECTED, function(card) {
                     self.handleCardSelected(card);
                 });

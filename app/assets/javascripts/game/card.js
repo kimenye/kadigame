@@ -300,6 +300,9 @@ window.kadi = (function(me, $, undefined){
             this.container().click(function() {
                 self.handleClick();
             });
+            this.container().dblclick(function() {
+                SHOTGUN.fire(kadi.Events.CARD_DOUBLE_CLICKED, [self]);
+            });
             this.container().hover(function() {
                 if (self.active) {
                     self.moveCardUp();
@@ -399,8 +402,11 @@ window.kadi = (function(me, $, undefined){
             var before = this.selected;
             this.selected = !this.selected;
             this.container().toggleClass('selected');
-            if (before)
+            if (before) {
+                console.log("De-selecting ", this.toS());
                 SHOTGUN.fire(kadi.Events.CARD_DESELECTED, [this]);
+            }
+
             else
                 SHOTGUN.fire(kadi.Events.CARD_SELECTED, [this]);
         },

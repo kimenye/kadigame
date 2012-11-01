@@ -38,7 +38,8 @@ window.kadi = (function(me, $, undefined){
             SHOW_OPTIONS: "show-options",
             BLOCK_SKIP: "block-skip",
             INCREMENT_SKIP: "increment-skip",
-            RESET_PLAYER_CARDS: "reset-player-cards"
+            RESET_PLAYER_CARDS: "reset-player-cards",
+            CARD_DOUBLE_CLICKED: "card-double-clicked"
         }
     });
 
