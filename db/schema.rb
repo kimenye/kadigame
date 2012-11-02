@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 8) do
+ActiveRecord::Schema.define(:version => 9) do
 
   create_table "accounts", :force => true do |t|
     t.string   "name"
@@ -37,11 +37,11 @@ ActiveRecord::Schema.define(:version => 8) do
   create_table "players", :force => true do |t|
     t.string   "fb_id"
     t.text     "name"
-    t.datetime "created_at",     :null => false
-    t.datetime "updated_at",     :null => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
     t.datetime "last_logged_in"
-    t.integer  "times_played"
-    t.integer  "games_won"
+    t.integer  "times_played",   :default => 0
+    t.integer  "games_won",      :default => 0
     t.boolean  "is_test"
   end
 
