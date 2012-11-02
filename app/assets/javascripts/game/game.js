@@ -575,30 +575,14 @@ window.kadi = (function(me, $, undefined){
         dealSpecificCards: function(playerCards, topCard) {
             _.each(playerCards, function(cards, idx) {
                 var player = this.players[idx];
-
                 _.each(cards, function(card) {
-                    var cardUi = _.find(this.pickingDeck.cards, function(c) {
-                        return c.eq(card);
-                    }, this);
+                    var cardUi = this.pickingDeck.dealCard(card);
                     player.addCard(cardUi);
-                    //remove the card from the deck
-                    this.pickingDeck.deck = _.reject(this.pickingDeck.cards, function(c) {
-                        return c.eq(cardUi);
-                    });
                 }, this);
-
             }, this);
             
             if (kadi.isSomethingMeaningful(topCard)) {
-                var cardUi = _.find(this.pickingDeck.cards, function(c) {
-                        return c.eq(topCard);
-                    }, this);
-                
-                //remove the card from the deck
-                this.pickingDeck.deck = _.reject(this.pickingDeck.cards, function(c) {
-                    return c.eq(cardUi);
-                });
-                
+                var cardUi = this.pickingDeck.dealCard(topCard);
                 this.tableDeck.addCard(cardUi, true);
             }
             else {

@@ -134,6 +134,24 @@ window.kadi = (function(me, $, undefined){
                 SHOTGUN.fire(kadi.Events.REPLENISH_PICKING_CARDS,[]);
             }
             return this.cards.pop();
+        },
+
+        dealCard: function(card) {
+            if (this.numCards() <= kadi.PickingDeck.REPLENISH_THRESHOLD && !this.replenished) {
+                this.replenished = true;
+                SHOTGUN.fire(kadi.Events.REPLENISH_PICKING_CARDS,[]);
+            }
+
+            if (kadi.isSomethingMeaningful(card)) {
+                var dealedCard = null;
+                this.cards = _.reject(this.cards, function(c) {
+                    var result = c.eq(card);
+                    if (result) dealedCard = card;
+                    return result;
+                }, this);
+
+                return dealedCard;
+            }
         }
     });
 

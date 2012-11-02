@@ -212,6 +212,10 @@ window.kadi = (function(me, $, undefined){
                 return value;
             };
 
+            this.deSelect = function() {
+                this.selected = false;
+            };
+
             this.isBlockingCard = function() {
                 return this.isPickingCard() || this.isAce();
             };
@@ -339,7 +343,7 @@ window.kadi = (function(me, $, undefined){
         },
 
         deSelect: function() {
-            this.selected = false;
+            this.parent.deSelect.apply(this,[]);
             this.container().removeClass('selected');
         },
 
