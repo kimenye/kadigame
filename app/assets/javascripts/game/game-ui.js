@@ -221,12 +221,9 @@ window.kadi = (function(me, $, undefined){
             if (mode == kadi.GameOptions.MODE_FIRST_TO_WIN) {
                 SHOTGUN.listen(kadi.Events.FINISH, function(winner, action, playedCards, mode, loggedInPlayer) {
                     $.post('/get_players', function(data) {
-                        //TODO: Sort this on the server...
-                        //and make sure its highest scores first
-                        var jsonData = $.parseJSON(data);
-                        var players = _.sortBy(jsonData, function(player){ return player.games_won; });
+                        var players = $.parseJSON(data);
                         if (mode == kadi.GameOptions.MODE_FIRST_TO_WIN) {
-                            self.showPlayAgain(winner, loggedInPlayer, players.slice(0, 9));
+                            self.showPlayAgain(winner, loggedInPlayer, players);
                         }
                     });
                 });
