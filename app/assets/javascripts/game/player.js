@@ -498,7 +498,7 @@ window.kadi = (function(me, $, undefined){
             else {
                 if (this.selections.length > 0) {
                     this.activateActions(false);
-                    var canFinish = this.onKADI & kadi.RuleEngine.canFinish(this.cards(), this.topCard, this.requestedSuite);
+                    var canFinish = this.onKADI & kadi.RuleEngine.canFinish(this.cards(), this.gameContext.topCard, this.gameContext.requestedSuite);
                     SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, this.selections, canFinish, false]);
                 }
             }
