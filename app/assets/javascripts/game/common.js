@@ -146,7 +146,7 @@ window.kadi = (function(me, $, undefined){
                 var dealedCard = null;
                 this.cards = _.reject(this.cards, function(c) {
                     var result = c.eq(card);
-                    if (result) dealedCard = card;
+                    if (result) dealedCard = c;
                     return result;
                 }, this);
 

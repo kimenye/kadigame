@@ -374,20 +374,6 @@ describe("Integration tests:", function() {
                 });
             });
 
-            it("Basic rules : Requesting a card", function() {
-                var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_ALL);
-                var game = new kadi.Game(null, [compA, compB], options);
-
-                var playerACards = [kadi.spades("A"), kadi.diamonds("3"), kadi.diamonds("9")];
-                var playerBCards = [kadi.clubs("5"), kadi.diamonds("5")];
-
-                var cards = [playerACards, playerBCards];
-                var topCard = kadi.spades("5");
-                game.startGame(0, cards, topCard);
-
-                game.removeListeners();
-            });
-
             it("Advanced rules : Blocking a Jump with another jump", function() {
                 var options = new kadi.GameOptions(kadi.GameOptions.MODE_ELIMINATION, kadi.GameOptions.ONE_CARD_KADI, kadi.GameOptions.PICKING_MODE_ALL);
                 var game = new kadi.Game(null, [compA, compB, compC], options);

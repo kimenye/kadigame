@@ -343,8 +343,8 @@ window.kadi = (function(me, $, undefined){
         },
 
         deSelect: function() {
-            this.parent.deSelect.apply(this,[]);
             this.container().removeClass('selected');
+            this.selected = false;
         },
 
         buildBack: function() {

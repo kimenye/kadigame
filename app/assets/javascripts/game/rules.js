@@ -42,6 +42,12 @@ window.kadi = (function(me, $, undefined){
                     groups.push(gp);
                 });
 
+                //reject the groups that are not valid moves
+                //since a joker can follow any suite
+                groups = _.reject(groups, function(gp) {
+                    return !me.RuleEngine.isValidMove(gp, kadi.joker("0"));
+                });
+
                 groups = _.sortBy(groups, function(gp) {
                     return gp.length;
                 });

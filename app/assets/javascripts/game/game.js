@@ -580,7 +580,7 @@ window.kadi = (function(me, $, undefined){
                     player.addCard(cardUi);
                 }, this);
             }, this);
-            
+
             if (kadi.isSomethingMeaningful(topCard)) {
                 var cardUi = this.pickingDeck.dealCard(topCard);
                 this.tableDeck.addCard(cardUi, true);
