@@ -309,7 +309,7 @@ window.kadi = (function(me, $, undefined){
                 self.handleClick();
             });
             this.container().dblclick(function() {
-                SHOTGUN.fire(kadi.Events.CARD_DOUBLE_CLICKED, [self]);
+                self.handleDoubleClick();
             });
             this.container().hover(function() {
                 if (self.active) {
@@ -395,6 +395,12 @@ window.kadi = (function(me, $, undefined){
 
         buildRankText: function() {
             return kadi.createSpan(this.rank, "rank " + kadi.Suite.getColorClass(this.suite, this.rank),null);
+        },
+
+        handleDoubleClick: function() {
+            if (this.active) {
+                SHOTGUN.fire(kadi.Events.CARD_DOUBLE_CLICKED, [this]);
+            }
         },
 
         handleClick: function() {
