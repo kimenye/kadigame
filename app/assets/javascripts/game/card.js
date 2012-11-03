@@ -212,10 +212,6 @@ window.kadi = (function(me, $, undefined){
                 return value;
             };
 
-            this.deSelect = function() {
-                this.selected = false;
-            };
-
             this.isBlockingCard = function() {
                 return this.isPickingCard() || this.isAce();
             };
@@ -256,6 +252,10 @@ window.kadi = (function(me, $, undefined){
                 else
                     return rankName + " of " + suiteName;
             }
+        },
+
+        deSelect : function() {
+            this.selected = false;
         },
 
         eq: function(other) {
@@ -322,12 +322,6 @@ window.kadi = (function(me, $, undefined){
                 }
             });
 
-            this.reset = function() {
-                var top = kadi.PlayerDeckUI.Y_A;
-                this.deSelect();
-                this.moveTo(null,top,null);
-            };
-
             this.div = document.createElement("div");
             this.div.className = "card";
 
@@ -342,9 +336,15 @@ window.kadi = (function(me, $, undefined){
             }
         },
 
+        reset : function() {
+            var top = kadi.PlayerDeckUI.Y_A;
+            this.deSelect();
+            this.moveTo(null,top,null);
+        },
+
         deSelect: function() {
+            this.parent.deSelect.apply(this,[]);
             this.container().removeClass('selected');
-            this.selected = false;
         },
 
         buildBack: function() {
@@ -410,11 +410,8 @@ window.kadi = (function(me, $, undefined){
             var before = this.selected;
             this.selected = !this.selected;
             this.container().toggleClass('selected');
-            if (before) {
-                console.log("De-selecting ", this.toS());
+            if (before)
                 SHOTGUN.fire(kadi.Events.CARD_DESELECTED, [this]);
-            }
-
             else
                 SHOTGUN.fire(kadi.Events.CARD_SELECTED, [this]);
         },

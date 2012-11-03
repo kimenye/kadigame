@@ -134,17 +134,13 @@ window.kadi = (function(me, $, undefined){
                         var moves = kadi.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,null,this.gameContext.requestedSuite);
                         move = _.first(moves);
                     }
-                    console.log("Fired A: ", this, kadi.handToS(move), this.onKADI, new Date());
                     SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI, test]);
                 }
-
             } else {
-//                var canFinish = this.onKADI && kadi.RuleEngine.canFinish(cards,this.gameContext.topCard,null);
                 var canFinish = this.canFinish();
                 if (canFinish) {
                     var moves = kadi.RuleEngine.movesThatCanFollowTopCardOrSuite(cards,this.gameContext.topCard,null);
                     var move = _.first(moves);
-                    console.log("Fired B: ", this, kadi.handToS(move), this.onKADI, new Date());
                     SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI, test]);
                 }
                 else {
@@ -155,11 +151,9 @@ window.kadi = (function(me, $, undefined){
                             //look for a possible move
                             var moves = kadi.RuleEngine.possibleMoves(this.gameContext.topCard, cards);
                             var move = _.first(moves);
-                            console.log("Fired: C", this, kadi.handToS(move.cards), this.onKADI, new Date());
                             SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move.cards, this.onKADI, test]);
                         } else {
                             var move = _.first(groups);
-                            console.log("Fired: D", this, kadi.handToS(move), this.onKADI, new Date());
                             SHOTGUN.fire(kadi.Events.PLAY_CARDS, [this, move, this.onKADI, test]);
                         }
                     }
