@@ -15,6 +15,15 @@ Account has been successfully created, now you can login with:
    password: kadigame
 
 
+Production
+=================================================================
+Account has been successfully created, now you can login with:
+=================================================================
+   email: kadi@sprout.co.ke
+   password: kadisprout
+=================================================================
+
+
 Facebook integration
 ====================
 

@@ -40,13 +40,28 @@ describe("Integration tests:", function() {
         });
 
         describe("Picking deck", function() {
-            var pickingDeck = new kadi.PickingDeck(kadi.Suite.getDeckOfCards());
+            var pickingDeck = null;
+
+            beforeEach(function() {
+                pickingDeck = new kadi.PickingDeck(kadi.Suite.getDeckOfCards());
+            });
 
             it("Picks a valid starting card to begin the game", function() {
                 expect(pickingDeck.numCards()).toBe(54);
 
                 var startingCard = pickingDeck.cut();
                 expect(kadi.RuleEngine.canStart(startingCard)).toBe(true);
+
+                expect(pickingDeck.numCards()).toBe(53);
+            });
+
+            it("Can deal a specific card", function() {
+                var card = pickingDeck.dealCard(kadi.clubs("5"));
+                expect(card.eq(kadi.clubs("5"))).toBe(true);
+
+                expect(pickingDeck.numCards()).toBe(53);
+                pickingDeck.dealCard(kadi.clubs("6"));
+                expect(pickingDeck.numCards()).toBe(52);
             });
         });
     });
@@ -134,6 +149,15 @@ describe("Integration tests:", function() {
             });
 
             expect(game.tableDeck.topCard().eq(topCard)).toBe(true);
+
+            //count the total number of cards
+            var playerCards = 0;
+            _.each(players, function(p) { playerCards += p.deck.numCards(); });
+
+            expect(playerCards).toBe(9);
+            expect(game.tableDeck.numCards()).toBe(1);
+            expect(game.pickingDeck.numCards()).toBe(44);
+            expect(playerCards + game.tableDeck.numCards() + game.pickingDeck.numCards()).toBe(54);
 
             game.removeListeners();
             game = null;

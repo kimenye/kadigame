@@ -297,6 +297,15 @@ describe("Card rules:", function() {
             var hand = [kadi.clubs("2"), kadi.diamonds("J"), kadi.clubs("A"), kadi.spades("3"), kadi.clubs("J")];
             expect(kadi.Strategy.bestMoveForRequestedSuite(hand,requested).length).toBe(2);
         });
+
+        it("The best move for a hand is also a valid move", function() {
+
+            var requested = kadi.Suite.SPADES;
+            var hand = [kadi.spades("Q"), kadi.spades("9"), kadi.diamonds("9")];
+            var move = kadi.Strategy.bestMoveForRequestedSuite(hand,requested);
+
+            expect(kadi.RuleEngine.isValidMove(move, kadi.joker("0"))).toBe(true);
+        });
     });
 
     describe("KADI rules", function() {

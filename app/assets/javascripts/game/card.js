@@ -254,6 +254,10 @@ window.kadi = (function(me, $, undefined){
             }
         },
 
+        deSelect : function() {
+            this.selected = false;
+        },
+
         eq: function(other) {
             return (this.suite == other.suite && this.rank == other.rank);
         }
@@ -305,7 +309,7 @@ window.kadi = (function(me, $, undefined){
                 self.handleClick();
             });
             this.container().dblclick(function() {
-                SHOTGUN.fire(kadi.Events.CARD_DOUBLE_CLICKED, [self]);
+                self.handleDoubleClick();
             });
             this.container().hover(function() {
                 if (self.active) {
@@ -317,12 +321,6 @@ window.kadi = (function(me, $, undefined){
                     self.reset();
                 }
             });
-
-            this.reset = function() {
-                var top = kadi.PlayerDeckUI.Y_A;
-                this.deSelect();
-                this.moveTo(null,top,null);
-            };
 
             this.div = document.createElement("div");
             this.div.className = "card";
@@ -338,8 +336,14 @@ window.kadi = (function(me, $, undefined){
             }
         },
 
+        reset : function() {
+            var top = kadi.PlayerDeckUI.Y_A;
+            this.deSelect();
+            this.moveTo(null,top,null);
+        },
+
         deSelect: function() {
-            this.selected = false;
+            this.parent.deSelect.apply(this,[]);
             this.container().removeClass('selected');
         },
 
@@ -393,6 +397,12 @@ window.kadi = (function(me, $, undefined){
             return kadi.createSpan(this.rank, "rank " + kadi.Suite.getColorClass(this.suite, this.rank),null);
         },
 
+        handleDoubleClick: function() {
+            if (this.active) {
+                SHOTGUN.fire(kadi.Events.CARD_DOUBLE_CLICKED, [this]);
+            }
+        },
+
         handleClick: function() {
             if (this.active) {
                 this.select();
@@ -406,11 +416,8 @@ window.kadi = (function(me, $, undefined){
             var before = this.selected;
             this.selected = !this.selected;
             this.container().toggleClass('selected');
-            if (before) {
-                console.log("De-selecting ", this.toS());
+            if (before)
                 SHOTGUN.fire(kadi.Events.CARD_DESELECTED, [this]);
-            }
-
             else
                 SHOTGUN.fire(kadi.Events.CARD_SELECTED, [this]);
         },
