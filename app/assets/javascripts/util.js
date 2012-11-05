@@ -22,6 +22,14 @@ window.kadi = (function(me, $, undefined){
             return val;
     }
 
+    me.valInRange = function(val, min, max) {
+        if (val <= min)
+            val = min;
+        if (val >= max)
+            val = max;
+        return val;
+    }
+
     me.isEnabled = function(btn) {
         return $(btn).attr('disabled') != 'disabled';
     }

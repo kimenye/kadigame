@@ -208,6 +208,7 @@ window.kadi = (function(me, $, undefined){
 
         activateCards: function(status) {
             _.each(this.cards, function(c) {
+//                c.activateDragging();
                 c.active = status;
                 if (!status && c.selected)
                 {

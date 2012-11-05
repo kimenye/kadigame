@@ -422,6 +422,25 @@ window.kadi = (function(me, $, undefined){
                 SHOTGUN.fire(kadi.Events.CARD_SELECTED, [this]);
         },
 
+        activateDragging: function() {
+            var self = this;
+            this.container().drag("start",function(){
+                    var before = $(this).css('zIndex');
+                    $( this ).css('zIndex', 10000);
+                })
+                .drag(function(ev, dd) {
+                    var x = dd.offsetX-self.x-200;
+                    x = kadi.valInRange(x, -200, 200);
+                    var y = dd.offsetY - self.y - 100;
+                    y = kadi.valInRange(y, -250, 40);
+
+                    $( this ).css({
+                        left: x,
+                        top: y
+                    });
+                });
+        },
+
         container : function() {
             return $(this.card_container);
         },

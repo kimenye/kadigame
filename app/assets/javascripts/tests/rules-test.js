@@ -739,4 +739,10 @@ describe("Utilities:", function() {
         expect(kadi.getProfileUrl("FD03", false)).toBe("/images/avatars/FD03.png");
         expect(kadi.getProfileUrl("FD03", true)).toBe("http://graph.facebook.com/FD03/picture");
     });
+
+    it("Check that a value is between a range", function() {
+        expect(kadi.valInRange(-30, -200, 200)).toBe(-30);
+        expect(kadi.valInRange(-210, -200, 200)).toBe(-200);
+        expect(kadi.valInRange(210, -200, 200)).toBe(200);
+    });
 });
