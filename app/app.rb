@@ -154,9 +154,10 @@ class Kadi < Padrino::Application
     result.to_json
   end
 
-  get :play do
+  get :play, :with => :id do
     if development?
-      @player = Player.first
+      #@player = Player.first
+      @player = Player.find_by_id!(params[:id])
       if @player.games_won.nil?
         @player.games_won = 0
       end
