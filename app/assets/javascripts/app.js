@@ -13,3 +13,4 @@
 //= require game/player
 //= require game/game-ui
 //= require game/rules
+//= require knockout.js

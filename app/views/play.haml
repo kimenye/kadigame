@@ -15,6 +15,14 @@
         %li
     #game{:style => "display:none;"}
     #game-options{:style => "display:none;"}
+    .span3#sidebar
+      #accordion.accordion
+        .accordion-group
+          .accordion-heading
+            %a.accordion-toggle{'data-toggle' => 'collapse', 'data-parent' => '#accordion', :href=>'#online'}
+              Who's Online
+              %span.badge.badge-info.pull-right{"data-bind" => "text: numOnline"}
+
 %script
   !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
 :javascript
