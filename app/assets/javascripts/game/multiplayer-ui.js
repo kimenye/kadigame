@@ -13,11 +13,12 @@
     console.log("About to start loading the files...");
 
     var manifest = [
-        { src: '/assets/multiplayer.js', id: 'multiplayer_javascript' }
+        { src: '/assets/multiplayer.js', id: 'lib' },
+        { src: '/assets/multiplayer-app.js', id: 'game' }
     ];
 
     var items = [];
-    var progress = 5;
+    var progress = 10;
 
 
     var loader = new createjs.PreloadJS();
@@ -40,17 +41,15 @@
     }
 
     function updateProgress(val) {
-        var loadedSpan = document.getElementById('splashAmountLoaded');
-        if (loadedSpan) {
-            loadedSpan.style.width = val + "%";
-        }
+        document.getElementById('progressAmountIndicator').style.width = val + "%";
     }
 
     function handleFileLoad(event) {
         switch (event.type){
             case createjs.PreloadJS.JAVASCRIPT:
+//                console.log("loaded ", event.id, progress);
                 document.body.appendChild(event.result);
-                progress+= 5;
+                progress+= 10;
                 updateProgress(progress);
                 break;
         }

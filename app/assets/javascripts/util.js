@@ -520,7 +520,7 @@ window.kadi = (function(me, $, undefined){
 
     me.progressLoader = function(text, value) {
         $('#loader_text').html(text);
-        $('#splashAmountLoaded').css('width', value + "%");
+        $('#progressAmountIndicator').css('width', value + "%");
     };
 
     me.display = function(parent, id, className) {
