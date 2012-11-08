@@ -475,3 +475,28 @@
 .stats {
     top: 15px !important;
 }
+
+/******************************/
+/* Stuff for GPU acceleration */
+/******************************/
+div {
+    margin: 0;
+    padding: 0;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -webkit-transform: scale3d(1, 1, 1);
+    -o-user-select: none;
+    user-select: none;
+}
+
+button {
+    margin: 0;
+    padding: 0;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -webkit-transform: scale3d(1, 1, 1);
+    -o-user-select: none;
+    user-select: none;
+}

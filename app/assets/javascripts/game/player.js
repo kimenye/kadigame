@@ -282,26 +282,26 @@ window.kadi = (function(me, $, undefined){
             this.cardsToPick = []; //TODO: remove
             this.kadiMode = false; //TODO: remove
 
-            var myViewModel = {
-                numOnline: ko.observable(0)
-            };
-            ko.applyBindings(myViewModel);
+//            var myViewModel = {
+//                numOnline: ko.observable(0)
+//            };
+//            ko.applyBindings(myViewModel);
             if (player.live) {
                 this.notification = new kadi.PlayerNotification();
 
-                SHOTGUN.listen(kadi.RealtimeSync.EVENT_CHANNEL_SUBSCRIBED, function(channel, memberCount) {
-                    myViewModel.numOnline(memberCount);
-                });
+//                SHOTGUN.listen(kadi.RealtimeSync.EVENT_CHANNEL_SUBSCRIBED, function(channel, memberCount) {
+//                    myViewModel.numOnline(memberCount);
+//                });
+//
+//                SHOTGUN.listen(kadi.RealtimeSync.EVENT_MEMBER_ADDED, function(channel, member, memberCount) {
+//                    myViewModel.numOnline(memberCount);
+//                });
+//
+//                SHOTGUN.listen(kadi.RealtimeSync.EVENT_MEMBER_LEFT, function(channel, member, memberCount) {
+//                    myViewModel.numOnline(memberCount);
+//                });
 
-                SHOTGUN.listen(kadi.RealtimeSync.EVENT_MEMBER_ADDED, function(channel, member, memberCount) {
-                    myViewModel.numOnline(memberCount);
-                });
-
-                SHOTGUN.listen(kadi.RealtimeSync.EVENT_MEMBER_LEFT, function(channel, member, memberCount) {
-                    myViewModel.numOnline(memberCount);
-                });
-
-                var sync = new kadi.RealtimeSync(player, true);
+//                var sync = new kadi.RealtimeSync(player, true);
             }
             if (kadi.getVal(prepare))
                 this.initDisplay();

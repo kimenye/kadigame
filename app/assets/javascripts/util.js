@@ -518,6 +518,11 @@ window.kadi = (function(me, $, undefined){
         $('#loading-text').html(text);
     };
 
+    me.progressLoader = function(text, value) {
+        $('#loader_text').html(text);
+        $('#splashAmountLoaded').css('width', value + "%");
+    };
+
     me.display = function(parent, id, className) {
         var div = kadi.createElement('div', className, id);
         var parentDiv = document.getElementById(parent);
@@ -536,6 +541,7 @@ window.kadi = (function(me, $, undefined){
         if (window.console && window.console.log) window.console.log(message);
     };
 
+    me.loaded = true;
 
     return me;
 })(window.kadi || {}, jQuery);

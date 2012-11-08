@@ -154,10 +154,40 @@ class Kadi < Padrino::Application
     result.to_json
   end
 
-  get :play, :with => :id do
+  if development?
+    get :multiplayer do
+      if params[:id].nil?
+        @player = Player.first
+      else
+        @player = Player.find_by_id(params[:id])
+      end
+
+      if @player.games_won.nil?
+        @player.games_won = 0
+      end
+
+      if @player.times_played.nil?
+        @player.times_played = 0
+      end
+      @player.save!
+      @friends_using_app = Player.all
+      @friends_using_app.reject! { |p| p == @player }
+
+      session[:player] = @player
+      session[:friends_with_app] = @friends_using_app
+      @multiplayer = true
+      render :multi, :layout => :multiplayer
+    end
+  end
+
+  get :play do
     if development?
-      #@player = Player.first
-      @player = Player.find_by_id!(params[:id])
+      if params[:id].nil?
+        @player = Player.first
+      else
+        @player = Player.find_by_id(params[:id])
+      end
+
       if @player.games_won.nil?
         @player.games_won = 0
       end

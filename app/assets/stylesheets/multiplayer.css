@@ -1,0 +1,83 @@
+.container {
+    width: 960px;
+    margin: auto;
+}
+
+.page-header h3 {
+    margin: 5px 0;
+    line-height: 25px;
+}
+
+#game_container {
+    height: 600px;
+    /*border: 1px solid #f5f5dc;*/
+    border: 1px solid #475058;
+    border-radius: 8px 8px 8px 8px;
+    box-shadow: 1px 3px 0 rgba(0, 0, 0, 0.4);
+}
+
+.hidden {
+    display: none;
+}
+
+/* Loader bar */
+#loader_bar {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -200px;
+    height: 30px;
+    width: 400px;
+    overflow: hidden;
+    background: #b1b8bf;
+    background: -webkit-linear-gradient(top, #b1b8bf 0%, #b1b8bf 65%, #97a3af 65%, #97a3af 100%);
+    background: -moz-linear-gradient(top, #b1b8bf 0%, #b1b8bf 65%, #97a3af 65%, #97a3af 100%);
+    border: 2px solid #475058;
+    border-radius: 8px;
+    -moz-border-radius: 6px;
+    -moz-box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.4);
+    box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.4);
+}
+
+#splashLoadHolder {
+    display: block;
+    position: absolute;
+    width: 390px;
+    height: 20px;
+    left: 5px;
+    top: 4px;
+    border-radius: 5px;
+    background-color: #475058;
+}
+
+#loader_text {
+    font-size: 16px;
+    font-weight: normal;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    height: 30px;
+    text-align: center;
+    margin: -25px 0 0 -200px;
+    width: 400px;
+}
+
+#splashAmountLoaded {
+    display: block;
+    position: absolute;
+    max-width: 386px;
+    height: 16px;
+    left: 2px;
+    top: 2px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0px 0px 4px #000;
+    -moz-box-shadow: 0px 0px 4px #000;
+
+    background-color: rgb(130, 224, 253);
+    background-image: -ms-linear-gradient(bottom, #649ca9 0%, #649ca9 20%, #82e8fa 20%, #82e8fa 80%, #dbf9ff 80%, #dbf9ff 100%);
+    background-image: linear-gradient(bottom, #649ca9 0%, #649ca9 20%, #82e8fa 20%, #82e8fa 80%, #dbf9ff 80%, #dbf9ff 100%);
+    background-image: -o-linear-gradient(bottom, #649ca9 0%, #649ca9 20%, #82e8fa 20%, #82e8fa 80%, #dbf9ff 80%, #dbf9ff 100%);
+    background-image: -moz-linear-gradient(bottom, #649ca9 0%, #649ca9 20%, #82e8fa 20%, #82e8fa 80%, #dbf9ff 80%, #dbf9ff 100%);
+    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #649ca9), color-stop(0.2, #649ca9), color-stop(0.2, #82e8fa), color-stop(0.8, #82e8fa), color-stop(0.8, #dbf9ff));
+}
