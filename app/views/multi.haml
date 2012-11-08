@@ -10,9 +10,9 @@
         %span#progressHolder
           %span#progressAmountIndicator{:style => 'width: 5%'}
     #game.hidden
-      #controls
+      #control-panel
         %button#toggle-button.btn
-          %i.icon-align-justify
+          %i#toggle-button-icon.icon-arrow-up
 :javascript
   (function(){
     window.pl = { id: "#{@player.fb_id}", name: "#{@player.name}", currentScore: 0, timesPlayed: parseInt("#{@player.times_played}"), timesWon: parseInt("#{@player.games_won}") };

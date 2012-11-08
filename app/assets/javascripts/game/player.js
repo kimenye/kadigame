@@ -580,6 +580,40 @@ window.kadi = (function(me, $, undefined){
         }
     });
 
+    me.MultiplayerGameUI = JS.Class({
+        construct: function(player) {
+            this.player = player;
+            this.controlsRevealed = false;
+            this.init();
+        },
+
+        init: function() {
+            var self = this;
+            kadi.progressLoader('Preparing controls');
+
+            //prepare the button that loads the options
+            $('#toggle-button').click(function() {
+                self.showOptions();
+            });
+
+            kadi.hideLoader();
+            $('#game').removeClass('hidden');
+        },
+
+        showOptions: function() {
+            kadi.enable($('#toggle-button'), false);
+            var self = this;
+            var position = this.controlsRevealed ? '0px' : '-360px';
+
+            $('#control-panel').transition({ y: position },
+                function() {
+                    kadi.enable($('#toggle-button'), true);
+                    $('#toggle-button-icon').toggleClass('icon-arrow-down');
+                    self.controlsRevealed = !self.controlsRevealed;
+                });
+        }
+    });
+
     me.SocialDashboard = JS.Class({
         construct: function(handler) {
             this.friends = [];

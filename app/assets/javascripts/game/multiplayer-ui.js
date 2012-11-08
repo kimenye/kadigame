@@ -38,12 +38,9 @@
                 kadi.progressLoader('Hi ' + player.name + ". We won't be long...", 90);
                 clearInterval(timer);
 
-                var me = new kadi.MultiPlayerUI(player, null, false);
-
                 _.delay(function() {
-                    kadi.hideLoader();
-//                    var game = kadi.createDiv('game','game');
-                    $('#game').removeClass('hidden');
+                    var me = new kadi.MultiPlayerUI(player, null, false);
+                    var game = new kadi.MultiplayerGameUI(me);
                 },0);
             }
         }, 500);
