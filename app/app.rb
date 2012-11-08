@@ -155,7 +155,7 @@ class Kadi < Padrino::Application
   end
 
   if development?
-    get :multiplayer do
+    get :multiplayer, :with => :id do
       if params[:id].nil?
         @player = Player.first
       else
@@ -182,12 +182,7 @@ class Kadi < Padrino::Application
 
   get :play do
     if development?
-      if params[:id].nil?
-        @player = Player.first
-      else
-        @player = Player.find_by_id(params[:id])
-      end
-
+      @player = Player.first
       if @player.games_won.nil?
         @player.games_won = 0
       end

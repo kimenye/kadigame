@@ -8,15 +8,50 @@
     line-height: 25px;
 }
 
-#game_container {
-    height: 600px;
-    border: 1px solid #475058;
-    border-radius: 8px 8px 8px 8px;
-    box-shadow: 1px 3px 0 rgba(0, 0, 0, 0.4);
-}
-
 .hidden {
     display: none;
+}
+
+/* Game items */
+
+#game_container {
+    height: 600px;
+    /*border: 1px solid #475058;*/
+    /*border-radius: 8px 8px 8px 8px;*/
+    /*box-shadow: 1px 3px 0 rgba(0, 0, 0, 0.4);*/
+}
+
+#game {
+    /*background:radial-gradient(rgba(80,0,0,0.1) 0%, rgba(80,0,0,0.2) 30%, rgba(21,11,1,0.9) 100% ), url(../images/woodback.jpg);*/
+    background-color: #475058;
+    /*background-color: #8C0021;*/
+    border-radius: 8px 8px 0px 0px;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+#controls {
+    height: 400px;
+    width: 99%;
+    margin-left: 4px;
+    position: relative;
+    top: 560px;
+    background: #b1b8bf;
+    background: -webkit-linear-gradient(top, #b1b8bf 0%, #b1b8bf 65%, #97a3af 65%, #97a3af 100%);
+    background: -moz-linear-gradient(top, #b1b8bf 0%, #b1b8bf 65%, #97a3af 65%, #97a3af 100%);
+    border: 1px solid #475058;
+    border-radius: 6px;
+    /*-moz-border-radius: 6px;*/
+    -moz-box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.4);
+    box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.4);
+}
+
+#toggle-button {
+    /*margin-right: 5px;*/
+    margin: 5px 5px 0 0;
+    float: right;
 }
 
 /* Loader bar */

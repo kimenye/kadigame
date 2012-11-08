@@ -573,6 +573,13 @@ window.kadi = (function(me, $, undefined){
         }
     });
 
+    me.MultiPlayerUI = me.Player.extend({
+        construct : function(player, deck, prepare) {
+            this.parent.construct.apply(this, [player.id,player.name,player.live, player.currentScore, player.numberOfTimesPlayed, player.numberOfTimesWon, deck]);
+            this.realtime = new me.RealtimeSync(this, true, false);
+        }
+    });
+
     me.SocialDashboard = JS.Class({
         construct: function(handler) {
             this.friends = [];

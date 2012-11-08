@@ -27,17 +27,26 @@
     loader.loadManifest(manifest);
 
     function isLoaded() {
-        return (typeof kadi != 'undefined' && kadi.loaded);
+        return (typeof kadi != 'undefined' && kadi.loaded && window.pl);
     }
 
     function handleComplete() {
         var timer = setInterval(function() {
             if (isLoaded()) {
                 progress += 30;
-                kadi.progressLoader('Finished loading assets...', progress);
+                var player = window.pl;
+                kadi.progressLoader('Hi ' + player.name + ". We won't be long...", 90);
                 clearInterval(timer);
+
+                var me = new kadi.MultiPlayerUI(player, null, false);
+
+                _.delay(function() {
+                    kadi.hideLoader();
+//                    var game = kadi.createDiv('game','game');
+                    $('#game').removeClass('hidden');
+                },0);
             }
-        }, 1000);
+        }, 500);
     }
 
     function updateProgress(val) {

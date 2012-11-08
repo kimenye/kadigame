@@ -523,6 +523,10 @@ window.kadi = (function(me, $, undefined){
         $('#progressAmountIndicator').css('width', value + "%");
     };
 
+    me.hideLoader = function() {
+        $('.loading').addClass('hidden');
+    };
+
     me.display = function(parent, id, className) {
         var div = kadi.createElement('div', className, id);
         var parentDiv = document.getElementById(parent);
