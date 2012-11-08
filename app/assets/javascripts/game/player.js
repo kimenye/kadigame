@@ -591,17 +591,19 @@ window.kadi = (function(me, $, undefined){
             var self = this;
             kadi.progressLoader('Preparing controls');
 
+            $('#toggle-button').tooltip({ title: 'Click to show / hide more options', placement: 'left' , delay: { show: 0, hide: 0 } });
             //prepare the button that loads the options
             $('#toggle-button').click(function() {
-                self.showOptions();
+                self.toggleOptions();
             });
 
             kadi.hideLoader();
             $('#game').removeClass('hidden');
         },
 
-        showOptions: function() {
+        toggleOptions: function() {
             kadi.enable($('#toggle-button'), false);
+            $('#toggle-button').tooltip('hide');
             var self = this;
             var position = this.controlsRevealed ? '0px' : '-360px';
 
