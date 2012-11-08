@@ -598,7 +598,7 @@ window.kadi = (function(me, $, undefined){
             });
 
             kadi.hideLoader();
-            $('#game').removeClass('hidden');
+            $('#game').removeClass('hide');
         },
 
         toggleOptions: function() {
@@ -607,7 +607,7 @@ window.kadi = (function(me, $, undefined){
             var self = this;
             var position = this.controlsRevealed ? '0px' : '-360px';
 
-            $('#control-panel').transition({ y: position },
+            $('#control-panel').transition({ y: position },400,'snap',
                 function() {
                     kadi.enable($('#toggle-button'), true);
                     $('#toggle-button-icon').toggleClass('icon-arrow-down');

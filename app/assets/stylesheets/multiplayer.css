@@ -8,8 +8,8 @@
     line-height: 25px;
 }
 
-.hidden {
-    display: none;
+.hide {
+    display: none !important;
 }
 
 /* Game items */
@@ -49,9 +49,25 @@
 }
 
 #toggle-button {
-    /*margin-right: 5px;*/
-    margin: 5px 5px 0 0;
     float: right;
+}
+
+.players_indicator {
+    height: 30px;
+    margin-top: 5px;
+    display: table-cell;
+    vertical-align: middle;
+    float: left;
+}
+
+.players_online {
+    color: white;
+}
+
+.right_controls {
+    float: right;
+    margin: 5px 5px 0 0;
+    width: 200px;
 }
 
 /* Loader bar */

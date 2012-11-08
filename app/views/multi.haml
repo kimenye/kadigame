@@ -9,10 +9,14 @@
       #loader
         %span#progressHolder
           %span#progressAmountIndicator{:style => 'width: 5%'}
-    #game.hidden
+    #game.hide
       #control-panel
-        %button#toggle-button.btn
-          %i#toggle-button-icon.icon-arrow-up
+        .right_controls
+          %button#toggle-button.btn
+            %i#toggle-button-icon.icon-arrow-up
+          .players_indicator.hide
+            %span.players_online Players Online
+            %span.badge.badge-info
 :javascript
   (function(){
     window.pl = { id: "#{@player.fb_id}", name: "#{@player.name}", currentScore: 0, timesPlayed: parseInt("#{@player.times_played}"), timesWon: parseInt("#{@player.games_won}") };

@@ -524,7 +524,7 @@ window.kadi = (function(me, $, undefined){
     };
 
     me.hideLoader = function() {
-        $('.loading').addClass('hidden');
+        $('.loading').addClass('hide');
     };
 
     me.display = function(parent, id, className) {
