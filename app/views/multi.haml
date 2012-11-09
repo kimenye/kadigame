@@ -15,8 +15,12 @@
           %button#toggle-button.btn
             %i#toggle-button-icon.icon-arrow-up
           .players_indicator.hide
-            %span.players_online Players Online
-            %span.badge.badge-info
+            %span.players_online
+              %a#players_online_link Players Online
+            %span.badge.badge-info#players_online_badge
+          .no_players_online
+            %span.players_online Connecting...
+        %hr.clear
 :javascript
   (function(){
     window.pl = { id: "#{@player.fb_id}", name: "#{@player.name}", currentScore: 0, timesPlayed: parseInt("#{@player.times_played}"), timesWon: parseInt("#{@player.games_won}") };

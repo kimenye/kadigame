@@ -247,10 +247,13 @@ class Kadi < Padrino::Application
 
   post "/pusher/presence/auth", :provides => [:json] do
     puts "Authenticating presence channel: #{params}"
+    @player = Player.find_by_fb_id(params[:userid])
     response = Pusher[params[:channel_name]].authenticate(params[:socket_id], {
         :user_id => params[:userid],
         :user_info => {
-            :name => params[:name]
+            :name => params[:name],
+            :games_won => @player.games_won,
+            :games_played => @player.times_played
         }
     })
     response.to_json

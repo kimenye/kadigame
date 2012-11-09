@@ -238,10 +238,10 @@ window.kadi = (function(me, $, undefined){
                 SHOTGUN.fire(me.RealtimeSync.EVENT_CHANNEL_SUB_ERROR, [msg]);
             });
 
-            this.gameRoomPresence.bind('pusher:subscription_succeeded', function() {
+            this.gameRoomPresence.bind('pusher:subscription_succeeded', function(members) {
                 var end = new Date();
                 self.connected = true;
-                SHOTGUN.fire(me.RealtimeSync.EVENT_CHANNEL_SUBSCRIBED, [channel, self.gameRoomPresence.members.count]);
+                SHOTGUN.fire(me.RealtimeSync.EVENT_CHANNEL_SUBSCRIBED, [channel, self.gameRoomPresence.members.count, members]);
             });
 
             this.gameRoomPresence.bind('pusher:member_added', function(member) {
@@ -282,26 +282,8 @@ window.kadi = (function(me, $, undefined){
             this.cardsToPick = []; //TODO: remove
             this.kadiMode = false; //TODO: remove
 
-//            var myViewModel = {
-//                numOnline: ko.observable(0)
-//            };
-//            ko.applyBindings(myViewModel);
             if (player.live) {
                 this.notification = new kadi.PlayerNotification();
-
-//                SHOTGUN.listen(kadi.RealtimeSync.EVENT_CHANNEL_SUBSCRIBED, function(channel, memberCount) {
-//                    myViewModel.numOnline(memberCount);
-//                });
-//
-//                SHOTGUN.listen(kadi.RealtimeSync.EVENT_MEMBER_ADDED, function(channel, member, memberCount) {
-//                    myViewModel.numOnline(memberCount);
-//                });
-//
-//                SHOTGUN.listen(kadi.RealtimeSync.EVENT_MEMBER_LEFT, function(channel, member, memberCount) {
-//                    myViewModel.numOnline(memberCount);
-//                });
-
-//                var sync = new kadi.RealtimeSync(player, true);
             }
             if (kadi.getVal(prepare))
                 this.initDisplay();
@@ -576,7 +558,29 @@ window.kadi = (function(me, $, undefined){
     me.MultiPlayerUI = me.Player.extend({
         construct : function(player, deck, prepare) {
             this.parent.construct.apply(this, [player.id,player.name,player.live, player.currentScore, player.numberOfTimesPlayed, player.numberOfTimesWon, deck]);
-            this.realtime = new me.RealtimeSync(this, true, false);
+            this.realtime = new me.RealtimeSync(this, prepare, false);
+        }
+    });
+
+    me.Opponent = me.Player.extend({
+        construct: function(member) {
+            this.parent.construct.apply(this, [member.id,member.info.name, false, 0, member.info.games_played, member.info.games_won]);
+            //get the image for this player
+            var avatarUrl = kadi.getProfileUrl(this.id, true);
+            this.avatar = kadi.createElement('img', 'img-polaroid');
+            this.imageLoaded = false;
+            var self = this;
+            this.avatar.onload = function() {
+                self.imageLoaded = true;
+                SHOTGUN.fire(kadi.Events.SHOW_LOGGED_IN_USER, [self]);
+            }
+            this.avatar.src = avatarUrl;
+        },
+
+        displayHtml: function() {
+            var div = kadi.createElement("div");
+            div.appendChild(this.avatar);
+            return $(div).html();
         }
     });
 
@@ -584,6 +588,8 @@ window.kadi = (function(me, $, undefined){
         construct: function(player) {
             this.player = player;
             this.controlsRevealed = false;
+            this.playersOnline = [];
+            this.numbersOnline = 0;
             this.init();
         },
 
@@ -591,18 +597,85 @@ window.kadi = (function(me, $, undefined){
             var self = this;
             kadi.progressLoader('Preparing controls');
 
-            $('#toggle-button').tooltip({ title: 'Click to show / hide more options', placement: 'left' , delay: { show: 0, hide: 0 } });
             //prepare the button that loads the options
             $('#toggle-button').click(function() {
                 self.toggleOptions();
             });
+//            $('#toggle-button').tooltip({ title: 'Click to show / hide more options', placement: 'top' , delay: { show: 0, hide: 0 } });
+
+
+            SHOTGUN.listen(kadi.RealtimeSync.EVENT_CHANNEL_SUBSCRIBED, function(channel, memberCount, members) {
+                self.numbersOnline = memberCount;
+                self.updatePlayerCountUI();
+
+                members.each(function(member) {
+                    if (member.id != self.player.id) {
+                        self.playersOnline.push(new me.Opponent(member));
+                    }
+                });
+            });
+
+            SHOTGUN.listen(kadi.RealtimeSync.EVENT_MEMBER_ADDED, function(channel, member, memberCount) {
+                self.numbersOnline = memberCount;
+                self.playersOnline.push(new me.Opponent(member));
+                self.updatePlayerCountUI();
+            });
+
+            SHOTGUN.listen(kadi.RealtimeSync.EVENT_MEMBER_LEFT, function(channel, member, memberCount) {
+                self.numbersOnline = memberCount;
+                self.updatePlayerCountUI();
+            });
+
+            SHOTGUN.listen(kadi.Events.SHOW_LOGGED_IN_USER, function(member) {
+                var content = member.displayHtml();
+                console.log("content: ", content);
+//                $('#players_online_link').popover({content: member.name});
+//                $('#players_online_link').popover('show');
+
+                $('#players_online_link').popover({
+                    html: true,
+                    animation: true,
+                    placement: 'placement',
+                    content: member.displayHtml(),
+//                    content: "<p>" + member.name + " came online</p>",
+                    title: "Who's Online",
+                    delay: { show: 50, hide: 0 }
+                }).popover('show');
+
+                $('.players_online .popover').css('top', '-150px').css('left', '650px');
+
+                _.delay(function() {
+//                    $('#players_online_link').popover('hide');
+                }, 2000);
+            });
+
 
             kadi.hideLoader();
             $('#game').removeClass('hide');
+
+//            _.delay(function() {
+//
+//                var test_member = { id: '100004303570767', info: { name: 'Wills', games_played: 10, games_won: 5 }};
+//                SHOTGUN.fire(kadi.RealtimeSync.EVENT_MEMBER_ADDED, [null,test_member,2]);
+//            }, 0);
+        },
+
+        hidePopoverElements: function() {
+//            $('.players_online .popover').popover('hide');
+            $('#players_online_link').popover('hide');
+        },
+
+        updatePlayerCountUI: function() {
+            if (this.numbersOnline > 0) {
+                $('.players_indicator').toggleClass('hide');
+                $('.no_players_online').toggleClass('hide');
+                $('#players_online_badge').html(this.numbersOnline);
+            }
         },
 
         toggleOptions: function() {
             kadi.enable($('#toggle-button'), false);
+            if (!this.controlsRevealed) this.hidePopoverElements();
             $('#toggle-button').tooltip('hide');
             var self = this;
             var position = this.controlsRevealed ? '0px' : '-360px';
